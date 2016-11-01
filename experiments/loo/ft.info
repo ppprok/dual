@@ -1,0 +1,11 @@
+method LOO
+algorithm
+{
+	type MultiByBinary
+	correctPart 1
+	positiveLearner
+	{
+		type FTVoting
+	        coverLimit 100
+	}
+}

@@ -1,0 +1,38 @@
+{{"..\\experiments\\cv\\breast-cancer-wisconsin.int", 
+   "..\\experiments\\cv\\boostingec.info", "../logs/1.log"} -> 
+  {TotalProcessorTime -> 0.6396041, Time -> 1.212, "MeanError" -> 0.027933}, 
+ {"..\\experiments\\cv\\breast-cancer-wisconsin.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/2.log"} -> 
+  {TotalProcessorTime -> 62.665601699999996, Time -> 63.25, 
+   "MeanError" -> 0.0405028}, 
+ {"..\\experiments\\cv\\breast-cancer-wisconsin.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/3.log"} -> 
+  {TotalProcessorTime -> 67.2832313, Time -> 67.85799999999999, 
+   "MeanError" -> 0.0418994}, 
+ {"..\\experiments\\cv\\breast-cancer-wisconsin.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin-boost.info", 
+   "../logs/4.log"} -> {TotalProcessorTime -> 23.8993532, 
+   Time -> 23.997999999999998, "MeanError" -> 0.0405028}, 
+ {"..\\experiments\\cv\\breast-cancer-wisconsin.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin.info", "../logs/5.log"} -> 
+  {TotalProcessorTime -> 2.2776145999999997, Time -> 2.3529999999999998, 
+   "MeanError" -> 0.0349162}, 
+ {"..\\experiments\\cv\\breast-cancer-wisconsin.int", 
+   "..\\experiments\\cv\\boostingft.info", "../logs/6.log"} -> 
+  {TotalProcessorTime -> 0.8580055, Time -> 0.9279999999999999, 
+   "MeanError" -> 0.0321229}, 
+ {"..\\experiments\\cv\\breast-cancer-wisconsin.int", 
+   "..\\experiments\\cv\\boostingmon.info", "../logs/7.log"} -> 
+  {TotalProcessorTime -> 4.7424304, Time -> 4.803999999999999, 
+   "MeanError" -> 0.0391061}, 
+ {"..\\experiments\\cv\\breast-cancer-wisconsin.int", 
+   "..\\experiments\\cv\\ft.info", "../logs/8.log"} -> 
+  {TotalProcessorTime -> 1.5288097999999999, Time -> 1.561, 
+   "MeanError" -> 0.146648}, 
+ {"..\\experiments\\cv\\breast-cancer-wisconsin.int", 
+   "..\\experiments\\cv\\mon.info", "../logs/9.log"} -> 
+  {TotalProcessorTime -> 8.9388573, Time -> 8.974, "MeanError" -> 0.162011}, 
+ {"..\\experiments\\cv\\breast-cancer-wisconsin.int", 
+   "..\\experiments\\cv\\ps.info", "../logs/10.log"} -> 
+  {TotalProcessorTime -> 0.1404009, Time -> 0.19399999999999998, 
+   "MeanError" -> 0.0307263}}

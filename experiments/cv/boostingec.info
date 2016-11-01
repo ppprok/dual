@@ -1,0 +1,12 @@
+method CV
+times 1
+trainPart 0.9
+algorithm
+{
+	type Boosting
+	weakLearner
+	{
+		type ECVoting
+	}
+    positiveLearner weakLearner
+}

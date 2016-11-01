@@ -1,0 +1,30 @@
+method CV
+times 3
+trainPart 0.9
+algorithm
+{
+	type Boosting
+	stopQ 0.5
+	positiveLearner
+	{
+		type ECmpVoting
+		ecmpCount 5
+		optionalCount 10
+		featureSelector
+		{
+			type BoostingFeatureSelector
+			mode 2
+		}
+	}
+	negativeLearner
+	{
+		type ECmpVoting
+		ecmpCount 5
+		optionalCount 10
+		featureSelector
+		{
+			type BoostingFeatureSelector
+			mode 2
+		}
+	}
+}

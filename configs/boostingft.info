@@ -1,0 +1,13 @@
+method CV
+times 3
+trainPart 0.9
+algorithm
+{
+	type Boosting
+	stopQ 0.5
+	positiveLearner
+	{
+		type FTVoting
+		ftCount 5
+	}
+}

@@ -1,0 +1,104 @@
+{{"..\\experiments\\cv\\car.int", "..\\experiments\\cv\\boostingec.info", 
+   "../logs/1.log"} -> {TotalProcessorTime -> 2.6988173, Time -> 2.8394912, 
+   "MeanError" -> 0.04}, {"..\\experiments\\cv\\car.int", 
+   "..\\experiments\\cv\\boostingft.info", "../logs/4.log"} -> 
+  {TotalProcessorTime -> 2.2620145, Time -> 2.34024, 
+   "MeanError" -> 0.0411429}, {"..\\experiments\\cv\\car.int", 
+   "..\\experiments\\cv\\ft.info", "../logs/5.log"} -> 
+  {TotalProcessorTime -> 0.9828062999999999, Time -> 1.0297056, 
+   "MeanError" -> 0.974857}, {"..\\experiments\\cv\\car.int", 
+   "..\\experiments\\cv\\mon.info", "../logs/6.log"} -> 
+  {TotalProcessorTime -> 3.9936255999999997, Time -> 4.056416, 
+   "MeanError" -> 0.294286}, {"..\\experiments\\cv\\car.int", 
+   "..\\experiments\\cv\\ps.info", "../logs/7.log"} -> 
+  {TotalProcessorTime -> 0.34320219999999996, Time -> 0.3744384, 
+   "MeanError" -> 0.0902857}, {"..\\experiments\\cv\\car.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/2.log"} -> 
+  {TotalProcessorTime -> 29.827391199999997, Time -> 30.0016704, 
+   "MeanError" -> 0.0194286}, {"..\\experiments\\cv\\car.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/3.log"} -> 
+  {TotalProcessorTime -> 86.1281521, Time -> 86.2911608, 
+   "MeanError" -> 0.0348571}, {"..\\experiments\\cv\\dermatology.int", 
+   "..\\experiments\\cv\\boostingec.info", "../logs/8.log"} -> 
+  {TotalProcessorTime -> 75.50448399999999, Time -> 75.5416443, 
+   "MeanError" -> 0.420513}, {"..\\experiments\\cv\\dermatology.int", 
+   "..\\experiments\\cv\\boostingft.info", "../logs/11.log"} -> 
+  {TotalProcessorTime -> 72.7900666, Time -> 72.8892736, 
+   "MeanError" -> 0.412821}, {"..\\experiments\\cv\\dermatology.int", 
+   "..\\experiments\\cv\\ft.info", "../logs/12.log"} -> 
+  {TotalProcessorTime -> 0.3276021, Time -> 0.37443119999999996, 
+   "MeanError" -> 0.825641}, {"..\\experiments\\cv\\dermatology.int", 
+   "..\\experiments\\cv\\mon.info", "../logs/13.log"} -> 
+  {TotalProcessorTime -> 2.6208168, Time -> 2.652221, 
+   "MeanError" -> 0.817949}, {"..\\experiments\\cv\\dermatology.int", 
+   "..\\experiments\\cv\\ps.info", "../logs/14.log"} -> 
+  {TotalProcessorTime -> 0.5148033, Time -> 0.5460455, 
+   "MeanError" -> 0.507692}, {"..\\experiments\\cv\\house-votes.int", 
+   "..\\experiments\\cv\\boostingec.info", "../logs/15.log"} -> 
+  {TotalProcessorTime -> 2.8236181, Time -> 2.8862405, 
+   "MeanError" -> 0.0442478}, {"..\\experiments\\cv\\house-votes.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/16.log"} -> 
+  {TotalProcessorTime -> 12.386479399999999, Time -> 12.4186348, 
+   "MeanError" -> 0.039823}, {"..\\experiments\\cv\\house-votes.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/17.log"} -> 
+  {TotalProcessorTime -> 7.0980455, Time -> 7.2078006, 
+   "MeanError" -> 0.050885}, {"..\\experiments\\cv\\house-votes.int", 
+   "..\\experiments\\cv\\boostingft.info", "../logs/18.log"} -> 
+  {TotalProcessorTime -> 2.8704183999999997, Time -> 2.9018417999999997, 
+   "MeanError" -> 0.0442478}, {"..\\experiments\\cv\\house-votes.int", 
+   "..\\experiments\\cv\\ft.info", "../logs/19.log"} -> 
+  {TotalProcessorTime -> 0.12480079999999999, Time -> 0.15601299999999999, 
+   "MeanError" -> 0.323009}, {"..\\experiments\\cv\\house-votes.int", 
+   "..\\experiments\\cv\\mon.info", "../logs/20.log"} -> 
+  {TotalProcessorTime -> 2.2932147, Time -> 2.340195, 
+   "MeanError" -> 0.0840708}, {"..\\experiments\\cv\\house-votes.int", 
+   "..\\experiments\\cv\\ps.info", "../logs/21.log"} -> 
+  {TotalProcessorTime -> 0.046800299999999996, Time -> 0.07800649999999999, 
+   "MeanError" -> 0.0420354}, {"..\\experiments\\cv\\mushrooms.int", 
+   "..\\experiments\\cv\\boostingec.info", "../logs/22.log"} -> 
+  {TotalProcessorTime -> 1.9500125, Time -> 1.9969663999999998, 
+   "MeanError" -> 0}, {"..\\experiments\\cv\\mushrooms.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/23.log"} -> 
+  {TotalProcessorTime -> 39.359052299999995, Time -> 39.4244851, 
+   "MeanError" -> 0}, {"..\\experiments\\cv\\mushrooms.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/24.log"} -> 
+  {TotalProcessorTime -> 2.9328187999999997, Time -> 2.964247, 
+   "MeanError" -> 0}, {"..\\experiments\\cv\\mushrooms.int", 
+   "..\\experiments\\cv\\boostingft.info", "../logs/25.log"} -> 
+  {TotalProcessorTime -> 1.9500125, Time -> 1.9969663999999998, 
+   "MeanError" -> 0}, {"..\\experiments\\cv\\mushrooms.int", 
+   "..\\experiments\\cv\\ft.info", "../logs/26.log"} -> 
+  {TotalProcessorTime -> 110.4955083, Time -> 110.51960919999999, 
+   "MeanError" -> 0}, {"..\\experiments\\cv\\dermatology.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/10.log"} -> 
+  {TotalProcessorTime -> 296.5267008, Time -> 296.6275169, 
+   "MeanError" -> 0.435897}, {"..\\experiments\\cv\\mushrooms.int", 
+   "..\\experiments\\cv\\ps.info", "../logs/28.log"} -> 
+  {TotalProcessorTime -> 0.6864043999999999, Time -> 0.7176598, 
+   "MeanError" -> 0}, {"..\\experiments\\cv\\tic-tac-toe.int", 
+   "..\\experiments\\cv\\boostingec.info", "../logs/29.log"} -> 
+  {TotalProcessorTime -> 8.299253199999999, Time -> 8.331094199999999, 
+   "MeanError" -> 0.00410678}, {"..\\experiments\\cv\\tic-tac-toe.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/30.log"} -> 
+  {TotalProcessorTime -> 43.7426804, Time -> 43.8084504, 
+   "MeanError" -> 0.0308008}, {"..\\experiments\\cv\\tic-tac-toe.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/31.log"} -> 
+  {TotalProcessorTime -> 3.2604208999999997, Time -> 3.2918743, 
+   "MeanError" -> 0.00410678}, {"..\\experiments\\cv\\tic-tac-toe.int", 
+   "..\\experiments\\cv\\boostingft.info", "../logs/32.log"} -> 
+  {TotalProcessorTime -> 7.6908493, Time -> 7.7382447999999995, 
+   "MeanError" -> 0.00410678}, {"..\\experiments\\cv\\tic-tac-toe.int", 
+   "..\\experiments\\cv\\ft.info", "../logs/33.log"} -> 
+  {TotalProcessorTime -> 0.5148033, Time -> 0.5772480999999999, 
+   "MeanError" -> 0.967146}, {"..\\experiments\\cv\\tic-tac-toe.int", 
+   "..\\experiments\\cv\\mon.info", "../logs/34.log"} -> 
+  {TotalProcessorTime -> 2.8392182, Time -> 2.8706392, 
+   "MeanError" -> 0.334702}, {"..\\experiments\\cv\\tic-tac-toe.int", 
+   "..\\experiments\\cv\\ps.info", "../logs/35.log"} -> 
+  {TotalProcessorTime -> 0.062400399999999995, Time -> 0.09360779999999999, 
+   "MeanError" -> 0.00410678}, {"..\\experiments\\cv\\dermatology.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/9.log"} -> 
+  {TotalProcessorTime -> 608.3726998, Time -> 608.6691182, 
+   "MeanError" -> 0.425641}, {"..\\experiments\\cv\\mushrooms.int", 
+   "..\\experiments\\cv\\mon.info", "../logs/27.log"} -> 
+  {TotalProcessorTime -> 476.9418573, Time -> 477.0721527, "MeanError" -> 0}}

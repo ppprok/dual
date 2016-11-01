@@ -1,0 +1,13 @@
+{{"..\\experiments\\cv\\kr-vs-kp.int", "..\\experiments\\cv\\mon.info", 
+   "../logs/1.log"} -> {TotalProcessorTime -> 89.8097757, Time -> 90.4391729, 
+   "MeanError" -> 0.107965}, {"..\\experiments\\cv\\letter-recognition.int", 
+   "..\\experiments\\cv\\mon.info", "../logs/2.log"} -> 
+  {Killed -> True, Timeout -> 2400, TotalProcessorTime -> 2399.8257834, 
+   Time -> 2400.5263022999998, "MeanError" -> {}}, 
+ {"..\\experiments\\cv\\nursery.int", "..\\experiments\\cv\\mon.info", 
+   "../logs/3.log"} -> {TotalProcessorTime -> 579.6217154999999, 
+   Time -> 580.2451881, "MeanError" -> 0.358963}, 
+ {"..\\experiments\\cv\\optdigits.int", "..\\experiments\\cv\\mon.info", 
+   "../logs/4.log"} -> {Killed -> True, Timeout -> 2400, 
+   TotalProcessorTime -> 2399.919384, Time -> 2400.0172732, 
+   "MeanError" -> {}}}

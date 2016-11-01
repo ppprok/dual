@@ -1,0 +1,14 @@
+method T
+algorithm
+{
+	type Boosting
+	weakLearner
+	{
+		type FTVoting
+		featureSelector
+		{
+			type InitECFeatureSelector
+		}
+	}
+    positiveLearner weakLearner
+}

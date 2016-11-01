@@ -1,0 +1,22 @@
+method CV
+times 3
+trainPart 0.9
+algorithm
+{
+	type MultiByBinary
+	positiveLearner
+	{
+		type ECmpVoting
+		ecmpCount 100
+		optionalCount 0
+		featureSelector
+		{
+			type AllFeatureSelector
+			maxRank 2
+			relation
+			{
+				LE
+			}
+		}
+	}
+}

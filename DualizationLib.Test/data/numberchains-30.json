@@ -1,0 +1,124 @@
+{
+    "columns": [
+        {
+            "name": "n1",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n2",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n3",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n4",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n5",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n6",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n7",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n8",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n9",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n10",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n11",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n12",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n13",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n14",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n15",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n16",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n17",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n18",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n19",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n20",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n21",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n22",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n23",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n24",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n25",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n26",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n27",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n28",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n29",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n30",
+            "type": "NumberChain"
+        }
+    ]
+}

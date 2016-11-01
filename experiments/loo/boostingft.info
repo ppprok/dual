@@ -1,0 +1,10 @@
+method LOO
+algorithm
+{
+	type Boosting
+	weakLearner
+	{
+		type FTVoting
+	}
+    positiveLearner weakLearner
+}

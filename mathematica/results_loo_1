@@ -1,0 +1,445 @@
+{{"..\\experiments\\loo\\ex10.int", "..\\experiments\\loo\\boostingec.info", 
+   "../logs/1.log"} -> {TotalProcessorTime -> 0.015600099999999999, 
+   Time -> 0.061012199999999996, "MeanError" -> 0.4}, 
+ {"..\\experiments\\loo\\ex10.int", 
+   "..\\experiments\\loo\\boostingecmp.info", "../logs/2.log"} -> 
+  {TotalProcessorTime -> 0.031200199999999997, Time -> 0.0770154, 
+   "MeanError" -> 0.2}, {"..\\experiments\\loo\\ex10.int", 
+   "..\\experiments\\loo\\boostingecmp-lb.info", "../logs/3.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0690138, 
+   "MeanError" -> 0.1}, {"..\\experiments\\loo\\ex10.int", 
+   "..\\experiments\\loo\\boostingft.info", "../logs/4.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.040007999999999995, 
+   "MeanError" -> 0.7}, {"..\\experiments\\loo\\ex10.int", 
+   "..\\experiments\\loo\\boostingmon.info", "../logs/5.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0540108, 
+   "MeanError" -> 0.5}, {"..\\experiments\\loo\\ex10.int", 
+   "..\\experiments\\loo\\ft.info", "../logs/6.log"} -> 
+  {TotalProcessorTime -> 0., Time -> 0.058011599999999997, "MeanError" -> 1}, 
+ {"..\\experiments\\loo\\ex10.int", "..\\experiments\\loo\\mon.info", 
+   "../logs/7.log"} -> {TotalProcessorTime -> 0.015600099999999999, 
+   Time -> 0.031006199999999998, "MeanError" -> 0.4}, 
+ {"..\\experiments\\loo\\ex10.int", "..\\experiments\\loo\\ps.info", 
+   "../logs/8.log"} -> {TotalProcessorTime -> 0., Time -> 0.0430086, 
+   "MeanError" -> 0.5}, {"..\\experiments\\loo\\ex11.int", 
+   "..\\experiments\\loo\\boostingec.info", "../logs/9.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.058011599999999997, 
+   "MeanError" -> 0.5}, {"..\\experiments\\loo\\ex11.int", 
+   "..\\experiments\\loo\\boostingecmp.info", "../logs/10.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.045009, 
+   "MeanError" -> 0.333333}, {"..\\experiments\\loo\\ex11.int", 
+   "..\\experiments\\loo\\boostingecmp-lb.info", "../logs/11.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.058011599999999997, 
+   "MeanError" -> 0.333333}, {"..\\experiments\\loo\\ex11.int", 
+   "..\\experiments\\loo\\boostingft.info", "../logs/12.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0510102, 
+   "MeanError" -> 0.833333}, {"..\\experiments\\loo\\ex11.int", 
+   "..\\experiments\\loo\\boostingmon.info", "../logs/13.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.040007999999999995, 
+   "MeanError" -> 0.416667}, {"..\\experiments\\loo\\ex11.int", 
+   "..\\experiments\\loo\\ft.info", "../logs/14.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.039007799999999995, 
+   "MeanError" -> 1}, {"..\\experiments\\loo\\ex11.int", 
+   "..\\experiments\\loo\\mon.info", "../logs/15.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0490098, 
+   "MeanError" -> 0.666667}, {"..\\experiments\\loo\\ex11.int", 
+   "..\\experiments\\loo\\ps.info", "../logs/16.log"} -> 
+  {TotalProcessorTime -> 0.031200199999999997, Time -> 0.031006199999999998, 
+   "MeanError" -> 0.5}, {"..\\experiments\\loo\\ex12.int", 
+   "..\\experiments\\loo\\boostingec.info", "../logs/17.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0490098, 
+   "MeanError" -> 0.428571}, {"..\\experiments\\loo\\ex12.int", 
+   "..\\experiments\\loo\\boostingecmp.info", "../logs/18.log"} -> 
+  {TotalProcessorTime -> 0.031200199999999997, Time -> 0.0660132, 
+   "MeanError" -> 0.357143}, {"..\\experiments\\loo\\ex12.int", 
+   "..\\experiments\\loo\\boostingecmp-lb.info", "../logs/19.log"} -> 
+  {TotalProcessorTime -> 0.031200199999999997, Time -> 0.058011599999999997, 
+   "MeanError" -> 0.428571}, {"..\\experiments\\loo\\ex12.int", 
+   "..\\experiments\\loo\\boostingft.info", "../logs/20.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0420084, 
+   "MeanError" -> 0.714286}, {"..\\experiments\\loo\\ex12.int", 
+   "..\\experiments\\loo\\boostingmon.info", "../logs/21.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0440088, 
+   "MeanError" -> 0.5}, {"..\\experiments\\loo\\ex12.int", 
+   "..\\experiments\\loo\\ft.info", "../logs/22.log"} -> 
+  {TotalProcessorTime -> 0., Time -> 0.0330066, "MeanError" -> 0.857143}, 
+ {"..\\experiments\\loo\\ex12.int", "..\\experiments\\loo\\mon.info", 
+   "../logs/23.log"} -> {TotalProcessorTime -> 0., 
+   Time -> 0.036007199999999996, "MeanError" -> 0.5}, 
+ {"..\\experiments\\loo\\ex12.int", "..\\experiments\\loo\\ps.info", 
+   "../logs/24.log"} -> {TotalProcessorTime -> 0.031200199999999997, 
+   Time -> 0.0330066, "MeanError" -> 0.428571}, 
+ {"..\\experiments\\loo\\ex13.int", "..\\experiments\\loo\\boostingec.info", 
+   "../logs/25.log"} -> {TotalProcessorTime -> 0., 
+   Time -> 0.040007999999999995, "MeanError" -> 0.2}, 
+ {"..\\experiments\\loo\\ex13.int", 
+   "..\\experiments\\loo\\boostingecmp.info", "../logs/26.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.05001, 
+   "MeanError" -> 0.133333}, {"..\\experiments\\loo\\ex13.int", 
+   "..\\experiments\\loo\\boostingecmp-lb.info", "../logs/27.log"} -> 
+  {TotalProcessorTime -> 0.031200199999999997, Time -> 0.0530106, 
+   "MeanError" -> 0.133333}, {"..\\experiments\\loo\\ex13.int", 
+   "..\\experiments\\loo\\boostingft.info", "../logs/28.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.040007999999999995, 
+   "MeanError" -> 0.666667}, {"..\\experiments\\loo\\ex13.int", 
+   "..\\experiments\\loo\\boostingmon.info", "../logs/29.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0430086, 
+   "MeanError" -> 0.133333}, {"..\\experiments\\loo\\ex13.int", 
+   "..\\experiments\\loo\\ft.info", "../logs/30.log"} -> 
+  {TotalProcessorTime -> 0., Time -> 0.039007799999999995, 
+   "MeanError" -> 0.733333}, {"..\\experiments\\loo\\ex13.int", 
+   "..\\experiments\\loo\\mon.info", "../logs/31.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.031006199999999998, 
+   "MeanError" -> 0.2}, {"..\\experiments\\loo\\ex13.int", 
+   "..\\experiments\\loo\\ps.info", "../logs/32.log"} -> 
+  {TotalProcessorTime -> 0., Time -> 0.0320064, "MeanError" -> 0.2}, 
+ {"..\\experiments\\loo\\ex14.int", "..\\experiments\\loo\\boostingec.info", 
+   "../logs/33.log"} -> {TotalProcessorTime -> 0.015600099999999999, 
+   Time -> 0.036007199999999996, "MeanError" -> 0.4}, 
+ {"..\\experiments\\loo\\ex14.int", 
+   "..\\experiments\\loo\\boostingecmp.info", "../logs/34.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0340068, 
+   "MeanError" -> 0.6}, {"..\\experiments\\loo\\ex14.int", 
+   "..\\experiments\\loo\\boostingecmp-lb.info", "../logs/35.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.040007999999999995, 
+   "MeanError" -> 0.6}, {"..\\experiments\\loo\\ex14.int", 
+   "..\\experiments\\loo\\boostingft.info", "../logs/36.log"} -> 
+  {TotalProcessorTime -> 0., Time -> 0.031006199999999998, 
+   "MeanError" -> 0.6}, {"..\\experiments\\loo\\ex14.int", 
+   "..\\experiments\\loo\\boostingmon.info", "../logs/37.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0330066, 
+   "MeanError" -> 0.6}, {"..\\experiments\\loo\\ex14.int", 
+   "..\\experiments\\loo\\ft.info", "../logs/38.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.035006999999999996, 
+   "MeanError" -> 0.6}, {"..\\experiments\\loo\\ex14.int", 
+   "..\\experiments\\loo\\mon.info", "../logs/39.log"} -> 
+  {TotalProcessorTime -> 0., Time -> 0.035006999999999996, 
+   "MeanError" -> 0.6}, {"..\\experiments\\loo\\ex14.int", 
+   "..\\experiments\\loo\\ps.info", "../logs/40.log"} -> 
+  {TotalProcessorTime -> 0., Time -> 0.030005999999999998, 
+   "MeanError" -> 0.6}, {"..\\experiments\\loo\\ex15.int", 
+   "..\\experiments\\loo\\boostingec.info", "../logs/41.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0420084, 
+   "MeanError" -> 0.875}, {"..\\experiments\\loo\\ex15.int", 
+   "..\\experiments\\loo\\boostingecmp.info", "../logs/42.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.039007799999999995, 
+   "MeanError" -> 0.875}, {"..\\experiments\\loo\\ex15.int", 
+   "..\\experiments\\loo\\boostingecmp-lb.info", "../logs/43.log"} -> 
+  {TotalProcessorTime -> 0.031200199999999997, Time -> 0.0510102, 
+   "MeanError" -> 1}, {"..\\experiments\\loo\\ex15.int", 
+   "..\\experiments\\loo\\boostingft.info", "../logs/44.log"} -> 
+  {TotalProcessorTime -> 0., Time -> 0.0490098, "MeanError" -> 1}, 
+ {"..\\experiments\\loo\\ex15.int", "..\\experiments\\loo\\boostingmon.info", 
+   "../logs/45.log"} -> {TotalProcessorTime -> 0.015600099999999999, 
+   Time -> 0.038007599999999996, "MeanError" -> 0.75}, 
+ {"..\\experiments\\loo\\ex15.int", "..\\experiments\\loo\\ft.info", 
+   "../logs/46.log"} -> {TotalProcessorTime -> 0., Time -> 0.075015, 
+   "MeanError" -> 1}, {"..\\experiments\\loo\\ex15.int", 
+   "..\\experiments\\loo\\mon.info", "../logs/47.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0540108, 
+   "MeanError" -> 0.75}, {"..\\experiments\\loo\\ex15.int", 
+   "..\\experiments\\loo\\ps.info", "../logs/48.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.065013, 
+   "MeanError" -> 1}, {"..\\experiments\\loo\\ex16.int", 
+   "..\\experiments\\loo\\boostingec.info", "../logs/49.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0710142, 
+   "MeanError" -> 0.35}, {"..\\experiments\\loo\\ex16.int", 
+   "..\\experiments\\loo\\boostingecmp.info", "../logs/50.log"} -> 
+  {TotalProcessorTime -> 0.046800299999999996, Time -> 0.0940188, 
+   "MeanError" -> 0.2}, {"..\\experiments\\loo\\ex16.int", 
+   "..\\experiments\\loo\\boostingecmp-lb.info", "../logs/51.log"} -> 
+  {TotalProcessorTime -> 0.031200199999999997, Time -> 0.0940188, 
+   "MeanError" -> 0.4}, {"..\\experiments\\loo\\ex16.int", 
+   "..\\experiments\\loo\\boostingft.info", "../logs/52.log"} -> 
+  {TotalProcessorTime -> 0.031200199999999997, Time -> 0.0660132, 
+   "MeanError" -> 0.5}, {"..\\experiments\\loo\\ex16.int", 
+   "..\\experiments\\loo\\boostingmon.info", "../logs/53.log"} -> 
+  {TotalProcessorTime -> 0., Time -> 0.0840168, "MeanError" -> 0.4}, 
+ {"..\\experiments\\loo\\ex16.int", "..\\experiments\\loo\\ft.info", 
+   "../logs/54.log"} -> {TotalProcessorTime -> 0., 
+   Time -> 0.058011599999999997, "MeanError" -> 1}, 
+ {"..\\experiments\\loo\\ex16.int", "..\\experiments\\loo\\mon.info", 
+   "../logs/55.log"} -> {TotalProcessorTime -> 0., Time -> 0.0520104, 
+   "MeanError" -> 0.35}, {"..\\experiments\\loo\\ex16.int", 
+   "..\\experiments\\loo\\ps.info", "../logs/56.log"} -> 
+  {TotalProcessorTime -> 0., Time -> 0.061012199999999996, 
+   "MeanError" -> 0.4}, {"..\\experiments\\loo\\ex1.int", 
+   "..\\experiments\\loo\\boostingec.info", "../logs/57.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0730146, 
+   "MeanError" -> 0.111111}, {"..\\experiments\\loo\\ex1.int", 
+   "..\\experiments\\loo\\boostingecmp.info", "../logs/58.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0410082, 
+   "MeanError" -> 0.333333}, {"..\\experiments\\loo\\ex1.int", 
+   "..\\experiments\\loo\\boostingecmp-lb.info", "../logs/59.log"} -> 
+  {TotalProcessorTime -> 0., Time -> 0.0520104, "MeanError" -> 0.111111}, 
+ {"..\\experiments\\loo\\ex1.int", "..\\experiments\\loo\\boostingft.info", 
+   "../logs/60.log"} -> {TotalProcessorTime -> 0.015600099999999999, 
+   Time -> 0.037007399999999996, "MeanError" -> 0.666667}, 
+ {"..\\experiments\\loo\\ex1.int", "..\\experiments\\loo\\boostingmon.info", 
+   "../logs/61.log"} -> {TotalProcessorTime -> 0.015600099999999999, 
+   Time -> 0.060011999999999996, "MeanError" -> 0.111111}, 
+ {"..\\experiments\\loo\\ex1.int", "..\\experiments\\loo\\ft.info", 
+   "../logs/62.log"} -> {TotalProcessorTime -> 0., Time -> 0.0770154, 
+   "MeanError" -> 1}, {"..\\experiments\\loo\\ex1.int", 
+   "..\\experiments\\loo\\mon.info", "../logs/63.log"} -> 
+  {TotalProcessorTime -> 0.031200199999999997, Time -> 0.0770154, 
+   "MeanError" -> 0.444444}, {"..\\experiments\\loo\\ex1.int", 
+   "..\\experiments\\loo\\ps.info", "../logs/64.log"} -> 
+  {TotalProcessorTime -> 0.031200199999999997, Time -> 0.060011999999999996, 
+   "MeanError" -> 0.222222}, {"..\\experiments\\loo\\ex2.int", 
+   "..\\experiments\\loo\\boostingec.info", "../logs/65.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.061012199999999996, 
+   "MeanError" -> 0.333333}, {"..\\experiments\\loo\\ex2.int", 
+   "..\\experiments\\loo\\boostingecmp.info", "../logs/66.log"} -> 
+  {TotalProcessorTime -> 0.031200199999999997, Time -> 0.10302059999999999, 
+   "MeanError" -> 0.277778}, {"..\\experiments\\loo\\ex2.int", 
+   "..\\experiments\\loo\\boostingecmp-lb.info", "../logs/67.log"} -> 
+  {TotalProcessorTime -> 0.046800299999999996, Time -> 0.0670134, 
+   "MeanError" -> 0.277778}, {"..\\experiments\\loo\\ex2.int", 
+   "..\\experiments\\loo\\boostingft.info", "../logs/68.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0570114, 
+   "MeanError" -> 0.5}, {"..\\experiments\\loo\\ex2.int", 
+   "..\\experiments\\loo\\boostingmon.info", "../logs/69.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.045009, 
+   "MeanError" -> 0.333333}, {"..\\experiments\\loo\\ex2.int", 
+   "..\\experiments\\loo\\ft.info", "../logs/70.log"} -> 
+  {TotalProcessorTime -> 0., Time -> 0.0410082, "MeanError" -> 1}, 
+ {"..\\experiments\\loo\\ex2.int", "..\\experiments\\loo\\mon.info", 
+   "../logs/71.log"} -> {TotalProcessorTime -> 0.015600099999999999, 
+   Time -> 0.0530106, "MeanError" -> 0.555556}, 
+ {"..\\experiments\\loo\\ex2.int", "..\\experiments\\loo\\ps.info", 
+   "../logs/72.log"} -> {TotalProcessorTime -> 0., Time -> 0.0340068, 
+   "MeanError" -> 0.333333}, {"..\\experiments\\loo\\ex3.int", 
+   "..\\experiments\\loo\\boostingec.info", "../logs/73.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.036007199999999996, 
+   "MeanError" -> 0.25}, {"..\\experiments\\loo\\ex3.int", 
+   "..\\experiments\\loo\\boostingecmp.info", "../logs/74.log"} -> 
+  {TotalProcessorTime -> 0.031200199999999997, Time -> 0.0560112, 
+   "MeanError" -> 0}, {"..\\experiments\\loo\\ex3.int", 
+   "..\\experiments\\loo\\boostingecmp-lb.info", "../logs/75.log"} -> 
+  {TotalProcessorTime -> 0.046800299999999996, Time -> 0.07201439999999999, 
+   "MeanError" -> 0.25}, {"..\\experiments\\loo\\ex3.int", 
+   "..\\experiments\\loo\\boostingft.info", "../logs/76.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0440088, 
+   "MeanError" -> 0.9375}, {"..\\experiments\\loo\\ex3.int", 
+   "..\\experiments\\loo\\boostingmon.info", "../logs/77.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0670134, 
+   "MeanError" -> 0.25}, {"..\\experiments\\loo\\ex3.int", 
+   "..\\experiments\\loo\\ft.info", "../logs/78.log"} -> 
+  {TotalProcessorTime -> 0., Time -> 0.0640128, "MeanError" -> 1}, 
+ {"..\\experiments\\loo\\ex3.int", "..\\experiments\\loo\\mon.info", 
+   "../logs/79.log"} -> {TotalProcessorTime -> 0., Time -> 0.0670134, 
+   "MeanError" -> 0.3125}, {"..\\experiments\\loo\\ex3.int", 
+   "..\\experiments\\loo\\ps.info", "../logs/80.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0570114, 
+   "MeanError" -> 0.25}, {"..\\experiments\\loo\\ex4.int", 
+   "..\\experiments\\loo\\boostingec.info", "../logs/81.log"} -> 
+  {TotalProcessorTime -> 0., Time -> 0.0670134, "MeanError" -> 0.5}, 
+ {"..\\experiments\\loo\\ex4.int", "..\\experiments\\loo\\boostingecmp.info", 
+   "../logs/82.log"} -> {TotalProcessorTime -> 0.015600099999999999, 
+   Time -> 0.08001599999999999, "MeanError" -> 0.5}, 
+ {"..\\experiments\\loo\\ex4.int", 
+   "..\\experiments\\loo\\boostingecmp-lb.info", "../logs/83.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0460092, 
+   "MeanError" -> 0}, {"..\\experiments\\loo\\ex4.int", 
+   "..\\experiments\\loo\\boostingft.info", "../logs/84.log"} -> 
+  {TotalProcessorTime -> 0., Time -> 0.058011599999999997, 
+   "MeanError" -> 0.5}, {"..\\experiments\\loo\\ex4.int", 
+   "..\\experiments\\loo\\boostingmon.info", "../logs/85.log"} -> 
+  {TotalProcessorTime -> 0., Time -> 0.045009, "MeanError" -> 0.5}, 
+ {"..\\experiments\\loo\\ex4.int", "..\\experiments\\loo\\ft.info", 
+   "../logs/86.log"} -> {TotalProcessorTime -> 0.015600099999999999, 
+   Time -> 0.030005999999999998, "MeanError" -> 0.5}, 
+ {"..\\experiments\\loo\\ex4.int", "..\\experiments\\loo\\mon.info", 
+   "../logs/87.log"} -> {TotalProcessorTime -> 0., 
+   Time -> 0.040007999999999995, "MeanError" -> 0.5}, 
+ {"..\\experiments\\loo\\ex4.int", "..\\experiments\\loo\\ps.info", 
+   "../logs/88.log"} -> {TotalProcessorTime -> 0., Time -> 0.0490098, 
+   "MeanError" -> 0.5}, {"..\\experiments\\loo\\ex5.int", 
+   "..\\experiments\\loo\\boostingec.info", "../logs/89.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0420084, 
+   "MeanError" -> 0.5}, {"..\\experiments\\loo\\ex5.int", 
+   "..\\experiments\\loo\\boostingecmp.info", "../logs/90.log"} -> 
+  {TotalProcessorTime -> 0.031200199999999997, Time -> 0.055011, 
+   "MeanError" -> 0.5}, {"..\\experiments\\loo\\ex5.int", 
+   "..\\experiments\\loo\\boostingecmp-lb.info", "../logs/91.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.059011799999999996, 
+   "MeanError" -> 0}, {"..\\experiments\\loo\\ex5.int", 
+   "..\\experiments\\loo\\boostingft.info", "../logs/92.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0680136, 
+   "MeanError" -> 0.916667}, {"..\\experiments\\loo\\ex5.int", 
+   "..\\experiments\\loo\\boostingmon.info", "../logs/93.log"} -> 
+  {TotalProcessorTime -> 0., Time -> 0.058011599999999997, 
+   "MeanError" -> 0.5}, {"..\\experiments\\loo\\ex5.int", 
+   "..\\experiments\\loo\\ft.info", "../logs/94.log"} -> 
+  {TotalProcessorTime -> 0., Time -> 0.0710142, "MeanError" -> 1}, 
+ {"..\\experiments\\loo\\ex5.int", "..\\experiments\\loo\\mon.info", 
+   "../logs/95.log"} -> {TotalProcessorTime -> 0.015600099999999999, 
+   Time -> 0.061012199999999996, "MeanError" -> 0.5}, 
+ {"..\\experiments\\loo\\ex5.int", "..\\experiments\\loo\\ps.info", 
+   "../logs/96.log"} -> {TotalProcessorTime -> 0., Time -> 0.0480096, 
+   "MeanError" -> 0.5}, {"..\\experiments\\loo\\ex6.int", 
+   "..\\experiments\\loo\\boostingec.info", "../logs/97.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0710142, 
+   "MeanError" -> 0.333333}, {"..\\experiments\\loo\\ex6.int", 
+   "..\\experiments\\loo\\boostingecmp.info", "../logs/98.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0560112, 
+   "MeanError" -> 0.333333}, {"..\\experiments\\loo\\ex6.int", 
+   "..\\experiments\\loo\\boostingecmp-lb.info", "../logs/99.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0730146, 
+   "MeanError" -> 0.333333}, {"..\\experiments\\loo\\ex6.int", 
+   "..\\experiments\\loo\\boostingft.info", "../logs/100.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.058011599999999997, 
+   "MeanError" -> 0.583333}, {"..\\experiments\\loo\\ex6.int", 
+   "..\\experiments\\loo\\boostingmon.info", "../logs/101.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0690138, 
+   "MeanError" -> 0.333333}, {"..\\experiments\\loo\\ex6.int", 
+   "..\\experiments\\loo\\ft.info", "../logs/102.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0530106, 
+   "MeanError" -> 1}, {"..\\experiments\\loo\\ex6.int", 
+   "..\\experiments\\loo\\mon.info", "../logs/103.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.075015, 
+   "MeanError" -> 0.166667}, {"..\\experiments\\loo\\ex6.int", 
+   "..\\experiments\\loo\\ps.info", "../logs/104.log"} -> 
+  {TotalProcessorTime -> 0., Time -> 0.039007799999999995, 
+   "MeanError" -> 0.333333}, {"..\\experiments\\loo\\ex7.int", 
+   "..\\experiments\\loo\\boostingec.info", "../logs/105.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0460092, 
+   "MeanError" -> 0.2}, {"..\\experiments\\loo\\ex7.int", 
+   "..\\experiments\\loo\\boostingecmp.info", "../logs/106.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.045009, 
+   "MeanError" -> 0.2}, {"..\\experiments\\loo\\ex7.int", 
+   "..\\experiments\\loo\\boostingecmp-lb.info", "../logs/107.log"} -> 
+  {TotalProcessorTime -> 0.031200199999999997, Time -> 0.0570114, 
+   "MeanError" -> 0.2}, {"..\\experiments\\loo\\ex7.int", 
+   "..\\experiments\\loo\\boostingft.info", "../logs/108.log"} -> 
+  {TotalProcessorTime -> 0., Time -> 0.062012399999999995, 
+   "MeanError" -> 0.4}, {"..\\experiments\\loo\\ex7.int", 
+   "..\\experiments\\loo\\boostingmon.info", "../logs/109.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0640128, 
+   "MeanError" -> 0.2}, {"..\\experiments\\loo\\ex7.int", 
+   "..\\experiments\\loo\\ft.info", "../logs/110.log"} -> 
+  {TotalProcessorTime -> 0., Time -> 0.0520104, "MeanError" -> 1}, 
+ {"..\\experiments\\loo\\ex7.int", "..\\experiments\\loo\\mon.info", 
+   "../logs/111.log"} -> {TotalProcessorTime -> 0.015600099999999999, 
+   Time -> 0.055011, "MeanError" -> 0.2}, 
+ {"..\\experiments\\loo\\ex7.int", "..\\experiments\\loo\\ps.info", 
+   "../logs/112.log"} -> {TotalProcessorTime -> 0., 
+   Time -> 0.061012199999999996, "MeanError" -> 0.2}, 
+ {"..\\experiments\\loo\\ex8.int", "..\\experiments\\loo\\boostingec.info", 
+   "../logs/113.log"} -> {TotalProcessorTime -> 0.015600099999999999, 
+   Time -> 0.058011599999999997, "MeanError" -> 0.833333}, 
+ {"..\\experiments\\loo\\ex8.int", "..\\experiments\\loo\\boostingecmp.info", 
+   "../logs/114.log"} -> {TotalProcessorTime -> 0.031200199999999997, 
+   Time -> 0.0820164, "MeanError" -> 0.0833333}, 
+ {"..\\experiments\\loo\\ex8.int", 
+   "..\\experiments\\loo\\boostingecmp-lb.info", "../logs/115.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.07201439999999999, 
+   "MeanError" -> 0.416667}, {"..\\experiments\\loo\\ex8.int", 
+   "..\\experiments\\loo\\boostingft.info", "../logs/116.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0330066, 
+   "MeanError" -> 1}, {"..\\experiments\\loo\\ex8.int", 
+   "..\\experiments\\loo\\boostingmon.info", "../logs/117.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.062012399999999995, 
+   "MeanError" -> 0.5}, {"..\\experiments\\loo\\ex8.int", 
+   "..\\experiments\\loo\\ft.info", "../logs/118.log"} -> 
+  {TotalProcessorTime -> 0., Time -> 0.0440088, "MeanError" -> 1}, 
+ {"..\\experiments\\loo\\ex8.int", "..\\experiments\\loo\\mon.info", 
+   "../logs/119.log"} -> {TotalProcessorTime -> 0., Time -> 0.0730146, 
+   "MeanError" -> 0.5}, {"..\\experiments\\loo\\ex8.int", 
+   "..\\experiments\\loo\\ps.info", "../logs/120.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.065013, 
+   "MeanError" -> 0.583333}, {"..\\experiments\\loo\\ex9.int", 
+   "..\\experiments\\loo\\boostingec.info", "../logs/121.log"} -> 
+  {TotalProcessorTime -> 0., Time -> 0.059011799999999996, 
+   "MeanError" -> 0.5}, {"..\\experiments\\loo\\ex9.int", 
+   "..\\experiments\\loo\\boostingecmp.info", "../logs/122.log"} -> 
+  {TotalProcessorTime -> 0.062400399999999995, Time -> 0.09301859999999999, 
+   "MeanError" -> 0.4375}, {"..\\experiments\\loo\\ex9.int", 
+   "..\\experiments\\loo\\boostingecmp-lb.info", "../logs/123.log"} -> 
+  {TotalProcessorTime -> 0.031200199999999997, Time -> 0.075015, 
+   "MeanError" -> 0.4375}, {"..\\experiments\\loo\\ex9.int", 
+   "..\\experiments\\loo\\boostingft.info", "../logs/124.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0730146, 
+   "MeanError" -> 0.875}, {"..\\experiments\\loo\\ex9.int", 
+   "..\\experiments\\loo\\boostingmon.info", "../logs/125.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.065013, 
+   "MeanError" -> 0.5625}, {"..\\experiments\\loo\\ex9.int", 
+   "..\\experiments\\loo\\ft.info", "../logs/126.log"} -> 
+  {TotalProcessorTime -> 0., Time -> 0.060011999999999996, "MeanError" -> 1}, 
+ {"..\\experiments\\loo\\ex9.int", "..\\experiments\\loo\\mon.info", 
+   "../logs/127.log"} -> {TotalProcessorTime -> 0.031200199999999997, 
+   Time -> 0.07401479999999999, "MeanError" -> 0.5}, 
+ {"..\\experiments\\loo\\ex9.int", "..\\experiments\\loo\\ps.info", 
+   "../logs/128.log"} -> {TotalProcessorTime -> 0., Time -> 0.0570114, 
+   "MeanError" -> 0.5}, {"..\\experiments\\loo\\lenses.int", 
+   "..\\experiments\\loo\\boostingec.info", "../logs/129.log"} -> 
+  {TotalProcessorTime -> 0.031200199999999997, Time -> 0.0960192, 
+   "MeanError" -> 0.333333}, {"..\\experiments\\loo\\lenses.int", 
+   "..\\experiments\\loo\\boostingecmp.info", "../logs/130.log"} -> 
+  {TotalProcessorTime -> 0.062400399999999995, Time -> 0.1230246, 
+   "MeanError" -> 0.25}, {"..\\experiments\\loo\\lenses.int", 
+   "..\\experiments\\loo\\boostingecmp-lb.info", "../logs/131.log"} -> 
+  {TotalProcessorTime -> 0.09360059999999999, Time -> 0.11802359999999999, 
+   "MeanError" -> 0.291667}, {"..\\experiments\\loo\\lenses.int", 
+   "..\\experiments\\loo\\boostingft.info", "../logs/132.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.0530106, 
+   "MeanError" -> 0.25}, {"..\\experiments\\loo\\lenses.int", 
+   "..\\experiments\\loo\\boostingmon.info", "../logs/133.log"} -> 
+  {TotalProcessorTime -> 0.031200199999999997, Time -> 0.060011999999999996, 
+   "MeanError" -> 0.25}, {"..\\experiments\\loo\\lenses.int", 
+   "..\\experiments\\loo\\ft.info", "../logs/134.log"} -> 
+  {TotalProcessorTime -> 0., Time -> 0.0480096, "MeanError" -> 1}, 
+ {"..\\experiments\\loo\\lenses.int", "..\\experiments\\loo\\mon.info", 
+   "../logs/135.log"} -> {TotalProcessorTime -> 0.015600099999999999, 
+   Time -> 0.0490098, "MeanError" -> 0.291667}, 
+ {"..\\experiments\\loo\\lenses.int", "..\\experiments\\loo\\ps.info", 
+   "../logs/136.log"} -> {TotalProcessorTime -> 0., 
+   Time -> 0.062012399999999995, "MeanError" -> 0.208333}, 
+ {"..\\experiments\\loo\\soybean-small.int", 
+   "..\\experiments\\loo\\boostingec.info", "../logs/137.log"} -> 
+  {TotalProcessorTime -> 0.1092007, Time -> 0.175035, "MeanError" -> 0}, 
+ {"..\\experiments\\loo\\soybean-small.int", 
+   "..\\experiments\\loo\\boostingecmp.info", "../logs/138.log"} -> 
+  {TotalProcessorTime -> 1.7784114, Time -> 1.8233646, "MeanError" -> 0}, 
+ {"..\\experiments\\loo\\soybean-small.int", 
+   "..\\experiments\\loo\\boostingecmp-lb.info", "../logs/139.log"} -> 
+  {TotalProcessorTime -> 0.18720119999999998, Time -> 0.18903779999999998, 
+   "MeanError" -> 0.0425532}, {"..\\experiments\\loo\\soybean-small.int", 
+   "..\\experiments\\loo\\boostingft.info", "../logs/140.log"} -> 
+  {TotalProcessorTime -> 0.2652017, Time -> 0.3070614, 
+   "MeanError" -> 0.0212766}, {"..\\experiments\\loo\\soybean-small.int", 
+   "..\\experiments\\loo\\boostingmon.info", "../logs/141.log"} -> 
+  {TotalProcessorTime -> 0.4524029, Time -> 0.47909579999999996, 
+   "MeanError" -> 0}, {"..\\experiments\\loo\\soybean-small.int", 
+   "..\\experiments\\loo\\ft.info", "../logs/142.log"} -> 
+  {TotalProcessorTime -> 0.4212027, Time -> 0.4730946, 
+   "MeanError" -> 0.0212766}, {"..\\experiments\\loo\\soybean-small.int", 
+   "..\\experiments\\loo\\mon.info", "../logs/143.log"} -> 
+  {TotalProcessorTime -> 0.4212027, Time -> 0.4560912, "MeanError" -> 0}, 
+ {"..\\experiments\\loo\\soybean-small.int", "..\\experiments\\loo\\ps.info", 
+   "../logs/144.log"} -> {TotalProcessorTime -> 0.1092007, Time -> 0.1210242, 
+   "MeanError" -> 0.0212766}, {"..\\experiments\\loo\\xor.int", 
+   "..\\experiments\\loo\\boostingec.info", "../logs/145.log"} -> 
+  {TotalProcessorTime -> 0.031200199999999997, Time -> 0.040007999999999995, 
+   "MeanError" -> 1}, {"..\\experiments\\loo\\xor.int", 
+   "..\\experiments\\loo\\boostingecmp.info", "../logs/146.log"} -> 
+  {TotalProcessorTime -> 0., Time -> 0.035006999999999996, "MeanError" -> 1}, 
+ {"..\\experiments\\loo\\xor.int", 
+   "..\\experiments\\loo\\boostingecmp-lb.info", "../logs/147.log"} -> 
+  {TotalProcessorTime -> 0.015600099999999999, Time -> 0.037007399999999996, 
+   "MeanError" -> 1}, {"..\\experiments\\loo\\xor.int", 
+   "..\\experiments\\loo\\boostingft.info", "../logs/148.log"} -> 
+  {TotalProcessorTime -> 0., Time -> 0.0330066, "MeanError" -> 1}, 
+ {"..\\experiments\\loo\\xor.int", "..\\experiments\\loo\\boostingmon.info", 
+   "../logs/149.log"} -> {TotalProcessorTime -> 0., 
+   Time -> 0.037007399999999996, "MeanError" -> 1}, 
+ {"..\\experiments\\loo\\xor.int", "..\\experiments\\loo\\ft.info", 
+   "../logs/150.log"} -> {TotalProcessorTime -> 0., 
+   Time -> 0.040007999999999995, "MeanError" -> 1}, 
+ {"..\\experiments\\loo\\xor.int", "..\\experiments\\loo\\mon.info", 
+   "../logs/151.log"} -> {TotalProcessorTime -> 0., 
+   Time -> 0.029005799999999998, "MeanError" -> 1}, 
+ {"..\\experiments\\loo\\xor.int", "..\\experiments\\loo\\ps.info", 
+   "../logs/152.log"} -> {TotalProcessorTime -> 0., 
+   Time -> 0.031006199999999998, "MeanError" -> 1}}

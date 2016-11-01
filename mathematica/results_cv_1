@@ -1,0 +1,169 @@
+{{"..\\experiments\\cv\\audiology.int", 
+   "..\\experiments\\cv\\boostingec.info", "../logs/1.log"} -> 
+  {TotalProcessorTime -> 5.9748383, Time -> 6.053964, 
+   "MeanError" -> 0.0430622}, {"..\\experiments\\cv\\audiology.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/2.log"} -> 
+  {TotalProcessorTime -> 78.79610509999999, Time -> 78.935577, 
+   "MeanError" -> 0.0311005}, {"..\\experiments\\cv\\audiology.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/3.log"} -> 
+  {TotalProcessorTime -> 81.44812209999999, Time -> 81.572484, 
+   "MeanError" -> 0.0430622}, {"..\\experiments\\cv\\audiology.int", 
+   "..\\experiments\\cv\\boostingft.info", "../logs/4.log"} -> 
+  {TotalProcessorTime -> 10.2180655, Time -> 10.251171, 
+   "MeanError" -> 0.0358852}, {"..\\experiments\\cv\\audiology.int", 
+   "..\\experiments\\cv\\boostingmon.info", "../logs/5.log"} -> 
+  {TotalProcessorTime -> 15.9433022, Time -> 15.977471999999999, 
+   "MeanError" -> 0.0430622}, {"..\\experiments\\cv\\audiology.int", 
+   "..\\experiments\\cv\\ft.info", "../logs/6.log"} -> 
+  {TotalProcessorTime -> 1.5444099, Time -> 1.5759029999999998, 
+   "MeanError" -> 0.129187}, {"..\\experiments\\cv\\audiology.int", 
+   "..\\experiments\\cv\\mon.info", "../logs/7.log"} -> 
+  {TotalProcessorTime -> 1.7004108999999998, Time -> 1.731933, 
+   "MeanError" -> 0.138756}, {"..\\experiments\\cv\\audiology.int", 
+   "..\\experiments\\cv\\ps.info", "../logs/8.log"} -> 
+  {TotalProcessorTime -> 1.2324079, Time -> 1.263843, 
+   "MeanError" -> 0.0813397}, {"..\\experiments\\cv\\balance-scale.int", 
+   "..\\experiments\\cv\\boostingec.info", "../logs/9.log"} -> 
+  {TotalProcessorTime -> 0.8112052, Time -> 0.873768, 
+   "MeanError" -> 0.209231}, {"..\\experiments\\cv\\balance-scale.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/10.log"} -> 
+  {TotalProcessorTime -> 53.445942599999995, Time -> 53.502686999999995, 
+   "MeanError" -> 0.249231}, {"..\\experiments\\cv\\balance-scale.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/11.log"} -> 
+  {TotalProcessorTime -> 146.484939, Time -> 147.0004458, 
+   "MeanError" -> 0.226154}, {"..\\experiments\\cv\\balance-scale.int", 
+   "..\\experiments\\cv\\boostingft.info", "../logs/12.log"} -> 
+  {TotalProcessorTime -> 0.7176045999999999, Time -> 0.764547, 
+   "MeanError" -> 0.229231}, {"..\\experiments\\cv\\balance-scale.int", 
+   "..\\experiments\\cv\\boostingmon.info", "../logs/13.log"} -> 
+  {TotalProcessorTime -> 1.1856076, Time -> 1.217034, 
+   "MeanError" -> 0.235385}, {"..\\experiments\\cv\\balance-scale.int", 
+   "..\\experiments\\cv\\ft.info", "../logs/14.log"} -> 
+  {TotalProcessorTime -> 0.48360309999999995, Time -> 0.514899, 
+   "MeanError" -> 0.923077}, {"..\\experiments\\cv\\balance-scale.int", 
+   "..\\experiments\\cv\\mon.info", "../logs/15.log"} -> 
+  {TotalProcessorTime -> 0.9204059, Time -> 0.9517829999999999, 
+   "MeanError" -> 0.550769}, {"..\\experiments\\cv\\balance-scale.int", 
+   "..\\experiments\\cv\\ps.info", "../logs/16.log"} -> 
+  {TotalProcessorTime -> 0.2808018, Time -> 0.31206, 
+   "MeanError" -> 0.269231}, {"..\\experiments\\cv\\car.int", 
+   "..\\experiments\\cv\\boostingec.info", "../logs/17.log"} -> 
+  {TotalProcessorTime -> 2.1372136999999998, Time -> 2.1688169999999998, 
+   "MeanError" -> 0.0451429}, {"..\\experiments\\cv\\car.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/18.log"} -> 
+  {TotalProcessorTime -> 30.997398699999998, Time -> 31.04997, 
+   "MeanError" -> 0.02}, {"..\\experiments\\cv\\car.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/19.log"} -> 
+  {TotalProcessorTime -> 104.4426695, Time -> 104.60756939999999, 
+   "MeanError" -> 0.0388571}, {"..\\experiments\\cv\\car.int", 
+   "..\\experiments\\cv\\boostingft.info", "../logs/20.log"} -> 
+  {TotalProcessorTime -> 2.1372136999999998, Time -> 2.1688169999999998, 
+   "MeanError" -> 0.0537143}, {"..\\experiments\\cv\\car.int", 
+   "..\\experiments\\cv\\boostingmon.info", "../logs/21.log"} -> 
+  {TotalProcessorTime -> 2.9484189, Time -> 3.3546449999999997, 
+   "MeanError" -> 0.0411429}, {"..\\experiments\\cv\\car.int", 
+   "..\\experiments\\cv\\ft.info", "../logs/22.log"} -> 
+  {TotalProcessorTime -> 2.8236181, Time -> 2.855349, 
+   "MeanError" -> 0.974857}, {"..\\experiments\\cv\\car.int", 
+   "..\\experiments\\cv\\mon.info", "../logs/23.log"} -> 
+  {TotalProcessorTime -> 5.6316361, Time -> 5.679492, "MeanError" -> 0.296}, 
+ {"..\\experiments\\cv\\car.int", "..\\experiments\\cv\\ps.info", 
+   "../logs/24.log"} -> {TotalProcessorTime -> 1.0452067, 
+   Time -> 1.0766069999999999, "MeanError" -> 0.0891429}, 
+ {"..\\experiments\\cv\\dermatology.int", 
+   "..\\experiments\\cv\\boostingec.info", "../logs/25.log"} -> 
+  {TotalProcessorTime -> 24.757358699999997, Time -> 24.839976, 
+   "MeanError" -> 0.4}, {"..\\experiments\\cv\\dermatology.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/26.log"} -> 
+  {TotalProcessorTime -> 173.0831095, Time -> 173.5895586, 
+   "MeanError" -> 0.453846}, {"..\\experiments\\cv\\dermatology.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/27.log"} -> 
+  {TotalProcessorTime -> 114.9103366, Time -> 115.3168656, 
+   "MeanError" -> 0.407692}, {"..\\experiments\\cv\\dermatology.int", 
+   "..\\experiments\\cv\\boostingft.info", "../logs/28.log"} -> 
+  {TotalProcessorTime -> 23.0725479, Time -> 23.0868726, 
+   "MeanError" -> 0.412821}, {"..\\experiments\\cv\\dermatology.int", 
+   "..\\experiments\\cv\\boostingmon.info", "../logs/29.log"} -> 
+  {TotalProcessorTime -> 38.3138456, Time -> 38.4605214, 
+   "MeanError" -> 0.407692}, {"..\\experiments\\cv\\dermatology.int", 
+   "..\\experiments\\cv\\ft.info", "../logs/30.log"} -> 
+  {TotalProcessorTime -> 2.1528138, Time -> 2.205225, 
+   "MeanError" -> 0.825641}, {"..\\experiments\\cv\\dermatology.int", 
+   "..\\experiments\\cv\\mon.info", "../logs/31.log"} -> 
+  {TotalProcessorTime -> 3.6660234999999997, Time -> 3.6945113999999997, 
+   "MeanError" -> 0.835897}, {"..\\experiments\\cv\\dermatology.int", 
+   "..\\experiments\\cv\\ps.info", "../logs/32.log"} -> 
+  {TotalProcessorTime -> 12.2616786, Time -> 12.2799648, 
+   "MeanError" -> 0.497436}, {"..\\experiments\\cv\\house-votes.int", 
+   "..\\experiments\\cv\\boostingec.info", "../logs/33.log"} -> 
+  {TotalProcessorTime -> 1.5444099, Time -> 1.5987078, 
+   "MeanError" -> 0.050885}, {"..\\experiments\\cv\\house-votes.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/34.log"} -> 
+  {TotalProcessorTime -> 7.6128488, Time -> 7.6412736, 
+   "MeanError" -> 0.0442478}, {"..\\experiments\\cv\\house-votes.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/35.log"} -> 
+  {TotalProcessorTime -> 7.9716511, Time -> 8.0577582, 
+   "MeanError" -> 0.039823}, {"..\\experiments\\cv\\house-votes.int", 
+   "..\\experiments\\cv\\boostingft.info", "../logs/36.log"} -> 
+  {TotalProcessorTime -> 1.7004108999999998, Time -> 1.7421354, 
+   "MeanError" -> 0.0464602}, {"..\\experiments\\cv\\house-votes.int", 
+   "..\\experiments\\cv\\boostingmon.info", "../logs/37.log"} -> 
+  {TotalProcessorTime -> 2.5584164, Time -> 2.5895034, 
+   "MeanError" -> 0.050885}, {"..\\experiments\\cv\\house-votes.int", 
+   "..\\experiments\\cv\\ft.info", "../logs/38.log"} -> 
+  {TotalProcessorTime -> 2.5584164, Time -> 2.5680972, 
+   "MeanError" -> 0.289823}, {"..\\experiments\\cv\\house-votes.int", 
+   "..\\experiments\\cv\\mon.info", "../logs/39.log"} -> 
+  {TotalProcessorTime -> 6.5832422, Time -> 6.614082, 
+   "MeanError" -> 0.079646}, {"..\\experiments\\cv\\house-votes.int", 
+   "..\\experiments\\cv\\ps.info", "../logs/40.log"} -> 
+  {TotalProcessorTime -> 0.9516061, Time -> 0.9745902, 
+   "MeanError" -> 0.0553097}, {"..\\experiments\\cv\\soybean-large.int", 
+   "..\\experiments\\cv\\boostingec.info", "../logs/41.log"} -> 
+  {TotalProcessorTime -> 10.670468399999999, Time -> 10.722885, 
+   "MeanError" -> 0.105882}, {"..\\experiments\\cv\\soybean-large.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/42.log"} -> 
+  {TotalProcessorTime -> 105.59707689999999, Time -> 105.779865, 
+   "MeanError" -> 0.0911765}, {"..\\experiments\\cv\\soybean-large.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/43.log"} -> 
+  {TotalProcessorTime -> 126.8912134, Time -> 127.07422079999999, 
+   "MeanError" -> 0.123529}, {"..\\experiments\\cv\\soybean-large.int", 
+   "..\\experiments\\cv\\boostingft.info", "../logs/44.log"} -> 
+  {TotalProcessorTime -> 14.3208918, Time -> 14.3870124, 
+   "MeanError" -> 0.111765}, {"..\\experiments\\cv\\soybean-large.int", 
+   "..\\experiments\\cv\\boostingmon.info", "../logs/45.log"} -> 
+  {TotalProcessorTime -> 25.0537606, Time -> 25.0870212, 
+   "MeanError" -> 0.0911765}, {"..\\experiments\\cv\\soybean-large.int", 
+   "..\\experiments\\cv\\ft.info", "../logs/46.log"} -> 
+  {TotalProcessorTime -> 2.0436131, Time -> 2.0691216, "MeanError" -> 0.2}, 
+ {"..\\experiments\\cv\\soybean-large.int", "..\\experiments\\cv\\mon.info", 
+   "../logs/47.log"} -> {TotalProcessorTime -> 3.0576195999999998, 
+   Time -> 3.1330961999999998, "MeanError" -> 0.155882}, 
+ {"..\\experiments\\cv\\soybean-large.int", "..\\experiments\\cv\\ps.info", 
+   "../logs/48.log"} -> {TotalProcessorTime -> 2.1528138, 
+   Time -> 2.2005917999999998, "MeanError" -> 0.120588}, 
+ {"..\\experiments\\cv\\tic-tac-toe.int", 
+   "..\\experiments\\cv\\boostingec.info", "../logs/49.log"} -> 
+  {TotalProcessorTime -> 1.9812127, Time -> 2.069775, 
+   "MeanError" -> 0.00205339}, {"..\\experiments\\cv\\tic-tac-toe.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/50.log"} -> 
+  {TotalProcessorTime -> 19.375324199999998, Time -> 19.405720199999998, 
+   "MeanError" -> 0.0154004}, {"..\\experiments\\cv\\tic-tac-toe.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/51.log"} -> 
+  {TotalProcessorTime -> 1.8564119, Time -> 1.8724938, 
+   "MeanError" -> 0.00616016}, {"..\\experiments\\cv\\tic-tac-toe.int", 
+   "..\\experiments\\cv\\boostingft.info", "../logs/52.log"} -> 
+  {TotalProcessorTime -> 3.4164219, Time -> 3.4701456, 
+   "MeanError" -> 0.00205339}, {"..\\experiments\\cv\\tic-tac-toe.int", 
+   "..\\experiments\\cv\\boostingmon.info", "../logs/53.log"} -> 
+  {TotalProcessorTime -> 4.368028, Time -> 4.391290199999999, 
+   "MeanError" -> 0.00102669}, {"..\\experiments\\cv\\tic-tac-toe.int", 
+   "..\\experiments\\cv\\ft.info", "../logs/54.log"} -> 
+  {TotalProcessorTime -> 2.7924179, Time -> 2.8210553999999997, 
+   "MeanError" -> 0.967146}, {"..\\experiments\\cv\\tic-tac-toe.int", 
+   "..\\experiments\\cv\\mon.info", "../logs/55.log"} -> 
+  {TotalProcessorTime -> 3.3540215, Time -> 3.3640049999999997, 
+   "MeanError" -> 0.414784}, {"..\\experiments\\cv\\tic-tac-toe.int", 
+   "..\\experiments\\cv\\ps.info", "../logs/56.log"} -> 
+  {TotalProcessorTime -> 0.6552042, Time -> 0.685137, 
+   "MeanError" -> 0.00102669}}

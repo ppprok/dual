@@ -1,0 +1,443 @@
+{{"..\\experiments\\cv\\audiology.int", 
+   "..\\experiments\\cv\\boostingec.info", "../logs/1.log"} -> 
+  {TotalProcessorTime -> 8.9232572, Time -> 9.0085153, 
+   "MeanError" -> 0.0327456}, {"..\\experiments\\cv\\audiology.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/2.log"} -> 
+  {TotalProcessorTime -> 224.12663669999998, Time -> 224.3138301, 
+   "MeanError" -> 0.0302267}, {"..\\experiments\\cv\\audiology.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/3.log"} -> 
+  {TotalProcessorTime -> 420.2198937, Time -> 420.52705269999996, 
+   "MeanError" -> 0.0352645}, {"..\\experiments\\cv\\audiology.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin-boost.info", 
+   "../logs/4.log"} -> {TotalProcessorTime -> 82.4309284, Time -> 82.5687227, 
+   "MeanError" -> 0.0327456}, {"..\\experiments\\cv\\audiology.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin.info", "../logs/5.log"} -> 
+  {TotalProcessorTime -> 4.0248257999999995, Time -> 4.0682327, 
+   "MeanError" -> 0.02267}, {"..\\experiments\\cv\\audiology.int", 
+   "..\\experiments\\cv\\boostingft.info", "../logs/6.log"} -> 
+  {TotalProcessorTime -> 22.6825454, Time -> 22.757301599999998, 
+   "MeanError" -> 0.0277078}, {"..\\experiments\\cv\\audiology.int", 
+   "..\\experiments\\cv\\boostingmon.info", "../logs/7.log"} -> 
+  {TotalProcessorTime -> 42.2138706, Time -> 42.2484165, 
+   "MeanError" -> 0.0327456}, {"..\\experiments\\cv\\audiology.int", 
+   "..\\experiments\\cv\\ft.info", "../logs/8.log"} -> 
+  {TotalProcessorTime -> 1.9188123, Time -> 1.9461112999999999, 
+   "MeanError" -> 0.13602}, {"..\\experiments\\cv\\audiology.int", 
+   "..\\experiments\\cv\\mon.info", "../logs/9.log"} -> 
+  {TotalProcessorTime -> 4.6176296, Time -> 4.6582665, 
+   "MeanError" -> 0.093199}, {"..\\experiments\\cv\\audiology.int", 
+   "..\\experiments\\cv\\ps.info", "../logs/10.log"} -> 
+  {TotalProcessorTime -> 1.4664093999999999, Time -> 1.4970856, 
+   "MeanError" -> 0.0680101}, {"..\\experiments\\cv\\balance-scale.int", 
+   "..\\experiments\\cv\\boostingec.info", "../logs/11.log"} -> 
+  {TotalProcessorTime -> 0.9984063999999999, Time -> 1.0220584, 
+   "MeanError" -> 0.2}, {"..\\experiments\\cv\\balance-scale.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/12.log"} -> 
+  {TotalProcessorTime -> 132.5072494, Time -> 132.612585, 
+   "MeanError" -> 0.18}, {"..\\experiments\\cv\\balance-scale.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/13.log"} -> 
+  {TotalProcessorTime -> 1251.0032191999999, Time -> 1251.7365952999999, 
+   "MeanError" -> 0.226154}, {"..\\experiments\\cv\\balance-scale.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin-boost.info", 
+   "../logs/14.log"} -> {TotalProcessorTime -> 243.70476219999998, 
+   Time -> 243.96595399999998, "MeanError" -> 0.255385}, 
+ {"..\\experiments\\cv\\balance-scale.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin.info", "../logs/15.log"} -> 
+  {TotalProcessorTime -> 3.900025, Time -> 3.9462257, 
+   "MeanError" -> 0.226154}, {"..\\experiments\\cv\\balance-scale.int", 
+   "..\\experiments\\cv\\boostingft.info", "../logs/16.log"} -> 
+  {TotalProcessorTime -> 0.7956051, Time -> 0.8310474999999999, 
+   "MeanError" -> 0.253846}, {"..\\experiments\\cv\\balance-scale.int", 
+   "..\\experiments\\cv\\boostingmon.info", "../logs/17.log"} -> 
+  {TotalProcessorTime -> 2.8860185, Time -> 2.9201669999999997, 
+   "MeanError" -> 0.184615}, {"..\\experiments\\cv\\balance-scale.int", 
+   "..\\experiments\\cv\\ft.info", "../logs/18.log"} -> 
+  {TotalProcessorTime -> 0.5460035, Time -> 0.5780331, 
+   "MeanError" -> 0.923077}, {"..\\experiments\\cv\\balance-scale.int", 
+   "..\\experiments\\cv\\mon.info", "../logs/19.log"} -> 
+  {TotalProcessorTime -> 2.4024153999999998, Time -> 2.4281389, 
+   "MeanError" -> 0.456923}, {"..\\experiments\\cv\\balance-scale.int", 
+   "..\\experiments\\cv\\ps.info", "../logs/20.log"} -> 
+  {TotalProcessorTime -> 0.37440239999999997, Time -> 0.40502319999999997, 
+   "MeanError" -> 0.269231}, 
+ {"..\\experiments\\cv\\breast-cancer-wisconsin.int", 
+   "..\\experiments\\cv\\boostingec.info", "../logs/21.log"} -> 
+  {TotalProcessorTime -> 0.5148033, Time -> 0.5400309, 
+   "MeanError" -> 0.0441176}, 
+ {"..\\experiments\\cv\\breast-cancer-wisconsin.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/22.log"} -> 
+  {TotalProcessorTime -> 108.10869299999999, Time -> 108.170187, 
+   "MeanError" -> 0.0609244}, 
+ {"..\\experiments\\cv\\breast-cancer-wisconsin.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/23.log"} -> 
+  {TotalProcessorTime -> 110.0275053, Time -> 110.14029959999999, 
+   "MeanError" -> 0.0588235}, 
+ {"..\\experiments\\cv\\breast-cancer-wisconsin.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin-boost.info", 
+   "../logs/24.log"} -> {TotalProcessorTime -> 51.2463285, 
+   Time -> 51.3109348, "MeanError" -> 0.0588235}, 
+ {"..\\experiments\\cv\\breast-cancer-wisconsin.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin.info", "../logs/25.log"} -> 
+  {TotalProcessorTime -> 1.3260085, Time -> 1.3690783, 
+   "MeanError" -> 0.0651261}, 
+ {"..\\experiments\\cv\\breast-cancer-wisconsin.int", 
+   "..\\experiments\\cv\\boostingft.info", "../logs/26.log"} -> 
+  {TotalProcessorTime -> 0.7020044999999999, Time -> 0.7380422, 
+   "MeanError" -> 0.0462185}, 
+ {"..\\experiments\\cv\\breast-cancer-wisconsin.int", 
+   "..\\experiments\\cv\\boostingmon.info", "../logs/27.log"} -> 
+  {TotalProcessorTime -> 5.1636331, Time -> 5.1902968, 
+   "MeanError" -> 0.0567227}, 
+ {"..\\experiments\\cv\\breast-cancer-wisconsin.int", 
+   "..\\experiments\\cv\\ft.info", "../logs/28.log"} -> 
+  {TotalProcessorTime -> 1.2012076999999999, Time -> 1.2330705, 
+   "MeanError" -> 0.214286}, 
+ {"..\\experiments\\cv\\breast-cancer-wisconsin.int", 
+   "..\\experiments\\cv\\mon.info", "../logs/29.log"} -> 
+  {TotalProcessorTime -> 7.8156501, Time -> 7.8334481, 
+   "MeanError" -> 0.241597}, 
+ {"..\\experiments\\cv\\breast-cancer-wisconsin.int", 
+   "..\\experiments\\cv\\ps.info", "../logs/30.log"} -> 
+  {TotalProcessorTime -> 0.18720119999999998, Time -> 0.2080119, 
+   "MeanError" -> 0.0504202}, {"..\\experiments\\cv\\car.int", 
+   "..\\experiments\\cv\\boostingec.info", "../logs/31.log"} -> 
+  {TotalProcessorTime -> 3.0576195999999998, Time -> 3.0961771, 
+   "MeanError" -> 0.032}, {"..\\experiments\\cv\\car.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/32.log"} -> 
+  {TotalProcessorTime -> 78.5309034, Time -> 78.6024958, 
+   "MeanError" -> 0.0131429}, {"..\\experiments\\cv\\car.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/33.log"} -> 
+  {TotalProcessorTime -> 713.6733747999999, Time -> 714.0318403, 
+   "MeanError" -> 0.0268571}, {"..\\experiments\\cv\\car.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin-boost.info", 
+   "../logs/34.log"} -> {TotalProcessorTime -> 34.8662235, 
+   Time -> 34.9199973, "MeanError" -> 0.0114286}, 
+ {"..\\experiments\\cv\\car.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin.info", "../logs/35.log"} -> 
+  {TotalProcessorTime -> 7.987251199999999, Time -> 8.0294592, 
+   "MeanError" -> 0.0222857}, {"..\\experiments\\cv\\car.int", 
+   "..\\experiments\\cv\\boostingft.info", "../logs/36.log"} -> 
+  {TotalProcessorTime -> 2.2932147, Time -> 2.3121321999999997, 
+   "MeanError" -> 0.0605714}, {"..\\experiments\\cv\\car.int", 
+   "..\\experiments\\cv\\boostingmon.info", "../logs/37.log"} -> 
+  {TotalProcessorTime -> 7.1136456, Time -> 7.1544092, 
+   "MeanError" -> 0.0325714}, {"..\\experiments\\cv\\car.int", 
+   "..\\experiments\\cv\\ft.info", "../logs/38.log"} -> 
+  {TotalProcessorTime -> 3.0420195, Time -> 3.0901768, 
+   "MeanError" -> 0.974857}, {"..\\experiments\\cv\\car.int", 
+   "..\\experiments\\cv\\mon.info", "../logs/39.log"} -> 
+  {TotalProcessorTime -> 10.0620645, Time -> 10.0965775, 
+   "MeanError" -> 0.274857}, {"..\\experiments\\cv\\car.int", 
+   "..\\experiments\\cv\\ps.info", "../logs/40.log"} -> 
+  {TotalProcessorTime -> 1.2948083, Time -> 1.3250758, 
+   "MeanError" -> 0.0897143}, {"..\\experiments\\cv\\dermatology.int", 
+   "..\\experiments\\cv\\boostingec.info", "../logs/41.log"} -> 
+  {TotalProcessorTime -> 66.5344265, Time -> 66.58280839999999, 
+   "MeanError" -> 0.4}, {"..\\experiments\\cv\\dermatology.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/42.log"} -> 
+  {TotalProcessorTime -> 272.4401464, Time -> 272.5085866, 
+   "MeanError" -> 0.394872}, {"..\\experiments\\cv\\dermatology.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/43.log"} -> 
+  {TotalProcessorTime -> 689.6336206999999, Time -> 690.1064718, 
+   "MeanError" -> 0.417949}, {"..\\experiments\\cv\\dermatology.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin-boost.info", 
+   "../logs/44.log"} -> {TotalProcessorTime -> 345.18341269999996, 
+   Time -> 345.4357578, "MeanError" -> 0.425641}, 
+ {"..\\experiments\\cv\\dermatology.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin.info", "../logs/45.log"} -> 
+  {TotalProcessorTime -> 98.96703439999999, Time -> 99.2156748, 
+   "MeanError" -> 0.435897}, {"..\\experiments\\cv\\dermatology.int", 
+   "..\\experiments\\cv\\boostingft.info", "../logs/46.log"} -> 
+  {TotalProcessorTime -> 40.872262, Time -> 41.0103456, 
+   "MeanError" -> 0.410256}, {"..\\experiments\\cv\\dermatology.int", 
+   "..\\experiments\\cv\\boostingmon.info", "../logs/47.log"} -> 
+  {TotalProcessorTime -> 118.9195623, Time -> 119.12481349999999, 
+   "MeanError" -> 0.4}, {"..\\experiments\\cv\\dermatology.int", 
+   "..\\experiments\\cv\\ft.info", "../logs/48.log"} -> 
+  {TotalProcessorTime -> 2.8392182, Time -> 2.8971657, 
+   "MeanError" -> 0.84359}, {"..\\experiments\\cv\\dermatology.int", 
+   "..\\experiments\\cv\\mon.info", "../logs/49.log"} -> 
+  {TotalProcessorTime -> 13.213284699999999, Time -> 13.309761199999999, 
+   "MeanError" -> 0.792308}, {"..\\experiments\\cv\\dermatology.int", 
+   "..\\experiments\\cv\\ps.info", "../logs/50.log"} -> 
+  {TotalProcessorTime -> 15.3816986, Time -> 15.5038868, 
+   "MeanError" -> 0.471795}, {"..\\experiments\\cv\\house-votes.int", 
+   "..\\experiments\\cv\\boostingec.info", "../logs/51.log"} -> 
+  {TotalProcessorTime -> 8.626855299999999, Time -> 8.699497599999999, 
+   "MeanError" -> 0.0505618}, {"..\\experiments\\cv\\house-votes.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/52.log"} -> 
+  {TotalProcessorTime -> 37.143838099999996, Time -> 37.3661373, 
+   "MeanError" -> 0.0505618}, {"..\\experiments\\cv\\house-votes.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/53.log"} -> 
+  {TotalProcessorTime -> 87.25135929999999, Time -> 87.4380011, 
+   "MeanError" -> 0.0589888}, {"..\\experiments\\cv\\house-votes.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin-boost.info", 
+   "../logs/54.log"} -> {TotalProcessorTime -> 167.3422727, 
+   Time -> 167.6305879, "MeanError" -> 0.0758427}, 
+ {"..\\experiments\\cv\\house-votes.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin.info", "../logs/55.log"} -> 
+  {TotalProcessorTime -> 7.8780505, Time -> 7.907452299999999, 
+   "MeanError" -> 0.0702247}, {"..\\experiments\\cv\\house-votes.int", 
+   "..\\experiments\\cv\\boostingft.info", "../logs/56.log"} -> 
+  {TotalProcessorTime -> 4.212027, Time -> 4.242242699999999, 
+   "MeanError" -> 0.0730337}, {"..\\experiments\\cv\\house-votes.int", 
+   "..\\experiments\\cv\\boostingmon.info", "../logs/57.log"} -> 
+  {TotalProcessorTime -> 12.0276771, Time -> 12.1126928, 
+   "MeanError" -> 0.0730337}, {"..\\experiments\\cv\\house-votes.int", 
+   "..\\experiments\\cv\\ft.info", "../logs/58.log"} -> 
+  {TotalProcessorTime -> 2.3556151, Time -> 2.4021374, 
+   "MeanError" -> 0.337079}, {"..\\experiments\\cv\\house-votes.int", 
+   "..\\experiments\\cv\\mon.info", "../logs/59.log"} -> 
+  {TotalProcessorTime -> 7.5504484, Time -> 7.6164356, 
+   "MeanError" -> 0.154494}, {"..\\experiments\\cv\\house-votes.int", 
+   "..\\experiments\\cv\\ps.info", "../logs/60.log"} -> 
+  {TotalProcessorTime -> 1.1076070999999998, Time -> 1.1680667999999998, 
+   "MeanError" -> 0.0589888}, {"..\\experiments\\cv\\kr-vs-kp.int", 
+   "..\\experiments\\cv\\boostingec.info", "../logs/61.log"} -> 
+  {TotalProcessorTime -> 79.8101116, Time -> 79.9095705, 
+   "MeanError" -> 0.00373367}, {"..\\experiments\\cv\\kr-vs-kp.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/62.log"} -> 
+  {TotalProcessorTime -> 226.0922493, Time -> 226.2969435, 
+   "MeanError" -> 0.00840075}, {"..\\experiments\\cv\\kr-vs-kp.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/63.log"} -> 
+  {TotalProcessorTime -> 192.0060308, Time -> 192.1869925, 
+   "MeanError" -> 0.00684505}, {"..\\experiments\\cv\\kr-vs-kp.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin-boost.info", 
+   "../logs/64.log"} -> {TotalProcessorTime -> 173.5823127, 
+   Time -> 173.6499322, "MeanError" -> 0.00342253}, 
+ {"..\\experiments\\cv\\kr-vs-kp.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin.info", "../logs/65.log"} -> 
+  {TotalProcessorTime -> 84.8333438, Time -> 84.9748603, 
+   "MeanError" -> 0.0040448}, {"..\\experiments\\cv\\kr-vs-kp.int", 
+   "..\\experiments\\cv\\boostingft.info", "../logs/66.log"} -> 
+  {TotalProcessorTime -> 58.952777899999994, Time -> 59.0143754, 
+   "MeanError" -> 0.00808961}, {"..\\experiments\\cv\\kr-vs-kp.int", 
+   "..\\experiments\\cv\\boostingmon.info", "../logs/67.log"} -> 
+  {TotalProcessorTime -> 87.4541606, Time -> 87.5170057, 
+   "MeanError" -> 0.00342253}, {"..\\experiments\\cv\\kr-vs-kp.int", 
+   "..\\experiments\\cv\\ft.info", "../logs/68.log"} -> 
+  {TotalProcessorTime -> 36.2546324, Time -> 36.320077399999995, 
+   "MeanError" -> 0.627567}, {"..\\experiments\\cv\\kr-vs-kp.int", 
+   "..\\experiments\\cv\\mon.info", "../logs/69.log"} -> 
+  {TotalProcessorTime -> 94.39620509999999, Time -> 94.43440129999999, 
+   "MeanError" -> 0.10112}, {"..\\experiments\\cv\\kr-vs-kp.int", 
+   "..\\experiments\\cv\\ps.info", "../logs/70.log"} -> 
+  {TotalProcessorTime -> 10.171265199999999, Time -> 10.209584, 
+   "MeanError" -> 0.0174238}, {"..\\experiments\\cv\\monks-1.int", 
+   "..\\experiments\\cv\\boostingec.info", "../logs/71.log"} -> 
+  {TotalProcessorTime -> 0.1404009, Time -> 0.19001089999999998, 
+   "MeanError" -> 0}, {"..\\experiments\\cv\\monks-1.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/72.log"} -> 
+  {TotalProcessorTime -> 3.6816236, Time -> 3.7242129999999998, 
+   "MeanError" -> 0}, {"..\\experiments\\cv\\monks-1.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/73.log"} -> 
+  {TotalProcessorTime -> 0.5616036, Time -> 0.6010344, "MeanError" -> 0}, 
+ {"..\\experiments\\cv\\monks-1.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin-boost.info", 
+   "../logs/74.log"} -> {TotalProcessorTime -> 2.5428162999999997, 
+   Time -> 2.5851479, "MeanError" -> 0}, 
+ {"..\\experiments\\cv\\monks-1.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin.info", "../logs/75.log"} -> 
+  {TotalProcessorTime -> 0.2964019, Time -> 0.3310189, "MeanError" -> 0}, 
+ {"..\\experiments\\cv\\monks-1.int", "..\\experiments\\cv\\boostingft.info", 
+   "../logs/76.log"} -> {TotalProcessorTime -> 0.2028013, Time -> 0.2400138, 
+   "MeanError" -> 0}, {"..\\experiments\\cv\\monks-1.int", 
+   "..\\experiments\\cv\\boostingmon.info", "../logs/77.log"} -> 
+  {TotalProcessorTime -> 0.48360309999999995, Time -> 0.5180296999999999, 
+   "MeanError" -> 0}, {"..\\experiments\\cv\\monks-1.int", 
+   "..\\experiments\\cv\\ft.info", "../logs/78.log"} -> 
+  {TotalProcessorTime -> 0.6552042, Time -> 0.7010400999999999, 
+   "MeanError" -> 0}, {"..\\experiments\\cv\\monks-1.int", 
+   "..\\experiments\\cv\\mon.info", "../logs/79.log"} -> 
+  {TotalProcessorTime -> 1.5756101, Time -> 1.6360934999999999, 
+   "MeanError" -> 0}, {"..\\experiments\\cv\\monks-1.int", 
+   "..\\experiments\\cv\\ps.info", "../logs/80.log"} -> 
+  {TotalProcessorTime -> 0.1092007, Time -> 0.1290073, "MeanError" -> 0}, 
+ {"..\\experiments\\cv\\monks-2.int", "..\\experiments\\cv\\boostingec.info", 
+   "../logs/81.log"} -> {TotalProcessorTime -> 1.9812127, Time -> 2.0171154, 
+   "MeanError" -> 0.552273}, {"..\\experiments\\cv\\monks-2.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/82.log"} -> 
+  {TotalProcessorTime -> 15.4284989, Time -> 15.4598842, 
+   "MeanError" -> 0.0409091}, {"..\\experiments\\cv\\monks-2.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/83.log"} -> 
+  {TotalProcessorTime -> 500.5916089, Time -> 500.7846432, 
+   "MeanError" -> 0.436364}, {"..\\experiments\\cv\\monks-2.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin-boost.info", 
+   "../logs/84.log"} -> {TotalProcessorTime -> 104.1306675, 
+   Time -> 104.23796209999999, "MeanError" -> 0.359091}, 
+ {"..\\experiments\\cv\\monks-2.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin.info", "../logs/85.log"} -> 
+  {TotalProcessorTime -> 5.8344374, Time -> 5.8473345, 
+   "MeanError" -> 0.563636}, {"..\\experiments\\cv\\monks-2.int", 
+   "..\\experiments\\cv\\boostingft.info", "../logs/86.log"} -> 
+  {TotalProcessorTime -> 0.936006, Time -> 0.9680554, 
+   "MeanError" -> 0.368182}, {"..\\experiments\\cv\\monks-2.int", 
+   "..\\experiments\\cv\\boostingmon.info", "../logs/87.log"} -> 
+  {TotalProcessorTime -> 2.1528138, Time -> 2.1771246, 
+   "MeanError" -> 0.422727}, {"..\\experiments\\cv\\monks-2.int", 
+   "..\\experiments\\cv\\ft.info", "../logs/88.log"} -> 
+  {TotalProcessorTime -> 0.5304034, Time -> 0.5680324999999999, 
+   "MeanError" -> 0.963636}, {"..\\experiments\\cv\\monks-2.int", 
+   "..\\experiments\\cv\\mon.info", "../logs/89.log"} -> 
+  {TotalProcessorTime -> 1.1856076, Time -> 1.2200697999999999, 
+   "MeanError" -> 0.963636}, {"..\\experiments\\cv\\monks-2.int", 
+   "..\\experiments\\cv\\ps.info", "../logs/90.log"} -> 
+  {TotalProcessorTime -> 0.5772037, Time -> 0.6050346, "MeanError" -> 0.525}, 
+ {"..\\experiments\\cv\\monks-3.int", "..\\experiments\\cv\\boostingec.info", 
+   "../logs/91.log"} -> {TotalProcessorTime -> 0.1092007, 
+   Time -> 0.14600829999999998, "MeanError" -> 0}, 
+ {"..\\experiments\\cv\\monks-3.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/92.log"} -> 
+  {TotalProcessorTime -> 3.744024, Time -> 3.7922168999999997, 
+   "MeanError" -> 0}, {"..\\experiments\\cv\\monks-3.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/93.log"} -> 
+  {TotalProcessorTime -> 0.35880229999999996, Time -> 0.3950226, 
+   "MeanError" -> 0}, {"..\\experiments\\cv\\monks-3.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin-boost.info", 
+   "../logs/94.log"} -> {TotalProcessorTime -> 0.5616036, Time -> 0.5980342, 
+   "MeanError" -> 0}, {"..\\experiments\\cv\\monks-3.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin.info", "../logs/95.log"} -> 
+  {TotalProcessorTime -> 0.1404009, Time -> 0.1720098, "MeanError" -> 0}, 
+ {"..\\experiments\\cv\\monks-3.int", "..\\experiments\\cv\\boostingft.info", 
+   "../logs/96.log"} -> {TotalProcessorTime -> 0.156001, 
+   Time -> 0.19101089999999998, "MeanError" -> 0}, 
+ {"..\\experiments\\cv\\monks-3.int", 
+   "..\\experiments\\cv\\boostingmon.info", "../logs/97.log"} -> 
+  {TotalProcessorTime -> 0.3276021, Time -> 0.3710212, "MeanError" -> 0}, 
+ {"..\\experiments\\cv\\monks-3.int", "..\\experiments\\cv\\ft.info", 
+   "../logs/98.log"} -> {TotalProcessorTime -> 0.6084039, Time -> 0.6390366, 
+   "MeanError" -> 0}, {"..\\experiments\\cv\\monks-3.int", 
+   "..\\experiments\\cv\\mon.info", "../logs/99.log"} -> 
+  {TotalProcessorTime -> 1.5444099, Time -> 1.5760901999999999, 
+   "MeanError" -> 0}, {"..\\experiments\\cv\\monks-3.int", 
+   "..\\experiments\\cv\\ps.info", "../logs/100.log"} -> 
+  {TotalProcessorTime -> 0.046800299999999996, Time -> 0.087005, 
+   "MeanError" -> 0}, {"..\\experiments\\cv\\mushrooms.int", 
+   "..\\experiments\\cv\\boostingec.info", "../logs/101.log"} -> 
+  {TotalProcessorTime -> 2.028013, Time -> 2.063118, "MeanError" -> 0}, 
+ {"..\\experiments\\cv\\mushrooms.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/102.log"} -> 
+  {TotalProcessorTime -> 114.5203341, Time -> 114.5805536, "MeanError" -> 0}, 
+ {"..\\experiments\\cv\\mushrooms.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/103.log"} -> 
+  {TotalProcessorTime -> 9.1728588, Time -> 9.225527699999999, 
+   "MeanError" -> 0}, {"..\\experiments\\cv\\mushrooms.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin-boost.info", 
+   "../logs/104.log"} -> {TotalProcessorTime -> 23.6965519, 
+   Time -> 23.7363577, "MeanError" -> 0}, 
+ {"..\\experiments\\cv\\mushrooms.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin.info", 
+   "../logs/105.log"} -> {TotalProcessorTime -> 3.3228212999999998, 
+   Time -> 3.3661925, "MeanError" -> 0}, 
+ {"..\\experiments\\cv\\mushrooms.int", 
+   "..\\experiments\\cv\\boostingft.info", "../logs/106.log"} -> 
+  {TotalProcessorTime -> 4.0092257, Time -> 4.0372309, "MeanError" -> 0}, 
+ {"..\\experiments\\cv\\mushrooms.int", 
+   "..\\experiments\\cv\\boostingmon.info", "../logs/107.log"} -> 
+  {TotalProcessorTime -> 15.974502399999999, Time -> 16.0319169, 
+   "MeanError" -> 0}, {"..\\experiments\\cv\\mushrooms.int", 
+   "..\\experiments\\cv\\ft.info", "../logs/108.log"} -> 
+  {TotalProcessorTime -> 188.5740088, Time -> 188.6767917, "MeanError" -> 0}, 
+ {"..\\experiments\\cv\\mushrooms.int", "..\\experiments\\cv\\mon.info", 
+   "../logs/109.log"} -> {TotalProcessorTime -> 878.7536329999999, 
+   Time -> 879.1512845999999, "MeanError" -> 0}, 
+ {"..\\experiments\\cv\\mushrooms.int", "..\\experiments\\cv\\ps.info", 
+   "../logs/110.log"} -> {TotalProcessorTime -> 1.4664093999999999, 
+   Time -> 1.5280874, "MeanError" -> 0}, 
+ {"..\\experiments\\cv\\nursery.int", "..\\experiments\\cv\\boostingec.info", 
+   "../logs/111.log"} -> {TotalProcessorTime -> 89.26377219999999, 
+   Time -> 89.3391099, "MeanError" -> 0.00253983}, 
+ {"..\\experiments\\cv\\nursery.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/112.log"} -> 
+  {TotalProcessorTime -> 452.9645036, Time -> 453.15291879999995, 
+   "MeanError" -> 0.00200108}, {"..\\experiments\\cv\\nursery.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/113.log"} -> 
+  {Killed -> True, Timeout -> 2400, TotalProcessorTime -> 2399.3109801, 
+   Time -> 2400.0242736, "MeanError" -> {}}, 
+ {"..\\experiments\\cv\\nursery.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin-boost.info", 
+   "../logs/114.log"} -> {TotalProcessorTime -> 589.0753761, 
+   Time -> 589.4857167, "MeanError" -> 0.00438698}, 
+ {"..\\experiments\\cv\\nursery.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin.info", 
+   "../logs/115.log"} -> {TotalProcessorTime -> 157.9198123, 
+   Time -> 158.0880421, "MeanError" -> 0.00192411}, 
+ {"..\\experiments\\cv\\nursery.int", "..\\experiments\\cv\\boostingft.info", 
+   "../logs/116.log"} -> {TotalProcessorTime -> 87.85976319999999, 
+   Time -> 87.95203049999999, "MeanError" -> 0.0267067}, 
+ {"..\\experiments\\cv\\nursery.int", 
+   "..\\experiments\\cv\\boostingmon.info", "../logs/117.log"} -> 
+  {TotalProcessorTime -> 224.36063819999998, Time -> 224.4978405, 
+   "MeanError" -> 0.00531055}, {"..\\experiments\\cv\\nursery.int", 
+   "..\\experiments\\cv\\ft.info", "../logs/118.log"} -> 
+  {TotalProcessorTime -> 163.9414509, Time -> 164.0453829, 
+   "MeanError" -> 0.662972}, {"..\\experiments\\cv\\nursery.int", 
+   "..\\experiments\\cv\\mon.info", "../logs/119.log"} -> 
+  {TotalProcessorTime -> 595.4870172, Time -> 595.7320738999999, 
+   "MeanError" -> 0.358963}, {"..\\experiments\\cv\\nursery.int", 
+   "..\\experiments\\cv\\ps.info", "../logs/120.log"} -> 
+  {TotalProcessorTime -> 20.857333699999998, Time -> 20.915196299999998, 
+   "MeanError" -> 0.0147002}, {"..\\experiments\\cv\\soybean-large.int", 
+   "..\\experiments\\cv\\boostingec.info", "../logs/121.log"} -> 
+  {TotalProcessorTime -> 21.2317361, Time -> 21.3072187, 
+   "MeanError" -> 0.0638889}, {"..\\experiments\\cv\\soybean-large.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/122.log"} -> 
+  {TotalProcessorTime -> 329.30251089999996, Time -> 329.44484309999996, 
+   "MeanError" -> 0.0777778}, {"..\\experiments\\cv\\soybean-large.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/123.log"} -> 
+  {TotalProcessorTime -> 868.6291681, Time -> 868.8146934, 
+   "MeanError" -> 0.105556}, {"..\\experiments\\cv\\soybean-large.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin-boost.info", 
+   "../logs/124.log"} -> {TotalProcessorTime -> 249.24279769999998, 
+   Time -> 249.41026549999998, "MeanError" -> 0.075}, 
+ {"..\\experiments\\cv\\soybean-large.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin.info", 
+   "../logs/125.log"} -> {TotalProcessorTime -> 15.974502399999999, 
+   Time -> 16.0239165, "MeanError" -> 0.0833333}, 
+ {"..\\experiments\\cv\\soybean-large.int", 
+   "..\\experiments\\cv\\boostingft.info", "../logs/126.log"} -> 
+  {TotalProcessorTime -> 28.2673812, Time -> 28.3346207, 
+   "MeanError" -> 0.075}, {"..\\experiments\\cv\\soybean-large.int", 
+   "..\\experiments\\cv\\boostingmon.info", "../logs/127.log"} -> 
+  {TotalProcessorTime -> 79.9037122, Time -> 79.9395722, 
+   "MeanError" -> 0.0722222}, {"..\\experiments\\cv\\soybean-large.int", 
+   "..\\experiments\\cv\\ft.info", "../logs/128.log"} -> 
+  {TotalProcessorTime -> 2.5272162, Time -> 2.5521458999999997, 
+   "MeanError" -> 0.194444}, {"..\\experiments\\cv\\soybean-large.int", 
+   "..\\experiments\\cv\\mon.info", "../logs/129.log"} -> 
+  {TotalProcessorTime -> 7.7220495, Time -> 7.761444, 
+   "MeanError" -> 0.130556}, {"..\\experiments\\cv\\soybean-large.int", 
+   "..\\experiments\\cv\\ps.info", "../logs/130.log"} -> 
+  {TotalProcessorTime -> 2.496016, Time -> 2.5151439, 
+   "MeanError" -> 0.0944444}, {"..\\experiments\\cv\\tic-tac-toe.int", 
+   "..\\experiments\\cv\\boostingec.info", "../logs/131.log"} -> 
+  {TotalProcessorTime -> 1.9188123, Time -> 1.9501115, 
+   "MeanError" -> 0.00205339}, {"..\\experiments\\cv\\tic-tac-toe.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/132.log"} -> 
+  {TotalProcessorTime -> 45.630292499999996, Time -> 45.6746124, 
+   "MeanError" -> 0.0277207}, {"..\\experiments\\cv\\tic-tac-toe.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/133.log"} -> 
+  {TotalProcessorTime -> 9.2664594, Time -> 9.2865311, 
+   "MeanError" -> 0.00205339}, {"..\\experiments\\cv\\tic-tac-toe.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin-boost.info", 
+   "../logs/134.log"} -> {TotalProcessorTime -> 16.2085039, 
+   Time -> 16.2799311, "MeanError" -> 0.00718686}, 
+ {"..\\experiments\\cv\\tic-tac-toe.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin.info", 
+   "../logs/135.log"} -> {TotalProcessorTime -> 2.184014, Time -> 2.2121265, 
+   "MeanError" -> 0.00102669}, {"..\\experiments\\cv\\tic-tac-toe.int", 
+   "..\\experiments\\cv\\boostingft.info", "../logs/136.log"} -> 
+  {TotalProcessorTime -> 4.4928288, Time -> 4.5292591, 
+   "MeanError" -> 0.0112936}, {"..\\experiments\\cv\\tic-tac-toe.int", 
+   "..\\experiments\\cv\\boostingmon.info", "../logs/137.log"} -> 
+  {TotalProcessorTime -> 10.2180655, Time -> 10.2595868, 
+   "MeanError" -> 0.00513347}, {"..\\experiments\\cv\\tic-tac-toe.int", 
+   "..\\experiments\\cv\\ft.info", "../logs/138.log"} -> 
+  {TotalProcessorTime -> 3.1980204999999997, Time -> 3.2361850999999997, 
+   "MeanError" -> 0.967146}, {"..\\experiments\\cv\\tic-tac-toe.int", 
+   "..\\experiments\\cv\\mon.info", "../logs/139.log"} -> 
+  {TotalProcessorTime -> 6.4584414, Time -> 6.4953715, 
+   "MeanError" -> 0.516427}, {"..\\experiments\\cv\\tic-tac-toe.int", 
+   "..\\experiments\\cv\\ps.info", "../logs/140.log"} -> 
+  {TotalProcessorTime -> 0.624004, Time -> 0.6610378, 
+   "MeanError" -> 0.00513347}}

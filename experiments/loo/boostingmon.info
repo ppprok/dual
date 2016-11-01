@@ -1,0 +1,20 @@
+method LOO
+algorithm
+{
+	type Boosting
+	weakLearner
+	{
+		type FTVoting
+		featureSelector
+		{
+			type ECmpByRank
+			maxRank 1
+			relation
+			{
+				LE
+			}
+		}
+	}
+    
+    positiveLearner weakLearner
+}

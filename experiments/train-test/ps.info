@@ -1,0 +1,12 @@
+method T
+algorithm
+{
+	type MultiByBinary
+	correctPart 1
+	positiveLearner
+	{
+		type ECVoting
+		coverLimit 100
+        	coverThreshold 200
+	}
+}

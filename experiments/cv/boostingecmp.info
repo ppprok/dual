@@ -1,0 +1,23 @@
+method CV
+times 1
+trainPart 0.9
+algorithm
+{
+	type Boosting
+	weakLearner
+	{
+		type FTVoting
+		featureSelector
+		{
+			type ECmpByRank
+			maxRank 1
+			relation
+			{
+				LE
+				GE
+			}
+		}
+	}
+    
+    positiveLearner weakLearner
+}

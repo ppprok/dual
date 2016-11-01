@@ -1,0 +1,45 @@
+{
+    "type": "PosetsDualizationTask",
+    "columns": [
+        {
+            "name": "n1",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n2",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n3",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n4",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n5",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n6",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n7",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n8",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n9",
+            "type": "NumberChain"
+        },
+        {
+            "name": "n10",
+            "type": "NumberChain"
+        }
+    ]
+}

@@ -1,0 +1,13 @@
+method CV
+times 1
+trainPart 0.9
+algorithm
+{
+	type MultiByBinary
+	correctPart 1
+	positiveLearner
+	{
+		type ECVoting
+		coverLimit 100
+	}
+}

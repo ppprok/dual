@@ -1,0 +1,30 @@
+{{"..\\experiments\\cv\\nursery.int", "..\\experiments\\cv\\boostingec.info", 
+   "../logs/1.log"} -> {TotalProcessorTime -> 81.0113193, Time -> 81.432, 
+   "MeanError" -> 0.00361733}, {"..\\experiments\\cv\\nursery.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/2.log"} -> 
+  {TotalProcessorTime -> 765.0601042, Time -> 765.5691999999999, 
+   "MeanError" -> 0.00307858}, {"..\\experiments\\cv\\nursery.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/3.log"} -> 
+  {Killed -> True, Timeout -> 1200, TotalProcessorTime -> 1199.7880909, 
+   Time -> 1200.3552, "MeanError" -> {}}, 
+ {"..\\experiments\\cv\\nursery.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin-boost.info", 
+   "../logs/4.log"} -> {TotalProcessorTime -> 796.541106, Time -> 796.7832, 
+   "MeanError" -> 0.00500269}, {"..\\experiments\\cv\\nursery.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin.info", "../logs/5.log"} -> 
+  {TotalProcessorTime -> 379.22283089999996, Time -> 379.406, 
+   "MeanError" -> 0.00230894}, {"..\\experiments\\cv\\nursery.int", 
+   "..\\experiments\\cv\\boostingft.info", "../logs/6.log"} -> 
+  {TotalProcessorTime -> 98.2962301, Time -> 98.35799999999999, 
+   "MeanError" -> 0.0300931}, {"..\\experiments\\cv\\nursery.int", 
+   "..\\experiments\\cv\\boostingmon.info", "../logs/7.log"} -> 
+  {TotalProcessorTime -> 321.75206249999997, Time -> 321.828, 
+   "MeanError" -> 0.00615716}, {"..\\experiments\\cv\\nursery.int", 
+   "..\\experiments\\cv\\ft.info", "../logs/8.log"} -> 
+  {TotalProcessorTime -> 160.6030295, Time -> 160.6644, 
+   "MeanError" -> 0.662972}, {"..\\experiments\\cv\\nursery.int", 
+   "..\\experiments\\cv\\mon.info", "../logs/9.log"} -> 
+  {TotalProcessorTime -> 0., Time -> 0.10919999999999999, "MeanError" -> {}}, 
+ {"..\\experiments\\cv\\nursery.int", "..\\experiments\\cv\\ps.info", 
+   "../logs/10.log"} -> {TotalProcessorTime -> 20.3113302, Time -> 20.358, 
+   "MeanError" -> 0.0149311}}

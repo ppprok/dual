@@ -1,0 +1,12 @@
+method T
+algorithm
+{
+	type MultiByBinary
+	correctPart 1
+	positiveLearner
+	{
+		type FTVoting
+        	coverLimit 100
+	        coverThreshold 200
+	}
+}

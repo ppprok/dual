@@ -1,0 +1,11 @@
+method LOO
+algorithm
+{
+	type MultiByBinary
+	correctPart 1
+	positiveLearner
+	{
+		type ECVoting
+		coverLimit 100
+	}
+}

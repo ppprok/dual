@@ -1,0 +1,10 @@
+method T
+algorithm
+{
+	type Boosting
+	weakLearner
+	{
+		type ECVoting
+	}
+    positiveLearner weakLearner
+}

@@ -1,0 +1,34 @@
+method C
+algorithm
+{
+	type Boosting
+	weakLearner
+	{
+		type FTVoting
+		featureSelector
+		{
+			type ClassFeatureSelector
+		            inner
+		            {
+		                type LazyFeatureSelector
+		                inner
+		                {
+		                    type BinaryECFeatureSelector
+		                    learner
+		                    {
+		                        type BinaryAdaptor
+					{
+						learner
+						{
+							type Boosting
+							iterationsCount 100
+						}
+					}
+		                    }
+		                }
+		            }
+            
+		}
+	}
+    positiveLearner weakLearner
+}

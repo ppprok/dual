@@ -1,0 +1,21 @@
+separators ",;|"
+eol "\nh"
+spaces "\t\r |'"
+columns
+{
+	column
+	{
+		type NumberChain
+		name a
+	}
+	column
+	{
+		type NumberChain
+		name b
+	}
+	column
+	{
+		type NumberChain
+		name c
+	}
+}

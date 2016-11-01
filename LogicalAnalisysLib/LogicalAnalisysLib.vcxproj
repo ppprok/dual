@@ -1,0 +1,170 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{822C9CB0-6080-4F36-881A-07F2B5799847}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>LogicalAnalisysLib</RootNamespace>
+    <ProjectName>LogicalAnalysisLib</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>d:\boost\boost_1_55_0;$(IncludePath)</IncludePath>
+    <LibraryPath>d:\boost\boost_1_55_0\lib32-msvc-11.0;$(LibraryPath)</LibraryPath>
+    <IntDir>$(SolutionDir)$(Configuration)\$(TargetName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>S:\boost\boost_1_55_0;$(IncludePath)</IncludePath>
+    <LibraryPath>s:\boost\boost_1_55_0\lib32-msvc-11.0;$(LibraryPath)</LibraryPath>
+    <IntDir>$(SolutionDir)$(Configuration)\$(TargetName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>s:\boost\boost_1_55_0\;../UtilsLib;../DualizationLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
+      <AdditionalOptions>-Zm200 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>d:\boost\boost_1_55_0\;../UtilsLib;../DualizationLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
+      <AdditionalOptions>-Zm200 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AlgorithmEstimator.h" />
+    <ClInclude Include="BinaryClassifierAdaptor.h" />
+    <ClInclude Include="BinaryClassifierNormalizer.h" />
+    <ClInclude Include="BinaryClassifierBoolAdaptor.h" />
+    <ClInclude Include="BinaryClassifierVoter.h" />
+    <ClInclude Include="BinaryECFeatureSelector.h" />
+    <ClInclude Include="BinaryLearnerAdaptor.h" />
+    <ClInclude Include="ClassFeatureSelector.h" />
+    <ClInclude Include="InitECFeatureSelector.h" />
+    <ClInclude Include="BoostingLearner.h" />
+    <ClInclude Include="CmpFitMatrixBuilder.h" />
+    <ClInclude Include="CmpMatrix.h" />
+    <ClInclude Include="Comparers.h" />
+    <ClInclude Include="CoverMatrix.h" />
+    <ClInclude Include="FeatureSelectorBase.h" />
+    <ClInclude Include="FitMatrix.h" />
+    <ClInclude Include="FTFeatureSelector.h" />
+    <ClInclude Include="InformativityCondition.h" />
+    <ClInclude Include="LazyFeatureSelector.h" />
+    <ClInclude Include="ObjectsClass.h" />
+    <ClInclude Include="Dataset.h" />
+    <ClInclude Include="EC.h" />
+    <ClInclude Include="ECmp.h" />
+    <ClInclude Include="ECmpVoting.h" />
+    <ClInclude Include="ECmpByRankFeatureSelector.h" />
+    <ClInclude Include="ECVotingLearner.h" />
+    <ClInclude Include="FTVoting.h" />
+    <ClInclude Include="FeatureValue.h" />
+    <ClInclude Include="Interfaces.h" />
+    <ClInclude Include="MultiByBinaryLearner.h" />
+    <ClInclude Include="Object.h" />
+    <ClInclude Include="Predictions.h" />
+    <ClInclude Include="ECVoting.h" />
+    <ClInclude Include="PSVotingLearner.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="FTVotingLearner.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AlgorithmEstimator.cpp" />
+    <ClCompile Include="BinaryClassifierAdaptor.cpp" />
+    <ClCompile Include="BinaryClassifierNormalizer.cpp" />
+    <ClCompile Include="BinaryClassifierVoter.cpp" />
+    <ClCompile Include="BinaryECFeatureSelector.cpp" />
+    <ClCompile Include="BinaryLearnerAdaptor.cpp" />
+    <ClCompile Include="ClassFeatureSelector.cpp" />
+    <ClCompile Include="InitECFeatureSelector.cpp" />
+    <ClCompile Include="BoostingLearner.cpp" />
+    <ClCompile Include="CmpFitMatrixBuilder.cpp" />
+    <ClCompile Include="CmpMatrix.cpp" />
+    <ClCompile Include="Comparers.cpp" />
+    <ClCompile Include="CoverMatrix.cpp" />
+    <ClCompile Include="Dataset.cpp" />
+    <ClCompile Include="ECmpVoting.cpp" />
+    <ClCompile Include="ECmpByRankFeatureSelector.cpp" />
+    <ClCompile Include="ECVotingLearner.cpp" />
+    <ClCompile Include="FeatureSelectorBase.cpp" />
+    <ClCompile Include="FitMatrix.cpp" />
+    <ClCompile Include="FTFeatureSelector.cpp" />
+    <ClCompile Include="FTVoting.cpp" />
+    <ClCompile Include="FeatureValue.cpp" />
+    <ClCompile Include="LazyFeatureSelector.cpp" />
+    <ClCompile Include="MultiByBinaryLearner.cpp" />
+    <ClCompile Include="Object.cpp" />
+    <ClCompile Include="ECVoting.cpp" />
+    <ClCompile Include="ObjectsClass.cpp" />
+    <ClCompile Include="Predictions.cpp" />
+    <ClCompile Include="PSVotingLearner.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="FTVotingLearner.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,103 @@
+{{"..\\experiments\\cv\\kr-vs-kp.int", 
+   "..\\experiments\\cv\\boostingec.info", "../logs/1.log"} -> 
+  {TotalProcessorTime -> 66.8620286, Time -> 67.392, 
+   "MeanError" -> 0.00280025}, {"..\\experiments\\cv\\kr-vs-kp.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/2.log"} -> 
+  {TotalProcessorTime -> 165.1270585, Time -> 165.682, 
+   "MeanError" -> 0.00622278}, {"..\\experiments\\cv\\kr-vs-kp.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/3.log"} -> 
+  {TotalProcessorTime -> 160.5094289, Time -> 161.101, 
+   "MeanError" -> 0.00311139}, {"..\\experiments\\cv\\kr-vs-kp.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin-boost.info", 
+   "../logs/4.log"} -> {TotalProcessorTime -> 186.7019968, Time -> 186.792, 
+   "MeanError" -> 0.00528936}, {"..\\experiments\\cv\\kr-vs-kp.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin.info", "../logs/5.log"} -> 
+  {TotalProcessorTime -> 72.93046749999999, Time -> 73.02, 
+   "MeanError" -> 0.0040448}, {"..\\experiments\\cv\\kr-vs-kp.int", 
+   "..\\experiments\\cv\\boostingft.info", "../logs/6.log"} -> 
+  {TotalProcessorTime -> 46.6598991, Time -> 46.727999999999994, 
+   "MeanError" -> 0.00528936}, {"..\\experiments\\cv\\kr-vs-kp.int", 
+   "..\\experiments\\cv\\boostingmon.info", "../logs/7.log"} -> 
+  {TotalProcessorTime -> 80.3249149, Time -> 80.41199999999999, 
+   "MeanError" -> 0.00653391}, {"..\\experiments\\cv\\kr-vs-kp.int", 
+   "..\\experiments\\cv\\ft.info", "../logs/8.log"} -> 
+  {TotalProcessorTime -> 36.0674312, Time -> 36.181, 
+   "MeanError" -> 0.638768}, {"..\\experiments\\cv\\kr-vs-kp.int", 
+   "..\\experiments\\cv\\mon.info", "../logs/9.log"} -> 
+  {TotalProcessorTime -> 0., Time -> 0.044, "MeanError" -> {}}, 
+ {"..\\experiments\\cv\\kr-vs-kp.int", "..\\experiments\\cv\\ps.info", 
+   "../logs/10.log"} -> {TotalProcessorTime -> 10.8108693, Time -> 10.956, 
+   "MeanError" -> 0.0143124}, {"..\\experiments\\cv\\letter-recognition.int", 
+   "..\\experiments\\cv\\boostingec.info", "../logs/11.log"} -> 
+  {Killed -> True, Timeout -> 2400, TotalProcessorTime -> 2398.8429771, 
+   Time -> 2399.901, "MeanError" -> {}}, 
+ {"..\\experiments\\cv\\letter-recognition.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/12.log"} -> 
+  {Killed -> True, Timeout -> 2400, TotalProcessorTime -> 2398.983378, 
+   Time -> 2399.888, "MeanError" -> {}}, 
+ {"..\\experiments\\cv\\letter-recognition.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/13.log"} -> 
+  {Killed -> True, Timeout -> 2400, TotalProcessorTime -> 2398.7337764, 
+   Time -> 2399.922, "MeanError" -> {}}, 
+ {"..\\experiments\\cv\\letter-recognition.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin-boost.info", 
+   "../logs/14.log"} -> {Killed -> True, Timeout -> 2400, 
+   TotalProcessorTime -> 2394.2097473999997, Time -> 2400.093, 
+   "MeanError" -> {}}, {"..\\experiments\\cv\\letter-recognition.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin.info", "../logs/15.log"} -> 
+  {Killed -> True, Timeout -> 2400, TotalProcessorTime -> 2397.5169686, 
+   Time -> 2399.893, "MeanError" -> {}}, 
+ {"..\\experiments\\cv\\letter-recognition.int", 
+   "..\\experiments\\cv\\boostingft.info", "../logs/16.log"} -> 
+  {Killed -> True, Timeout -> 2400, TotalProcessorTime -> 2397.6729695999998, 
+   Time -> 2399.888, "MeanError" -> {}}, 
+ {"..\\experiments\\cv\\letter-recognition.int", 
+   "..\\experiments\\cv\\boostingmon.info", "../logs/17.log"} -> 
+  {Killed -> True, Timeout -> 2400, TotalProcessorTime -> 2399.1861793, 
+   Time -> 2400.806, "MeanError" -> {}}, 
+ {"..\\experiments\\cv\\letter-recognition.int", 
+   "..\\experiments\\cv\\ft.info", "../logs/18.log"} -> 
+  {TotalProcessorTime -> 806.3223687, Time -> 806.726, 
+   "MeanError" -> 0.476574}, {"..\\experiments\\cv\\letter-recognition.int", 
+   "..\\experiments\\cv\\mon.info", "../logs/19.log"} -> 
+  {TotalProcessorTime -> 0.031200199999999997, Time -> 0.237, 
+   "MeanError" -> {}}, {"..\\experiments\\cv\\letter-recognition.int", 
+   "..\\experiments\\cv\\ps.info", "../logs/20.log"} -> 
+  {TotalProcessorTime -> 689.7272213, Time -> 690.435, 
+   "MeanError" -> 0.158512}, {"..\\experiments\\cv\\optdigits.int", 
+   "..\\experiments\\cv\\boostingec.info", "../logs/21.log"} -> 
+  {Killed -> True, Timeout -> 2400, TotalProcessorTime -> 2399.3109801, 
+   Time -> 2400.083, "MeanError" -> {}}, 
+ {"..\\experiments\\cv\\optdigits.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/22.log"} -> 
+  {Killed -> True, Timeout -> 2400, TotalProcessorTime -> 2399.5917819, 
+   Time -> 2399.909, "MeanError" -> {}}, 
+ {"..\\experiments\\cv\\optdigits.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/23.log"} -> 
+  {Killed -> True, Timeout -> 2400, TotalProcessorTime -> 2399.3265802, 
+   Time -> 2400.054, "MeanError" -> {}}, 
+ {"..\\experiments\\cv\\optdigits.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin-boost.info", 
+   "../logs/24.log"} -> {Killed -> True, Timeout -> 2400, 
+   TotalProcessorTime -> 2399.3421803, Time -> 2400.0589999999997, 
+   "MeanError" -> {}}, {"..\\experiments\\cv\\optdigits.int", 
+   "..\\experiments\\cv\\boostingecmp-lb-lazy-bin.info", "../logs/25.log"} -> 
+  {Killed -> True, Timeout -> 2400, TotalProcessorTime -> 2399.4045806999998, 
+   Time -> 2399.882, "MeanError" -> {}}, 
+ {"..\\experiments\\cv\\optdigits.int", 
+   "..\\experiments\\cv\\boostingft.info", "../logs/26.log"} -> 
+  {Killed -> True, Timeout -> 2400, TotalProcessorTime -> 2399.7789831, 
+   Time -> 2400.048, "MeanError" -> {}}, 
+ {"..\\experiments\\cv\\optdigits.int", 
+   "..\\experiments\\cv\\boostingmon.info", "../logs/27.log"} -> 
+  {Killed -> True, Timeout -> 2400, TotalProcessorTime -> 2399.9505842, 
+   Time -> 2400.1169999999997, "MeanError" -> {}}, 
+ {"..\\experiments\\cv\\optdigits.int", "..\\experiments\\cv\\ft.info", 
+   "../logs/28.log"} -> {TotalProcessorTime -> 320.5664549, 
+   Time -> 320.63599999999997, "MeanError" -> 0.735005}, 
+ {"..\\experiments\\cv\\optdigits.int", "..\\experiments\\cv\\mon.info", 
+   "../logs/29.log"} -> {TotalProcessorTime -> 0., Time -> 0.08, 
+   "MeanError" -> {}}, {"..\\experiments\\cv\\optdigits.int", 
+   "..\\experiments\\cv\\ps.info", "../logs/30.log"} -> 
+  {Killed -> True, Timeout -> 2400, TotalProcessorTime -> 2399.9661843, 
+   Time -> 2399.8959999999997, "MeanError" -> {}}}

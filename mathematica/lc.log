@@ -1,0 +1,3 @@
+ [info] log=lc.log
+ [info] config=../logs/48.log
+ [error] Catch: ../logs/48.log(2): unknown escape sequence

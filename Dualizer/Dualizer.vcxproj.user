@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LocalDebuggerCommandArguments>--task="f:\work\_dual\Algorithms_vs2012\DualizationLib.Test\data\pricegraph-30.json" --solver="f:\work\_dual\Algorithms_vs2012\Dualizer\solvers\migras3.info" --input="f:\work\_dual\Algorithms_vs2012\DualizationLib.Test\data\pricegraph-40x30-uniform-10.csv"</LocalDebuggerCommandArguments>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LocalDebuggerCommandArguments>--task="f:\work\_dual\Algorithms_vs2012\DualizationLib.Test\data\pricegraph-30.json" --solver="f:\work\_dual\Algorithms_vs2012\Dualizer\solvers\migras1.info" --input="f:\work\_dual\Algorithms_vs2012\DualizationLib.Test\data\pricegraph-40x30-uniform-10.csv"</LocalDebuggerCommandArguments>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
+</Project>

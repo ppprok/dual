@@ -1,0 +1,13 @@
+method CV
+times 3
+trainPart 0.9
+algorithm
+{
+	type MultiByBinary
+	correctPart 1
+	positiveLearner
+	{
+		type FTVoting
+		ftCount 200
+	}
+}

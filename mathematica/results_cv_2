@@ -1,0 +1,25 @@
+{{"..\\experiments\\cv\\nursery.int", "..\\experiments\\cv\\boostingec.info", 
+   "../logs/1.log"} -> {TotalProcessorTime -> 71.66685939999999, 
+   Time -> 71.7662443, "MeanError" -> 0.00484876}, 
+ {"..\\experiments\\cv\\nursery.int", 
+   "..\\experiments\\cv\\boostingecmp.info", "../logs/2.log"} -> 
+  {TotalProcessorTime -> 378.5676267, Time -> 378.6299276, 
+   "MeanError" -> 0.00438698}, {"..\\experiments\\cv\\nursery.int", 
+   "..\\experiments\\cv\\boostingecmp-lb.info", "../logs/3.log"} -> 
+  {Killed -> True, Timeout -> 1200, TotalProcessorTime -> 1199.8192910999999, 
+   Time -> 1200.0960659999998, "MeanError" -> {}}, 
+ {"..\\experiments\\cv\\nursery.int", "..\\experiments\\cv\\boostingft.info", 
+   "../logs/4.log"} -> {TotalProcessorTime -> 72.7432663, Time -> 72.7992792, 
+   "MeanError" -> 0.00785038}, {"..\\experiments\\cv\\nursery.int", 
+   "..\\experiments\\cv\\boostingmon.info", "../logs/5.log"} -> 
+  {TotalProcessorTime -> 113.49072749999999, Time -> 113.5303519, 
+   "MeanError" -> 0.00815824}, {"..\\experiments\\cv\\nursery.int", 
+   "..\\experiments\\cv\\ft.info", "../logs/6.log"} -> 
+  {TotalProcessorTime -> 144.45692599999998, Time -> 144.5114497, 
+   "MeanError" -> 0.662972}, {"..\\experiments\\cv\\nursery.int", 
+   "..\\experiments\\cv\\mon.info", "../logs/7.log"} -> 
+  {TotalProcessorTime -> 257.0740479, Time -> 257.1347109, 
+   "MeanError" -> 0.368968}, {"..\\experiments\\cv\\nursery.int", 
+   "..\\experiments\\cv\\ps.info", "../logs/8.log"} -> 
+  {TotalProcessorTime -> 17.6593132, Time -> 17.6987697, 
+   "MeanError" -> 0.0147772}}
