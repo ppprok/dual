@@ -1,0 +1,9 @@
+[submodule "3rd-party/boost/log"]
+	path = 3rd-party/boost/log
+	url = git@github.com:boostorg/log.git
+[submodule "3rd-party/boost/exception"]
+	path = 3rd-party/boost/exception
+	url = git@github.com:boostorg/exception.git
+[submodule "3rd-party/boost/vendor"]
+	path = 3rd-party/boost/vendor
+	url = git@github.com:boostorg/boost.git

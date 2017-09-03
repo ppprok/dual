@@ -1,0 +1,1 @@
+using gcc : cmake : ${CMAKE_CXX_COMPILER} : <compileflags>-fPIC <linkflags>-fPIC ;
