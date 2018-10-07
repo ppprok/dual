@@ -1,0 +1,371 @@
+% !TeX encoding = windows-1251
+
+\NeedsTeXFormat{LaTeX2e}
+
+\ProcessOptions
+
+\documentclass[a4paper,twoside,12pt]{article}
+
+\RequirePackage[cp1251]{inputenc}
+\RequirePackage[T2A]{fontenc}
+\RequirePackage{amssymb}
+\RequirePackage{amsmath}
+\RequirePackage{mathrsfs}
+\RequirePackage{euscript}
+\RequirePackage[english,russian]{babel}
+\RequirePackage{array}
+\RequirePackage{theorem}
+\RequirePackage[ruled]{algorithm}
+\RequirePackage[noend]{algorithmic}
+\RequirePackage{graphicx}
+\RequirePackage{color}
+\RequirePackage{ifthen}
+\RequirePackage{url}
+\RequirePackage{makeidx}
+\RequirePackage{pb-diagram}
+\RequirePackage{listings}
+\RequirePackage{fancyhdr}
+\RequirePackage{misccorr}
+\RequirePackage{tocloft}
+\RequirePackage{soul}
+\RequirePackage{nomencl}
+\RequirePackage{calc}
+\RequirePackage[all]{xy}
+
+%\usepackage{amsthm}
+
+%\usepackage{adm}
+\usepackage{multicol}
+
+\def\No{№}
+
+% Задание конечного множества первым и последним элементом 
+\newcommand{\range}[2]{\left \{#1, \ldots, #2\right \}}
+\def\endmark{\hfill $\Box$}
+\def\cP{\mathcal{P}}
+\def\cI{\mathcal{I}}
+\def\cO{\mathcal{O}}
+\def\P{\CCfont{P}}
+\def\NP{\mathtt{NP}}
+
+
+\newenvironment{Task}[1]{\medskip \par \textbf{Задача #1}. }
+    {\par \medskip}
+
+\title{Описание задачи дуализации и постановка задачи совместного перечисления}
+
+\begin{document}
+
+\maketitle	
+	\section{Введение}
+
+Пусть на конечном множестве $\cP$ задано отношение частичного порядка. 
+Для обозначения того, что $y \in \cP$ следует за $x \in \cP$, 
+будем использовать запись $x \preccurlyeq y$.
+Частичный порядок подразумевает выполнение свойств рефлексивности, транзитивности и антисимметричности:
+\begin{enumerate}
+	\item
+	$x \preccurlyeq x$, $\forall x \in \cP$;
+	\item
+	$(x \preccurlyeq y,\; y \preccurlyeq z) \to (x \preccurlyeq z)$, $\forall x,y,z \in 
+	\cP$;
+	\item
+	$(x \preccurlyeq y,\; y \preccurlyeq x) \to (x = y)$, $\forall x, y \in \cP$.
+\end{enumerate}
+
+В случае, когда $x \preccurlyeq y$ и $x \ne y$, будем писать $x \prec y$.
+
+Элемент $a \in A$, $A \subseteq \cP$, называется максимальным элементом $A$, 
+если для любого $x \in A$ отношение $a \prec x$ не выполняется.
+Обозначим через $\max(A)$ множества максимальных элементов~$A$.
+Аналогично определяется минимальный элемент $A$ и вводится
+множество минимальных элементов $\min(A)$.
+
+
+Множества $A^+ = \{x \in \cP \colon \exists a \in A, a 
+\preccurlyeq x\}$ и $A^- = \{x \in \cP \colon \exists a \in A, x 
+\preccurlyeq a\}$, $A \subseteq \cP$, называются соответственно \emph{идеалом и 
+фильтром $A$}.
+Элемент $x \in \cP \setminus A^+$ называется \emph{независимым} от $A$.
+Множество $\max(\cP \setminus A^+)$ состоит из \emph{максимальных 
+    независимых от $A$} элементов и обозначается через $\cI(A)$.
+Множество элементов~$A$ задаёт разбиение 
+$
+    \cP = A^+ \cup \cI(A)^-,\;  A^+ \cap \cI(A)^- = \emptyset,
+$
+поэтому $\cI(A)$ также называется \emph{двойственным~к}~$A$.
+%(здесь и далее через $X \sqcup Y$ обозначается объединение двух непересекающихся 
+%множеств 
+%$X$ и $Y$).
+
+Пусть $\cP = \cP_1 \times \ldots \times \cP_n$, где $\cP_1, 
+\ldots, \cP_n$ --- частично упорядоченные множества, и отношение частичного 
+порядка на $\cP$ определяется следующим образом.
+Для элементов $x=(x_1, \ldots, x_n), y = (y_1, \ldots, y_n) \in \cP$ верно 
+отношение $x \preccurlyeq y$ тогда и только тогда, когда 
+одновременно выполняются отношения $x_1 \preccurlyeq y_1, \ldots, x_n 
+\preccurlyeq y_n$.
+Рассматривается задача перечисления элементов $\cI(A)$, где $A = \{a_1, \ldots, 
+a_m\}$, $a_i = (a_{i1}, \ldots, a_{in}) \in \cP$, $i \in \{1, \ldots, m\}$.
+Эта задача называется \emph{дуализацией} над произведением частичных порядков.
+Она обобщает хорошо известную задачу 
+перечисления максимальных независимых наборов вершин гиперграфа,
+которая эквивалентна построению несократимой дизъюнктивной нормальной формы (ДНФ)
+для монотонной булевой функции, заданной конъюнктивной нормальной формой (КНФ).
+
+
+Дуализация может быть использована для решения более сложных перечислительных задач.
+Пусть на $\cP$ определено монотонное свойство $\pi : \cP \to \{0,1\}$, 
+из $x \preccurlyeq y \to \pi(x) \le \pi(y)$.
+Требуется перечислить <<минимальные единицы>> свойства $\pi$~---
+элементы $F_\pi = \min\{x \in \cP \colon \pi(x)=1\}$, и 
+<<максимальные нули>>~$\pi$~--- элементы $G_\pi = \max\{x \in \cP \colon 
+\pi(x)=0\}$.
+Обозначим через $O_\pi$ оракул, проверяющий выполнение свойства $\pi$ для
+элементов из $\pi$.
+Для инкрементального перечисления~$F_\pi$~и~$G_\pi$ фактически на каждом шаге необходимо 
+решать следующую задачу.
+\def\GEN{\mathbf{GEN}}
+
+\begin{Task}{$\GEN(\cP, O_\pi, A, B)$}
+    Даны оракул $O_\pi$ монотонного свойства $\pi$ и множества $A \subseteq 
+    F_\pi$,  
+    $B \subseteq G_\pi$.    
+    Найти элемент $x \in (F_\pi \setminus A) \cup (G_\pi \setminus B)$ или
+    установить, что таких элементов нет, то~есть $A = F_\pi$ и $B = G_\pi$.
+\end{Task}
+
+Обзор приложений, в которых возникает задача $\GEN(\cP, O_\pi, A, B)$
+можно найти~в~\cite{elbassioni2009-posets}. 
+Эти приложения относятся к таким областям, как машинное обучение, целочисленное 
+программирование, искусственный интеллект, извлечение знаний и пр.
+Рассмотрим более подробно одно из приложений в области извлечения знаний, 
+заключающееся в построении так называемых ассоциативных правил~\cite{AIS93-arules, 
+SA96-arules, HF95-arules}.
+Наиболее общая теория поиска ассоциативных правил формулируется в 
+\cite{elbassioni2014-arules}.
+
+Пусть $D=\{d_1, \ldots, d_m\} \subseteq \cP$ и $p \in \cP$.
+Через $S_D(p)$ обозначается множество $\{d_i \in D \colon p \preceq d_i \}$,
+состоящее их элементов, \emph{поддерживающих} $p$.
+Заметим, что набор $D$ удобно интерпретирован как множество записей базы данных,
+а набор $S_D(p)$~--- результат <<поискового запроса>>~$p$~к~$D$. 
+Фиксируется  неотрицательное пороговое значение $t$. 
+Элемент $p$ называется \emph{$t$-часто встречающимся}, если $|S_D(p)| \ge t$,
+иначе $p$ называется \emph{$t$-редко встречающимся}.
+Нетрудно проверить, что свойство $\pi: \cP \to \{0,1\}$, равное $0$ для 
+$t$-часто встречающихся и $1$ для $t$-редко встречающихся элементов, является монотонным.
+Элементы, $t$-часто/редко встречающиеся, перечисляются <<совместно>>, т.е. на каждом шаге находится
+новый либо $t$-часто встречающийся, либо $t$-редко встречающийся элемент.
+
+
+\section{
+Совместное перечисление максимальных и минимальных независимых элементов}
+
+Для адаптации асимптотически оптимальных алгоритмов к решению задачи 
+совместного перечисления предлагается изменить формулировку решаемой задачи:
+
+\begin{Task}{DualInterval(A,B)}
+Пусть $A, B \subset \cP$. Необходимо перечислить пары элементов $(x, y)$, обладающие свойствами:
+\begin{enumerate}
+\item
+$x \preccurlyeq y$
+\item
+$y \in \max(\cP \setminus A^+)$;
+\item
+$x \in \min(\cP \setminus B^-)$.
+\end{enumerate}
+\end{Task}
+
+На каждом шаге (кроме <<лишних>> в случае асимптотически оптимальных алгоритмов) будет найдена новая пара, поэтому Либо первый, либо второй элемент этой пары соответствует элементу, перечисляемому <<совместно>>. 
+
+\subsection{Булев случай}
+
+Пусть $\cP_i=\{0,1\}$, $0 \prec 1$. Набору элементов $A = \{a_1, \ldots, a_m \}$ соответствует
+булева матрица $L_1$ с элементами $a_{ij}$. Набору элементов $B=\{b_1, \ldots, b_l\}$ соответствует
+булева матрица $L_2$ с элементами $\neg b_{ij}$.
+Условие $x \in \cI(A)$ соответствует тому, что набор $H_1=\{j | x_j=0\}$ является неприводимым покрытием $L_1$. Условие $y \in \min(\cP \setminus B^-)$ соответствует тому, что
+набор $H_2=\{j | y_j=1\}$ является неприводимым покрытием $L_2$.
+Условие $y \preccurlyeq x$ эквивалентно тому, что $H_1 \subseteq \overline H_2$, что равносильно $H_1 \cap H_2 = \emptyset$. Итак, возникает следующая задача.
+
+\begin{Task}{DualIntervalBool($L_1$,$L_2$)}
+Пусть дано две булевых матрицы $L_1$ и $L_2$ c $n$ столбцами. 
+Необходимо перечислить пары наборов столбцов $(H_1, H_2)$,
+удовлетворяющие следующим свойствам:
+\begin{enumerate}
+	\item
+	$H_1$ --- неприводимое покрытие матрицы $L_1$;
+	\item
+	$H_2$ --- неприводимое покрытие матрицы $L_2$;
+	\item 
+	$H_1 \cap H_2 = \emptyset$.	
+\end{enumerate}
+\end{Task}
+
+Необходимо предложить алгоритм решения этой задачи.
+Самый простой способ --- это адаптировать один из имеющихся алгоритмов дуализации, например,
+RUNC-M. Для этого достаточно модифицировать итерацию алгоритма:
+\begin{enumerate}
+\item
+Выбрать одну из строк в одной из матриц $L_1$ или $L_2$ (подумать, как этот выбор выполнять оптимально).
+\item
+Выбрать столбец, которым можно покрыть эту строку и добавить его либо в $H_1$, либо в $H_2$
+\item 
+Запретить на последующих итерациях добавлять <<несовместимые>> с $H_1$, $H_2$ столбцы (возможно, придётся уточнить определение совместимости столбцов)
+\item
+Проверить, что в матрицах $L_1$ и $L_2$ все ещё можно покрыть оставшиеся строки не запрещёнными столбцами.
+Если это не так, то шаг считаем лишним. 
+\end{enumerate}
+
+Особенности реализации:
+
+\begin{enumerate}
+	\item
+	Язык программирования C/C++
+	\item
+	Представление строк и/или столбцов в битовом виде. Использовать побитовые операции: OR, XOR, AND.
+	\item
+	Для чистой реализации алгоритма не использовать распараллеливание и GPU.
+	В дальнейшем было бы хорошо сделать реализацию с GPU или OpenMP.
+	\item
+	Могу дать ссылку на свою реализацию алгоритмов дуализации, чтобы
+	сразу приступить к этапу адаптации без потери времени на собственную реализацию всех
+	этапов загрузки данных и перечисления решений.
+\end{enumerate}
+
+Где может быть использован данный алгоритм:
+\begin{enumerate}
+	\item
+	Предположим, мы решаем задачу дуализации матрицы $L_1$ с очень большим 
+	числом решений и по какой-то причине нам приходится приостановить процесс перечисления после
+	того, как мы нашли часть решений. Для возобновления перечисления покрытий с того момента,
+	где мы остановились можно из уже построенных покрытий составить матрицу $L_2$ и 
+	перечислять далее совместно. В $L_2$ можно также добавить результаты ранее сделанных <<лишних>> шагов.
+	
+	\item
+	Перечисление покрытий, удовлетворяющих условиям вида: 
+	 $H: J_1 \not \subseteq H, \ldots, J_k \not \subseteq H$.
+	 Например, условиями такого вида можно ограничиться при 
+	 дуализации над частичными порядками, когда исходная задача трансформируется в
+	 булев случай. В частности при перечислении тупиковых покрытий целочисленных матриц.
+	 
+	 \item
+	 Совместное перечисление t-редких/частых наборов при построении ассоциативных правил для
+	 бинарной БД.
+	 
+	 \item
+	 При распараллеливании дуализации, когда надо одним процессорам сообщить о том,
+	 какие покрытия были найдены другими процессорами, чтобы не повторять перечисление ранее найденных.   
+\end{enumerate} 
+
+%\subsection{Обобщение логических классификаторов}
+%
+%Пусть на множестве значений каждого признака в задаче распознавания по прецедентов задан частичный порядок.
+%Каждый объект задаётся вектором значений признаков $a \in \cP$, $\cP=\cP_1 \times \ldots \times \cP_n$.
+%Не теряя общности, будем считать, что для каждого признака с номером $j$ в порядке $\cP_j$ содержится
+%не более одного максимума и минимума (если это не так, то можно добавить в эти множества элементы, являющиеся
+%максимумом и минимумом). 
+%
+%Пусть задана обучающая выборка $T \subseteq \cP$, разбитая на классы $K_1, \ldots, K_l$.
+%Элементарным классификатором будем называть произвольный элемент $x \in \cP$. 
+%Будем говорить, что элементарный классификатор выделяет объект $a$, если $a \preccurlyeq x$.
+%Элементарный классификатор $x$ называется представительным набором класса $K$, если 
+%$x \notin \overline{K}^+$ и $x \in K^+$. 
+%
+%Поиск представительных наборов класса $K$ сводится к перечислению $\cI(\overline{K})$.
+%При этом строятся <<тупиковые>> представительные наборы.
+%
+%Можно дополнительно расширить понятие элементарного классификатора.
+%Эл.кл. будем называть пару $(x,y)$, для которой $x \preccurlyeq y$. 
+%Объект $a$ выделяется эл.кл. $(x,y)$, если $x \preccurlyeq a \preccurlyeq y$.
+%Представительный набор определяется аналогично. 
+%Построение таких эл.кл. сводится к задаче DualInterval(A,B).
+
+
+\begin{thebibliography}{1}
+%\bibitem{Duk2004}
+%\BibAuthor{Дюкова~Е.~В.} 
+%\BibTitle{О сложности реализации дискретных (логических) процедур 
+%распознавания}~// 
+%{Журнал вычислительной математики и математической физики}. 
+%2004. Т.~44, \No~3. С.~562--572.
+%
+%\bibitem{DukAO77}
+%\BibAuthor{Дюкова~Е.~В.} 
+%\BibTitle{Об асимптотически оптимальном алгоритме построения тупиковых 
+%тестов}~// ДАН СССР. 1977. Т. 233, \No~4. С.~527--530.
+
+%\bibitem{DI2008}
+%\BibAuthor{Дюкова~Е.~В., Инякин~А.~С.} 
+%\BibTitle{Асимптотически оптимальное построение тупиковых покрытий 
+%целочисленной матрицы}~// 
+%{Математические вопросы кибернетики}. 2008. Т.~17. С.~235--246.
+
+%\bibitem{DukSot2012}
+%\BibAuthor{Дюкова~Е.~В., Сотнезов~Р.~М.}
+%\BibTitle{О сложности задачи дуализации}~//
+%Ж. вычисл. матем. и матем. физ. 2012. Т.~52. \No~10. С.~1926--1935.
+
+%\bibitem{BorE2004a}
+%{Boros~E., Elbassioni~K.} 
+%{Generating maximal independent sets for hypergraphs with bounded 
+%edge-intersections}~//
+%LATIN 2004: Theoretical Informatics. --- Springer Berlin Heidelberg, 2004. --- 
+%P. 488-498.
+%%
+%%
+%\bibitem{BorGEK2000}
+%{Boros~E., Gurvich~V., Elbassioni~K., Khachiyan~L.} 
+%{An efficient incremental algorithm for generating all maximal 
+%independent sets in hypergraphs of bounded dimension}.~ //
+%Parallel Processing Letters. 2000, V.~10, \No~4, P.~253--266.
+%
+%\bibitem{Fredman1996}
+%{Fredman~M.~L., Khachiyan~L.} 
+%{On the Complexity of Dualization of Monotone Disjunctive Normal 
+%Forms}~// {J. Algorithms}. 1996. V.~21. P.~618--628.
+%
+%\bibitem{Khachiyan2006b}
+%\BibAuthor{Khachiyan~L., Boros~E., Elbassioni~K., Gurvich~V.}
+%\BibTitle{An efficient implementation of a quasi-polynomial algorithm for 
+%generating hypergraph transversals and its application in joint generation}~//
+%Discrete Applied Mathematics. 2006. V.~154, \No~16. P.~2350--2372. 
+%URL: \BibUrl{http://linkinghub.elsevier.com/retrieve/pii/S0166218X06001910}.
+
+\bibitem{elbassioni2009-posets}
+{Elbassioni~K.}
+{Algorithms for Dualization over Products of Partially Ordered Sets}~//
+SIAM Journal on Discrete Mathematics. 2009. V.~23, \No~1. P.~487--510. 
+
+%\bibitem{BEGKM2002-chains}
+%{E. Boros, K. Elbassioni, V. Gurvich, L. Khachiyan, K. Makino}. 
+%{Dual-bounded generating problems: All minimal integer solutions for a monotone 
+%system of linear inequalities}~// SIAM Journal on Computing. 2002.
+%V.~31, \No~5. P.~1624--1643.
+
+\bibitem{AIS93-arules}
+Agrawal R., Imieli?ski T., Swami A. 
+Mining association rules between sets of items in large databases //ACM SIGMOD Record. – 
+ACM, 1993. – Т. 22. – №. 2. – С. 207-216.
+
+\bibitem{SA96-arules}
+Srikant R., Agrawal R. Mining quantitative association rules in large relational tables 
+//ACM SIGMOD Record. – ACM, 1996. – Т. 25. – №. 2. – С. 1-12.
+
+\bibitem{HF95-arules}
+Han J., Fu Y. Discovery of multiple-level association rules from large databases //VLDB. 
+– 1995. – Т. 95. – С. 420-431.
+
+\bibitem{elbassioni2014-arules}
+Elbassioni K. M. On Finding Minimal Infrequent Elements in Multi-dimensional Data Defined 
+over Partially Ordered Sets //arXiv preprint arXiv:1411.2275. – 2014.
+
+
+
+
+
+
+\end{thebibliography}
+
+\end{document}
+
