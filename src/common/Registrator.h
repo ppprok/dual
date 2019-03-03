@@ -5,7 +5,7 @@
 
 #include "errors.h"
 
-// Регистратор глобальных объектов и фабрик объектов указанного типа по имени 
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ 
 template <typename T>
 class Registrator
 {
@@ -55,7 +55,7 @@ public:
     {
         auto pos = _instances.find(name);
         if (pos == _instances.end())
-            BOOST_THROW_EXCEPTION(error("Object isn't registered")<< object_name(name));
+            BOOST_THROW_EXCEPTION(error() << message("Object isn't registered") << object_name(name));
         return pos->second;
     }
 
@@ -63,7 +63,7 @@ public:
     {
         auto pos = _factories.find(name);
         if (pos == _factories.end())
-            BOOST_THROW_EXCEPTION(error("Factory isn't registered") << object_name(name));
+            BOOST_THROW_EXCEPTION(error() << message("Factory isn't registered") << object_name(name));
         return pos->second();
     }
 

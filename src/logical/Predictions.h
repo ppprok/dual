@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
-#include <hash_map>
+#include <unordered_map>
+#include <bits/unordered_set.h>
 
 #include "move_default.h"
 
@@ -22,7 +23,7 @@ struct ClassPrediction
 
 typedef std::vector<ClassPrediction> ClassPredictions;
 
-typedef std::hash_map<int, ClassPrediction> ClassPredictionsMap;
+typedef std::unordered_map<int, ClassPrediction> ClassPredictionsMap;
 
 // Предсказание для объекта
 class Prediction

@@ -1,4 +1,3 @@
-#include "stdafx.h"
 
 #include "GraphPoset.h"
 #include "graph_algorithms.h"

@@ -5,6 +5,7 @@
 #include "bit_mask.h"
 #include "DualizationBacktrackAlgorithmBase.h"
 #include "bit_vector.h"
+#include "move_default.h"
 
 // Задание веса порядковому номеру
 struct OrderByWeight

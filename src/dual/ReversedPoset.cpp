@@ -1,4 +1,3 @@
-#include "stdafx.h"
 
 #include "ReversedPoset.h"
 #include "NumberChain.h"

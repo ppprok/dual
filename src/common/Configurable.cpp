@@ -1,6 +1,11 @@
-#include "stdafx.h"
 
-#include <filesystem>
+#include <string.h>
+#include <boost/filesystem/path.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include <boost/property_tree/info_parser.hpp>
+#include <boost/property_tree/ini_parser.hpp>
+#include <boost/property_tree/xml_parser.hpp>
 
 #include <boost/exception/errinfo_file_name.hpp>
 #include "errors.h"
@@ -25,21 +30,21 @@ Options read_info_options(std::string const& filename)
 
 Options read_options(std::string const& filename)
 {
-    std::tr2::sys::path path(filename);
-    auto ext = std::tr2::sys::extension(path);
+    boost::filesystem::path path(filename);
+    auto ext = path.extension();
     Options opt;
-            
-    if (stricmp(ext.c_str(), ".json") == 0)
+
+    if (strcasecmp(ext.c_str(), ".json") == 0)
         boost::property_tree::read_json(filename.c_str(), opt);
-    else if (stricmp(ext.c_str(), ".info") == 0)
+    else if (strcasecmp(ext.c_str(), ".info") == 0)
         boost::property_tree::read_info(filename.c_str(), opt);
-    else if (stricmp(ext.c_str(), ".ini") == 0)
+    else if (strcasecmp(ext.c_str(), ".ini") == 0)
         boost::property_tree::read_ini(filename.c_str(), opt);
-    else if (stricmp(ext.c_str(), ".xml") == 0)
+    else if (strcasecmp(ext.c_str(), ".xml") == 0)
         boost::property_tree::read_xml(filename.c_str(), opt);
     else
-        BOOST_THROW_EXCEPTION(file_format_error() << 
-            format(ext) << boost::errinfo_file_name(filename));
+        BOOST_THROW_EXCEPTION(file_format_error() <<
+                                                  boost::errinfo_file_name(filename));
 
     return opt;
 }

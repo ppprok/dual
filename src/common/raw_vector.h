@@ -1,6 +1,6 @@
 #pragma once
 
-
+#include <memory>
 #include <cstring>
 
 // Контейнер, не вызывающий конструкторов своих элементов

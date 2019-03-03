@@ -30,7 +30,7 @@ public:
         assert(n>=0);
         if (n > 0)
         {
-            _begin = malloc(n * sizeof(T));
+            _begin = (T *) malloc(n * sizeof(T));
             _end = _begin + n;
         }
         else

@@ -1,6 +1,6 @@
-#include "stdafx.h"
-
+#include <cmath>
 #include "SamplesWeighter.h"
+#include "math_utils.h"
 
 Weight SamplesWeighter::Delta(Weight posw, Weight negw, Weight epsilon)
 {
@@ -129,7 +129,7 @@ void SamplesWeighter::UpdateClassWeights()
 
 void SamplesWeighter::RemoveNull()
 {
-    remove_false(_objects);
+    //TODO: remove_false(_objects);
 }
 
 void SamplesWeighter::OrderSamplesDescend()

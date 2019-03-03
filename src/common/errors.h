@@ -3,8 +3,7 @@
 #include <string>
 #include <exception>
 
-#include <boost/exception/exception.hpp>
-#include <boost/exception/enable_error_info.hpp>
+#include <boost/exception/all.hpp>
 #include <boost/function.hpp>
 
 struct error 

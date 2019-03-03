@@ -33,5 +33,4 @@ set(SOURCE_FILES io_utils.cpp
         bits.cpp)
 
 add_library(common ${SOURCE_FILES})
-target_link_libraries(common PUBLIC boost)
 

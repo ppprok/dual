@@ -9,7 +9,7 @@
 #include "AOT1.h"
 #include "bit_mask.h"
 #include "bit_vector.h"
-
+#include "move_default.h"
 
 namespace Runc
 {
@@ -26,6 +26,7 @@ enum AlgorithmType
     RUNCM
 };
 
+    class GlobalState;
 
 // Локальное состояние алгоритма типа Runc
 class LocalState

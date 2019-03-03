@@ -1,4 +1,5 @@
-#include "stdafx.h"
+#include <boost/format.hpp>
+
 #include "DualizationCounters.h"
 
 

@@ -1,4 +1,3 @@
-#include "stdafx.h"
 
 #include "FeatureValue.h"
 #include "Object.h"

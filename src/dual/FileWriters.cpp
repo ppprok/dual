@@ -1,4 +1,3 @@
-#include "stdafx.h"
 
 #include "FileWriters.h"
 #include "DualizationBacktrackAlgorithmBase.h"

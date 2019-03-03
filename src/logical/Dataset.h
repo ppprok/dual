@@ -28,7 +28,7 @@ struct Dataset
 
     Dataset();
 
-    UTILITY_MOVE_DEFAULT_MEMBERS(Dataset, (objects)(classes)(featureValues));
+    //UTILITY_MOVE_DEFAULT_MEMBERS(Dataset, (objects)(classes)(featureValues));
     
     // Собрать информацию об объектах в классах
     ObjectsClasses const& CollectClasses();

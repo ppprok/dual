@@ -1,4 +1,3 @@
-#include "stdafx.h"
 
 #include "FrequentInfrequentEnumerator.h"
 #include "io_utils.h"
@@ -33,7 +32,7 @@ void PosetDualization::FrequentInfrequentEnumerator::Enumerate( FrequentInfreque
     _dualizer.Options.MaxResults = Options.maxIndepCount;
     _dualizer.Options.BaseRowSelectionType = MIGRAS::DualizationAlgorithmOptions::MinCoverItemCount;
     _dualizer.Options.CollectResultsInMemory = true;
-    _dualTask.GetPosetsProduct() = _task->GetPosetsProduct();
+	_dualTask.GetPosetsProduct() = std::move(_task->GetPosetsProduct());
 		
     bool complete = false;
 
@@ -399,7 +398,7 @@ void PosetDualization::FrequentInfrequentEnumerator::FindMinimalInfrequent(int t
 
 int PosetDualization::FrequentInfrequentEnumerator::UpdateSupportBitMap(int j, PosetItem const& a)
 {
-	auto& column = _task->GetDatabase()[j];
+	auto const &column = _task->GetDatabase()[j];
 	auto& poset = _task->GetPosetsProduct().GetPoset(j);
 	int m = column.size();
 	int n = _task->GetDatabase().GetWidth();

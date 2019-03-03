@@ -4,7 +4,7 @@
 // Счётчики результатов выполнения дуализации
 struct DualizationCounters
 {
-    typedef __int64 Int;
+    typedef long long int Int;
 
     Int results;    ///< Число найденных решений
     Int inners;     ///< Число внутренних состояний

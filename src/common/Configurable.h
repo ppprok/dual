@@ -3,6 +3,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include "string_utils.h"
 #include "errors.h"
+#include "Registrator.h"
 
 typedef boost::property_tree::ptree Options;
 

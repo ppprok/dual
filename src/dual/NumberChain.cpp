@@ -1,4 +1,3 @@
-#include "stdafx.h"
 
 #include "containers.h"
 #include "CSVLoader.h"

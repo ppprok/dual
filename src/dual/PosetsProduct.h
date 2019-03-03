@@ -34,8 +34,8 @@ public:
     {
     }
 
-    UTILITY_MOVE_DEFAULT_MEMBERS(
-        PosetsProduct, (_bindings)(_posets)(_reversedPosets));
+//    UTILITY_MOVE_DEFAULT_MEMBERS(
+//        PosetsProduct, (_bindings)(_posets)(_reversedPosets));
 
     Strings const& GetBindings() const
     {

@@ -1,21 +1,22 @@
-#include "stdafx.h"
 
 #include <boost/property_tree/info_parser.hpp>
+#include <boost/log/utility/setup/console.hpp>
+#include <boost/log/utility/setup/file.hpp>
 
 //#include "LogicalClassificator.h"
-#include "..\LogicalAnalisysLib\ECmpByRankFeatureSelector.h"
-#include "..\LogicalAnalisysLib\MultiByBinaryLearner.h"
-#include "..\LogicalAnalisysLib\BoostingLearner.h"
+#include "ECmpByRankFeatureSelector.h"
+#include "MultiByBinaryLearner.h"
+#include "BoostingLearner.h"
 //#include "Exceptions.h"
-#include "..\LogicalAnalisysLib\FTVotingLearner.h"
-#include "..\LogicalAnalisysLib\AlgorithmEstimator.h"
-#include "..\LogicalAnalisysLib\InitECFeatureSelector.h"
-#include "..\LogicalAnalisysLib\ECVotingLearner.h"
-#include "..\LogicalAnalisysLib\FTFeatureSelector.h"
-#include "..\LogicalAnalisysLib\BinaryLearnerAdaptor.h"
-#include "..\LogicalAnalisysLib\BinaryECFeatureSelector.h"
-#include "..\LogicalAnalisysLib\LazyFeatureSelector.h"
-#include "..\LogicalAnalisysLib\ClassFeatureSelector.h"
+#include "FTVotingLearner.h"
+#include "AlgorithmEstimator.h"
+#include "InitECFeatureSelector.h"
+#include "ECVotingLearner.h"
+#include "FTFeatureSelector.h"
+#include "BinaryLearnerAdaptor.h"
+#include "BinaryECFeatureSelector.h"
+#include "LazyFeatureSelector.h"
+#include "ClassFeatureSelector.h"
 
 namespace po = boost::program_options;
 

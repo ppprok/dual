@@ -1,4 +1,3 @@
-#include "stdafx.h"
 
 #include "bit_vector.h"
 #include "PosetsDualizationTask.h"

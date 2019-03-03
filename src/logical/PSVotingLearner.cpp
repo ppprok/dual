@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "PSVotingLearner.h"
 #include "ECVoting.h"
 #include "logging_utils.h"

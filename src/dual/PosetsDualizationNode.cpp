@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "PosetsDualizationNode.h"
 
 
@@ -54,7 +53,7 @@ namespace PosetDualization
 
     void PosetsDualizationNode::StoreUsedItemsSizes()
     {
-        for (auto& rbeg = _usedItems.rbegin(), rend = _usedItems.rend(); rbeg != rend; ++rbeg)
+        for (auto rbeg = _usedItems.rbegin(), rend = _usedItems.rend(); rbeg != rend; ++rbeg)
             _usedItemsSizes.push_back(rbeg->size());
     }
 

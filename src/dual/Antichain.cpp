@@ -1,4 +1,3 @@
-#include "stdafx.h"
 
 #include "Antichain.h"
 #include "Registrator.h"
@@ -256,4 +255,12 @@ void Antichain::GetImmediateSucc( PosetItem const& item, PosetItems& items ) con
 Antichain::Antichain()
 {
     SetDefaultOptions();
+}
+
+void Antichain::GetMinUpperBounds(PosetItems const &items, PosetItems &upperBounds) const {
+
+}
+
+void Antichain::GetMaxLowerBounds(PosetItems const &items, PosetItems &lowerBounds) const {
+
 }

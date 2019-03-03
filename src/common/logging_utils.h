@@ -23,7 +23,7 @@ BOOST_LOG_INLINE_GLOBAL_LOGGER_INIT(utils_logger, def_severity_logger)
 
 
 //! Log catched exception diagnostic information
-void log_catched();
+//void log_catched();
 
 //! Add file for log output
 void add_log_file(std::string const& filename);

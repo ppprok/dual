@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "PosetsProduct.h"
 #include "ReversedPoset.h"
 #include "Registrator.h"
@@ -254,7 +253,7 @@ int PosetsProduct::GetPosetIndex( std::string const& name ) const
 {
     auto beg = _bindings.begin(), end = _bindings.end(), i = std::find(beg, end, name);
     if (i == end)
-        BOOST_THROW_EXCEPTION(error("Poset isn't founded by name") << column_name(name));
+        BOOST_THROW_EXCEPTION(error() << message("Poset isn't founded by name") << column_name(name));
     return i - beg;
 }
 

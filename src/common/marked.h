@@ -1,5 +1,7 @@
 #pragma once
 
+#include <limits.h>
+
 // Метка к объекту базового типа
 template<typename base>
 struct marked : public base

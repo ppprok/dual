@@ -71,3 +71,4 @@ set(SOURCE_FILES PosetsDualizationNode.h
 add_library(dual ${SOURCE_FILES})
 
 add_executable(dualizer main.cpp)
+target_link_libraries(dualizer dual common ${Boost_LIBRARIES} ${Boost_LIBRARIES} pthread)

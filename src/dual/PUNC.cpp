@@ -1,4 +1,3 @@
-#include "stdafx.h"
 
 #include "PUNC.h"
 #include "containers.h"

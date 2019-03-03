@@ -2,6 +2,7 @@
 
 #include "DualizationBacktrackAlgorithmBase.h"
 #include "WeightBoundsPruning.h"
+#include "move_default.h"
 
 
 // Усечение ветвей ДР по границам на суммарный вес покрытых строк

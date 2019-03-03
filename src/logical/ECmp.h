@@ -151,7 +151,7 @@ struct ECmpSetConjunction
     }
 
     ECmpSetConjunction(ECmpSet ecmpSet_)
-        :ecmpSet(ecmpSet_)
+            : ecmpSet(std::move(ecmpSet_))
     {
     }
 

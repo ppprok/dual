@@ -1,4 +1,3 @@
-#include "stdafx.h"
 
 #include "Weighters.h"
 
@@ -41,7 +40,7 @@ void CoveredRowWeighterCallback::WeightNewNode( DualizationNode &node )
 
     if ((int)node.columns.size() <= 1)
     {
-        // Инициализация веса
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
         node.weight = 0;        
     }
 
@@ -210,7 +209,7 @@ Weight WeighterBase::GetDefaultWeight()
     if (_weights.empty())
         return 0;
 
-    // Последний элемент в списке выступает в качестве веса по умолчанию
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     return _weights.back();
 }
 

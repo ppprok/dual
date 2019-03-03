@@ -11,7 +11,7 @@ struct EC
 
     Weight weight;
 
-    UTILITY_MOVE_DEFAULT_MEMBERS(EC, (featureValues)(weight));
+    //UTILITY_MOVE_DEFAULT_MEMBERS(EC, (featureValues)(weight));
 
     EC(Weight w = 0)
         :weight(w)

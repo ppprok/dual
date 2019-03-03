@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "Solver.h"
 
 namespace PosetDualization {namespace MIGRAS{
@@ -36,7 +35,7 @@ void Solver::Solve( ITask* task )
 
     auto pdtask = dynamic_cast<PosetsDualizationTask*>(task);
     if (! pdtask)
-        BOOST_THROW_EXCEPTION(error("Task has wrong type"));
+        BOOST_THROW_EXCEPTION(error() << message("Task has wrong type"));
 
     //_callbacksChain.use2 = pdtask->GetIdealPart() < pdtask->GetItemsCount();    
     //_algorithm.Callback = &_callbacksChain;

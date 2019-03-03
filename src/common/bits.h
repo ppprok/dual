@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CSVLoader.h"
+#include "stdint.h"
 
 typedef uint32_t bits32;
 
@@ -108,11 +108,12 @@ low_bit<T> find_first(T const& bits)
     return bits;
 }
 
-template <typename BitMatrix>
-void read_bit_matrix(std::string const& filename, BitMatrix& bitmatrix)
-{
-    CSVLoader csv;
-    csv.Load(filename);
-    //TODO:
-}
+
+//template <typename BitMatrix>
+//void read_bit_matrix(std::string const& filename, BitMatrix& bitmatrix)
+//{
+//    CSVLoader csv;
+//    csv.Load(filename);
+//    //TODO:
+//}
 

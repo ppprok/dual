@@ -1,6 +1,9 @@
 // Dualizer.cpp : Defines the entry point for the console application.
 //
 
+#include <boost/program_options.hpp>
+#include <iostream>
+
 #include "logging_utils.h"
 #include "Configurable.h"
 #include "Registrator.h"
@@ -9,10 +12,13 @@
 #include "Solver.h"
 #include "PosetsDualizationTask.h"
 //#include "Antichain.h"
+
+
 #include "GraphPoset.h"
 #include "NumberChain.h"
 #include "IntervalLattice.h"
 
+namespace po = boost::program_options;
 
 
 
@@ -96,7 +102,7 @@ int main(int argc, char* argv[])
     catch(...)
     {
         std::cout << "View log for error information";
-        log_catched();
+        //log_catched();
         return -2;
     }
     

@@ -1,5 +1,4 @@
-#include "stdafx.h"
-#include "Runc.h"
+#include "RUNC.h"
 #include "DualizationBacktrackAlgorithmBase.h"
 #include "BoolMatrixPreparation.h"
 

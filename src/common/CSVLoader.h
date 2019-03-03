@@ -5,6 +5,9 @@
 #include <string>
 #include <assert.h>
 
+#include <boost/lexical_cast.hpp>
+#include <boost/throw_exception.hpp>
+
 #include "chunk.h"
 #include "blob.h"
 #include "containers.h"
@@ -158,20 +161,20 @@ public:
     }
 
     // Explicitly set CSV data 
-    void SetData(blob<char> data)
+    void SetData(std::string data)
     {
-        _data = std::move(data);
+        _data.assign_range(data.begin(), data.end());
         _arrays.clear();
         _appendix.clear();
     }
 
     // Append CSV data chunk
-    void AddData(blob<char> data)
+    void AddData(std::string data)
     {
         if (_data.empty() || _appendix.empty())
             SetData(std::move(data));
         else
-            _appendix.emplace_back(std::move(data));
+            _appendix.emplace_back(data.begin(), data.end());
     }
     
     template<
@@ -235,7 +238,7 @@ public:
         }
         
     	BOOST_THROW_EXCEPTION(
-            error("Column '" + name + "' doesn't exist"));            
+                error() << message("Column '" + name + "' doesn't exist"));
     }
 
     CSVArray const& GetColumn(std::string const& name) const

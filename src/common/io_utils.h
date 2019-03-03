@@ -20,7 +20,7 @@ FILE_ptr open_file_for_read(std::string const& filename);
 
 FILE_ptr create_file_for_write(std::string const& filename);
 
-blob<char> read_all(std::string const& filename);
+std::string read_all(std::string const &filename);
 
 /*!
     Write string to file

@@ -5,7 +5,7 @@
 #include "marked.h"
 #include "bit_chunk.h"
 #include "DualizationBacktrackAlgorithmBase.h"
-
+#include <boost/move/move.hpp>
 
 namespace AOT1
 {
@@ -25,6 +25,7 @@ namespace AOT1
         AO2M
     };
 
+    class GlobalState;
 
     // Локальное состояние алгоритма типа AOT1
     class LocalState

@@ -1,4 +1,7 @@
 #pragma once
+
+#include <exception>
+
 #include "FrequentInfrequentTask.h"
 #include "MIGRAS.h"
 #include "bit_matrix.h"
@@ -90,12 +93,12 @@ public:
 
     virtual void Solve( ITask* task )
     {
-        throw std::exception("The method or operation is not implemented.");
+        throw std::exception();
     }
 
     virtual std::string GetResultDescription() const
     {
-        throw std::exception("The method or operation is not implemented.");
+        throw std::exception();
     }
 
 private:

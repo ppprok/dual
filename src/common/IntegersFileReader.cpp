@@ -37,7 +37,7 @@ IntegersFileReader::IntegersFileReader(std::string const& filename)
 int IntegersFileReader::EstimateBitMatrixCapacity() const
 {
     int size = _bm.size();
-    long fsize = _filelength(fileno(_input.get()));
+    long fsize = 0;
     long pos = ftell(_input.get());
     return size * (fsize/pos + 1);
 }

@@ -7,7 +7,7 @@
 #include "blob.h"
 #include "Configurable.h"
 #include "IteratorRange.h"
-
+#include "move_default.h"
 
 typedef float Cost;
 

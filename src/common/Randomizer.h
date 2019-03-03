@@ -65,7 +65,7 @@ struct RandomSampler
 
 struct RandomChoicer
 {
-    typedef RandomSampler<boost::uniform_01<float> > RandomSampler;
+    typedef RandomSampler<boost::uniform_01<float> > RandomSamplerType;
 
     // Выбрать несколько случайных объектов из дискретного равномерного распределения
     template <typename C, typename C1>
@@ -146,7 +146,7 @@ struct RandomChoicer
             output.reserve(count + s);
         
         blob<float> random(count);
-        RandomSampler::RandomValues(random.begin(), random.end(), 0.0f, (float)totalWeight);
+        RandomSamplerType::RandomValues(random.begin(), random.end(), 0.0f, (float) totalWeight);
         sort(random);
         
         auto current = totalWeight;

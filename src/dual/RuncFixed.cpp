@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "RuncFixed.h"
 
 
@@ -311,5 +310,6 @@ bool RuncFixed<Row>::DoCallback()
 template bits32 RuncFixedDualize<bits32>(std::vector<bits32> input, std::vector<bits32> input1);
 template bits64 RuncFixedDualize<bits64>(std::vector<bits64> input, std::vector<bits64> input1);
 
-template bits32 RuncFixedDualize<bits32>(std::vector<bits32> input);
-template bits64 RuncFixedDualize<bits64>(std::vector<bits64> input);
+template typename RuncFixed<bits32>::Rows RuncFixedDualize<bits32>(typename RuncFixed<bits32>::Rows input);
+
+template typename RuncFixed<bits64>::Rows RuncFixedDualize<bits64>(typename RuncFixed<bits64>::Rows input);

@@ -118,7 +118,7 @@ T RuncFixedDualize(std::vector<T> input, std::vector<T> input1)
 }
 
 template <typename T>
-RuncFixed<T>::Rows RuncFixedDualize(RuncFixed<T>::Rows input)
+typename RuncFixed<T>::Rows RuncFixedDualize(typename RuncFixed<T>::Rows input)
 {
     RuncFixed<T> runc;
     runc.Dualize(std::move(input));

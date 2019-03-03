@@ -1,7 +1,7 @@
-#include "stdafx.h"
 
 #include "BoostingLogicalCorrector.h"
 #include "math_utils.h"
+#include "Dataset.h"
 
 
 Prediction BoostingLogicalCorrector::Apply(Object const& o) const

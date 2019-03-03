@@ -4,6 +4,7 @@
 
 #include "PosetItem.h"
 #include "bit_chunk.h"
+#include "move_default.h"
 
 
 /*!
@@ -109,7 +110,7 @@ private:
 
 public:
 
-    UTILITY_MOVE_DEFAULT_MEMBERS(PosetItemsMatrix, (_columns)(_transposed));
+//    UTILITY_MOVE_DEFAULT_MEMBERS(PosetItemsMatrix, (_columns)(_transposed));
 
     PosetItemsMatrix(){}
 

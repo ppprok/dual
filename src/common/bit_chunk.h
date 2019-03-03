@@ -7,23 +7,23 @@
 #include "raw_vector.h"
 #include "bits.h"
 
-template <int value>
-struct log2
-{
-    static const int value = log2<value/2>::value+1;
-};
+namespace details {
 
-template <>
-struct log2<1>
-{
-    static const int value = 0;
-};
+    template<int v>
+    struct log2 {
+        static const int value = log2<v / 2>::value + 1;
+    };
 
-
-
+    template<>
+    struct log2<1> {
+        static const int value = 0;
+    };
+}
 
 
-// Блок с доступом к битам
+
+
+// пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
 //template <typename BaseChunk>
 struct bit_chunk : chunk<unsigned int>
 {
@@ -34,10 +34,10 @@ struct bit_chunk : chunk<unsigned int>
     //typedef raw_vector<Block> Blocks;
 
     static const int bits_per_block = sizeof(Block) * 8;
-    static const int low_index_bit_count = log2<bits_per_block>::value;
+    static const int low_index_bit_count = details::log2<bits_per_block>::value;
     static const int low_index_bit_mask = bits_per_block - 1;
 
-    // Информация о номере блока и маске получаемого бита
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
     struct get_bit_iterator
     {
         int blockNum;
@@ -67,14 +67,14 @@ struct bit_chunk : chunk<unsigned int>
     }
 
         
-    // Урезать до последней единицы
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     inline void trim()
     {
         assert(valid());
         for (auto d = end-1; begin != end && ! *d; --d, --end){};
     }
 
-    // Если число блоков меньше s, то добавить блоки, заполнив их bit-тами
+    // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ s, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ bit-пїЅпїЅпїЅпїЅ
     inline void pad_blocks(int s, bool bit = false)
     {
         assert(valid());
@@ -380,7 +380,7 @@ public:
     }
 
 
-        // Установить несколько битов
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
     template <typename Iter>
     inline void set_bits(Iter b, Iter e)
     {
@@ -388,14 +388,14 @@ public:
             set(*b);
     }
 
-    // Установить несколько битов
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
     template <typename C>
     inline void set_bits(C const& items)
     {
         set_bits(std::begin(items), std::end(items));
     }
 
-    // Пометить битами объекты, удовлетворяющие предикату
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     template <typename C, typename Pred>
     void set_if(C const& items, Pred pred)
     {
@@ -410,7 +410,7 @@ public:
 
 
         
-    // Получить номера установленных битов
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
     template <typename C>
     inline void get_bits(C& bits) const
     {
@@ -420,7 +420,7 @@ public:
 
 
 
-    // Выбрать объекты, помеченные битами
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
     template<typename C1, typename C2>
     void get_selected(C1 const& items, C2& selected)
     {
@@ -550,7 +550,7 @@ public:
         if (r)
             return r;
 
-        // если два набора совпадают, что считаем первый подмножеством второго
+        // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         return -1;
     }
     
@@ -643,7 +643,7 @@ public:
 
 typedef std::vector<bit_chunk> bit_chunks;
 
-// Набор битов с прискоенным весом
+// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 template <typename Weight>
 struct weighted_bit_chunk
     :bit_chunk

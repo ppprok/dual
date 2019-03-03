@@ -1,7 +1,7 @@
 #pragma once
 #include <algorithm>
-#include <boost\random\uniform_real.hpp>
-#include <boost\random.hpp>
+#include <boost/random/uniform_real.hpp>
+#include <boost/random.hpp>
 
 #include "Object.h"
 #include "containers.h"

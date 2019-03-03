@@ -1,4 +1,3 @@
-#include "stdafx.h"
 
 #include "PosetItemsMatrix.h"
 #include "containers.h"

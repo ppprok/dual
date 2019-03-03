@@ -181,7 +181,7 @@ namespace PosetDualization
                     break;
             }
             _idealNode.Reset(j);
-            _localStatesPool.Release(child);
+            _localStatesPool.Release(std::move(child));
         }
 
         void DualizationAlgorithm::DoComplete( LocalState& idealState, LocalState& filterState, int j0 /*= 0*/ )
@@ -255,7 +255,7 @@ namespace PosetDualization
                     break;
             }
             _idealNode.Reset(j);
-            _localStatesPool.Release(child);
+            _localStatesPool.Release(std::move(child));
         }
         
 
@@ -452,8 +452,8 @@ namespace PosetDualization
                 if (_stopped)
                     break;
             }
-            
-            _localStatesPool.Release(child);
+
+            _localStatesPool.Release(std::move(child));
             _idealNode.RestoreUsedItemsSizes();
         }
 
@@ -524,7 +524,7 @@ namespace PosetDualization
                     break;
             }
 
-            _localStatesPool.Release(child);
+            _localStatesPool.Release(std::move(child));
             _idealNode.RestoreUsedItemsSizes();
 
             if (reversed)
@@ -613,7 +613,7 @@ namespace PosetDualization
             if (ResultCallback.Callback && ResultCallback.Tick > 0)
                 ResultCallback.Callback->Call(*_task, _idealNode);
 
-            _localStatesPool.Release(root);
+            _localStatesPool.Release(std::move(root));
             _task = 0;
         }
 
@@ -658,8 +658,8 @@ namespace PosetDualization
 
             ReverseTask();
 
-            _localStatesPool.Release(idealRoot);
-            _localStatesPool.Release(filterRoot);
+            _localStatesPool.Release(std::move(idealRoot));
+            _localStatesPool.Release(std::move(filterRoot));
             
             _task = 0;
         }
@@ -737,14 +737,14 @@ namespace PosetDualization
 
         void DualizationAlgorithm::DualizeIntervalsDirect( PosetsDualizationTask const& task )
         {
-            auto ideal = task.GetIdealBase();
-            auto filter = task.GetFilterBase();
+            auto &ideal = task.GetIdealBase();
+            auto &filter = task.GetFilterBase();
             
             Options.CollectResultsInMemory = true;
 
             PosetsDualizationTask task1;
             task1.GetPosetsProduct().SetPosets(task.GetPosetsProduct().GetPosets(), task.GetPosetsProduct().GetBindings());
-            task1.GetIdealBase() = std::move(ideal);
+            task1.GetIdealBase() = ideal;
             Dualize(task1);
             auto upper = std::move(IdealIndependent);
 
@@ -837,7 +837,7 @@ namespace PosetDualization
 
         void LocalStatesPool::Release( LocalState state )
         {
-            _states.push_back(state);
+            _states.push_back(std::move(state));
         }
 
         LocalState LocalStatesPool::Get( int m, int n )

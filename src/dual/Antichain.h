@@ -22,6 +22,12 @@ protected:
     bool _includeUniversalMinimal;
 
     bool _includeUniversalMaximal;
+public:
+    void GetMinUpperBounds(PosetItems const &items, PosetItems &upperBounds) const override;
+
+    void GetMaxLowerBounds(PosetItems const &items, PosetItems &lowerBounds) const override;
+
+protected:
 
     int _size;
     

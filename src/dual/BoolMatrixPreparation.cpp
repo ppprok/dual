@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "BoolMatrixPreparation.h"
 #include "containers.h"
 

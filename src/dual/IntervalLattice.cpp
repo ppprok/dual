@@ -1,4 +1,3 @@
-#include "stdafx.h"
 
 #include "IntervalLattice.h"
 
@@ -152,7 +151,7 @@ PosetItem IntervalLattice::FromString( char const* begin, char const* end ) cons
         }
     }
 
-    BOOST_THROW_EXCEPTION(error(""));
+    BOOST_THROW_EXCEPTION(error());
 }
 
 

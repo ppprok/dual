@@ -1,4 +1,7 @@
 
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/string_file.hpp>
+#include <unistd.h>
 
 #include "errors.h"
 #include "io_utils.h"
@@ -33,33 +36,10 @@ FILE_ptr create_file_for_write(std::string const& filename)
 	return std::shared_ptr<FILE>(f, fclose);
 }
 
-blob<char> read_all(std::string const& filename)
-{
-	auto file = open_file_for_read(filename);
-
-	auto size = _filelength(file->_file);
-
-	if(size==-1L)
-		BOOST_THROW_EXCEPTION(
-		file_error() <<
-		boost::errinfo_api_function("_filelength") <<
-		boost::errinfo_errno(errno) <<
-		boost::errinfo_file_name(filename) );
-
-	
-	blob<char> data(size);
-
-	if (size)
-	{
-		if (_read(file->_file, data.begin(), size) != size)
-			BOOST_THROW_EXCEPTION(
-			file_read_error() <<
-			boost::errinfo_api_function("_read") <<
-			boost::errinfo_errno(errno) <<
-			boost::errinfo_file_name(filename) );
-	}
-
-	return data;
+std::string read_all(std::string const &filename) {
+    std::string buffer;
+    boost::filesystem::load_string_file(filename, buffer);
+    return std::move(buffer);
 }
 
 void write( FILE* file, char const* begin, char const* end )

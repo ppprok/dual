@@ -1,6 +1,6 @@
-#include "stdafx.h"
 
 #include <stdio.h>
+#include <cmath>
 
 #include <boost/exception/errinfo_api_function.hpp>
 #include <boost/exception/errinfo_at_line.hpp>

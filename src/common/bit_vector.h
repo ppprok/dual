@@ -1,9 +1,11 @@
 #pragma once
+
+#include <memory.h>
 #include "bit_chunk.h"
 
 
 //////////////////////////////////////////////////////////////////////////
-// Битовый массив с выделением памяти под блоки
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 //////////////////////////////////////////////////////////////////////////
 class bit_vector
     :public bit_chunk
@@ -12,10 +14,10 @@ private:
     
     int _capacity;
 
-    inline void bit_vector::free()
+    inline void free()
     {
         if (_capacity > 0 && begin)
-            free(begin);
+            ::free(begin);
         
         _capacity = 0;        
         begin = end = 0;
@@ -44,7 +46,7 @@ public:
         return bit_chunk::end;
     }*/
 
-    inline bit_vector& bit_vector::operator=( bit_vector&& v )
+    inline bit_vector &operator=(bit_vector &&v)
     {
         free();
 
@@ -73,7 +75,7 @@ public:
         if (n > 0)
         {
             _capacity = block_for_bits(n);
-            bit_chunk::begin = bit_chunk::end = malloc(_capacity * sizeof(Block));
+            bit_chunk::begin = bit_chunk::end = (unsigned int *) malloc(_capacity * sizeof(Block));
         }
         else
         {
@@ -94,7 +96,7 @@ public:
         free();
     }
 
-    // Обнулить вектор битов
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
     void zero(int n)
     {
         if ( n > 0)
@@ -103,9 +105,9 @@ public:
             if (_capacity < n)
             {
                 if (_capacity > 0)
-                    bit_chunk::begin = bit_chunk::end = WinHeap::Instance().ReAlloc<Block>(begin, n);
+                    bit_chunk::begin = bit_chunk::end = (unsigned int *) realloc(begin, n);
                 else
-                    bit_chunk::begin = bit_chunk::end = WinHeap::Instance().Alloc<Block>(n);
+                    bit_chunk::begin = bit_chunk::end = (unsigned int *) malloc(n);
                 _capacity = n;
             }
             else
