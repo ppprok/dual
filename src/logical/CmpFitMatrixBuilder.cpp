@@ -1,4 +1,3 @@
-#include "stdafx.h"
 
 #include "CmpFitMatrixBuilder.h"
 #include "RUNC.h"

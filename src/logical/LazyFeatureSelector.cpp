@@ -1,4 +1,3 @@
-#include "stdafx.h"
 
 #include "LazyFeatureSelector.h"
 #include "BinaryECFeatureSelector.h"

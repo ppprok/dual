@@ -1,6 +1,6 @@
 set(SOURCE_FILES MultiByBinaryLearner.cpp
         FeatureValue.cpp
-        BoolBinaryOperation.h
+#        BoolBinaryOperation.h
         ECmpVoting.h
         ECVotingLearner.h
         Object.cpp
@@ -10,11 +10,11 @@ set(SOURCE_FILES MultiByBinaryLearner.cpp
         ECVoting.h
         SamplesWeighter.cpp
         PSVotingLearner.cpp
-        BoostingLogicalCorrector.cpp
+#        BoostingLogicalCorrector.cpp
         InformativityCondition.h
         EC.h
         ObjectsClass.h
-        ECmpSetPredicateBuilder.cpp
+#        ECmpSetPredicateBuilder.cpp
         Interfaces.h
         BinaryECFeatureSelector.h
         ECmpByRankFeatureSelector.cpp
@@ -58,17 +58,17 @@ set(SOURCE_FILES MultiByBinaryLearner.cpp
         Predictions.cpp
         LazyFeatureSelector.cpp
         Dataset.cpp
-        BoostingLogicalCorrector.h
-        ECmpVotingLearner.h
+#        BoostingLogicalCorrector.h
+#        ECmpVotingLearner.h
         AlgorithmEstimator.h
         FTFeatureSelector.h
         ClassFeatureSelector.h
         BinaryLearnerAdaptor.cpp
         ECVotingLearner.cpp
-        BoolBinaryOperation.cpp
+#        BoolBinaryOperation.cpp
         ECmpByRankFeatureSelector.h
-        ECmpSetPredicateBuilder.h
-        ECmpVotingLearner.cpp
+#        ECmpSetPredicateBuilder.h
+#        ECmpVotingLearner.cpp
         BinaryClassifierBoolAdaptor.h
         FeatureSelectorBase.cpp
         CoverMatrix.cpp
@@ -82,3 +82,4 @@ set(SOURCE_FILES MultiByBinaryLearner.cpp
 add_library(logical ${SOURCE_FILES})
 
 add_executable(logcls main.cpp)
+target_link_libraries(logcls logical dual common ${Boost_LIBRARIES} ${Boost_LIBRARIES} pthread)

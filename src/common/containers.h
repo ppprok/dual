@@ -113,13 +113,13 @@ inline bool contains(C const& c, V const& v)
     return std::find(c.begin(), e, v) != e;
 }
 
-/*
+
 template <typename C, typename C1>
 inline void exclude(C& c, C1 const& excl)
 {
     remove(c, [&excl](typename C::value_type const& v)
                     {return contains(excl, v);});
-}*/
+}
 
 
 template <typename C>

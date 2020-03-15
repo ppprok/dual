@@ -25,7 +25,6 @@ struct ECmp
 
     RelationType op;
 
-    UTILITY_MOVE_DEFAULT_MEMBERS(ECmp, (ec)(op));
 
     ECmp()
         :op(LE)

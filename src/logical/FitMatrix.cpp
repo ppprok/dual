@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "FitMatrix.h"
 #include "bit_mask.h"
 

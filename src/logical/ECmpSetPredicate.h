@@ -21,7 +21,7 @@ public:
         ObjectPtrList precedents_, 
         ECmpSetConjunction ecmpSet_, 
         Weight weight_ = 1)
-        :precedents(precedents_), ecmpSet(ecmpSet_), weight(weight_)
+        :precedents(precedents_), ecmpSet(std::move(ecmpSet_)), weight(weight_)
     {
     }
     

@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "InitECFeatureSelector.h"
 #include "ECVotingLearner.h"
 #include "BinaryClassifierVoter.h"

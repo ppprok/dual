@@ -1,4 +1,3 @@
-#include "stdafx.h"
 
 #include "FTFeatureSelector.h"
 #include "Registrator.h"

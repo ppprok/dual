@@ -1,5 +1,5 @@
-#include "stdafx.h"
 
+#include <Weighters.h>
 #include "ECmpSetPredicateBuilder.h"
 
 

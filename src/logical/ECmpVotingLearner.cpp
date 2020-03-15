@@ -1,8 +1,7 @@
-#include "stdafx.h"
 
 #include "ECmpVotingLearner.h"
 #include "GeneticDualizer.h"
-#include "Exceptions.h"
+#include "../common/errors.h"
 #include "ECmpByRankFeatureSelector.h"
 #include "ECmpVoting.h"
 #include "BoolMatrixPreparation.h"

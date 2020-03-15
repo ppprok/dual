@@ -1,5 +1,5 @@
-#include "stdafx.h"
 
+#include <boost/log/common.hpp>
 #include "logging_utils.h"
 #include "BoostingLearner.h"
 #include "math_utils.h"

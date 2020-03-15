@@ -1,6 +1,4 @@
-#include "stdafx.h"
 #include "FTVotingLearner.h"
-//#include "Exceptions.h"
 #include "containers.h"
 #include "ECmpByRankFeatureSelector.h"
 #include "Registrator.h"

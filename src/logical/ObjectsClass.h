@@ -19,8 +19,6 @@ public:
 
     ObjectsClass(ObjectsClassRange const& range, int l = -1);
 
-    UTILITY_MOVE_DEFAULT_MEMBERS(ObjectsClass, (label)(positive)(negative));
-
     void MakeComplement();
 
     void SplitOptimal(

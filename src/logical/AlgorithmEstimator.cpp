@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "AlgorithmEstimator.h"
 #include "Registrator.h"
 //#include "Exceptions.h"

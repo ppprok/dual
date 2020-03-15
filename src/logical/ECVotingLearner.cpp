@@ -1,4 +1,3 @@
-#include "stdafx.h"
 
 #include "ECVotingLearner.h"
 #include "Registrator.h"

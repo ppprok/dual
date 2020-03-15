@@ -3,7 +3,7 @@
 #include "CmpMatrixBuilder.h"
 #include "containers.h"
 #include "Pruning.h"
-#include "CoverCollectors.h"
+//#include "CoverCollectors.h"
 #include "RUNC.h"
 #include "ECmpSetPredicate.h"
 

@@ -1,4 +1,3 @@
-#include "stdafx.h"
 
 #include "BinaryLearnerAdaptor.h"
 #include "BoostingLearner.h"

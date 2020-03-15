@@ -1,8 +1,6 @@
-#include "stdafx.h"
 
 #include "CmpMatrixBuilder.h"
 #include <set>
-#include "Exceptions.h"
 
 
 
@@ -132,7 +130,7 @@ CmpMatrixSubmatrix CmpMatrixBuilder::GetSubmatrix(
     int n = _localBasis.size()+1;
 
     if (_reservedColumns < n1 + n2)
-        Throw("Зарезервировано мало столбцов для опциональных объектов");
+        throw "Too few objects";
     
     submatrix.Rows.reserve(r1 * r2);
 

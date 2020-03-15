@@ -171,23 +171,23 @@ void InitLogging()
         keywords::filter=
         (
             expr::attr<def_severity_level>("Severity") == def_severity_level::info
-        ),
+        )/*,
         keywords::format = 
         (
             expr::stream << expr::message
-        ));
+        )*/);
 
     logging::add_console_log(std::clog, 
         keywords::filter=
         (
         expr::attr<def_severity_level>("Severity") >= def_severity_level::warning
-        ),
+        )/*,
         keywords::format = (
         expr::stream
         << expr::format_named_scope("Scopes", keywords::format = "%n") 
         << " [" << expr::attr<logging::trivial::severity_level>("Severity")
         << "] " << expr::message
-        )
+        )*/
         );
 
 
@@ -198,12 +198,13 @@ void AddLogFile(std::string const& filename)
 {
     logging::add_file_log
         (
-        keywords::file_name = filename,                                        /*< file name pattern >*/
+        keywords::file_name = filename
+                /*,                                        /*< file name pattern >
         keywords::format = (
         expr::stream
         << expr::format_named_scope("Scopes", keywords::format = "%n") 
         << " [" << expr::attr<logging::trivial::severity_level>("Severity")
         << "] " << expr::message
-        )
+        )*/
         );
 }

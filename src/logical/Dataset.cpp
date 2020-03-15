@@ -1,4 +1,3 @@
-#include "stdafx.h"
 
 #include <fstream>
 #include <set>
@@ -18,7 +17,7 @@ namespace karma = boost::spirit::karma;
 
 #include <boost/random.hpp>*/
 
-#include "dataset.h"
+#include "Dataset.h"
 #include "Interfaces.h"
 #include "Randomizer.h"
 #include "containers.h"

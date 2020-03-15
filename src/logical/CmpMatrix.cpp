@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "CmpMatrix.h"
 #include "bit_chunk.h"
 
