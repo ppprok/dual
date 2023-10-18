@@ -1,15 +1,12 @@
 #pragma once
-#include <vector>
 #include <assert.h>
+#include <vector>
 
 #include "bits.h"
 
-
-struct PosetItem
-{
+struct PosetItem {
     typedef short IntervalBound;
-    struct Interval
-    {
+    struct Interval {
         IntervalBound min;
         IntervalBound max;
     };
@@ -18,44 +15,37 @@ struct PosetItem
     typedef int Vertex;
     typedef bits32 Subset;
 
-    union
-    {
-        Interval interval;        
+    union {
+        Interval interval;
         ChainNumber dnumber;
-        Vertex vertex;        
-        Subset subset;    
+        Vertex vertex;
+        Subset subset;
     } value;
 
     PosetItem(){};
 
-    PosetItem(Subset const& bits)
-    {
+    PosetItem(Subset const& bits) {
         value.subset = bits;
     }
 
-    PosetItem(Vertex i)
-    {
+    PosetItem(Vertex i) {
         value.vertex = i;
     }
 
-    PosetItem(IntervalBound a, IntervalBound b)
-    {
+    PosetItem(IntervalBound a, IntervalBound b) {
         value.interval.min = a;
         value.interval.max = b;
     }
 
-    bool operator ==(PosetItem const& i) const
-    {
+    bool operator==(PosetItem const& i) const {
         return value.dnumber == i.value.dnumber;
     }
 
-    bool operator <(PosetItem const& i) const
-    {
+    bool operator<(PosetItem const& i) const {
         return value.dnumber < i.value.dnumber;
     }
 
-    bool operator <=(PosetItem const& i) const
-    {
+    bool operator<=(PosetItem const& i) const {
         return value.dnumber <= i.value.dnumber;
     }
 };
@@ -63,26 +53,17 @@ struct PosetItem
 // type of items collection
 typedef std::vector<PosetItem> PosetItems;
 
-struct PosetInterval
-{
+struct PosetInterval {
     PosetItem lower;
     PosetItem upper;
 
-    PosetInterval()
-    {
-    }
+    PosetInterval() {}
 
-    PosetInterval(PosetItem const& l, PosetItem const& u)
-        :upper(u), lower(l)
-    {
-    }
+    PosetInterval(PosetItem const& l, PosetItem const& u) : upper(u), lower(l) {}
 
-    bool operator==(PosetInterval const& that) const
-    {
+    bool operator==(PosetInterval const& that) const {
         return upper == that.upper && lower == that.lower;
     }
 };
 
 typedef std::vector<PosetInterval> PosetIntervals;
-
-

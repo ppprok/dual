@@ -6,53 +6,39 @@
 #include "MIGRAS.h"
 #include "bit_matrix.h"
 
-namespace PosetDualization{
+namespace PosetDualization {
 
 /*!
     –азделение всех элементов на t-частые и t-редкие
 */
-struct FrequentInfrequentDivision
-{
-    int threshold;                       ///< порог частоты встречаемости
-    
-    PosetItemsMatrix maximalFrequent;    ///< максимальные t-частые элементы
-    
+struct FrequentInfrequentDivision {
+    int threshold;  ///< порог частоты встречаемости
+
+    PosetItemsMatrix maximalFrequent;  ///< максимальные t-частые элементы
+
     PosetItemsMatrix minimalInfrequent;  ///< минимальные t-редкие элементы
-    
-    bool complete;                       ///< полное описание разделени€
 
-    FrequentInfrequentDivision(int t = 1)
-        :threshold(t), complete(false)
-    {
-    }
+    bool complete;  ///< полное описание разделени€
 
-    void Clear(int n = 0)
-    {
+    FrequentInfrequentDivision(int t = 1) : threshold(t), complete(false) {}
+
+    void Clear(int n = 0) {
         maximalFrequent.Clear(n);
         minimalInfrequent.Clear(n);
     }
-
 };
-
 
 typedef std::vector<FrequentInfrequentDivision> FrequentThresholdDivisions;
 
-
-struct FrequentInfrequentEnumeratorOptions
-{
+struct FrequentInfrequentEnumeratorOptions {
     int maxIndepCount;
     int minIndepCount;
     int maxDelay;
 
-    FrequentInfrequentEnumeratorOptions()
-        :maxIndepCount(100), minIndepCount(1), maxDelay(2000)
-    {
-    }
+    FrequentInfrequentEnumeratorOptions() : maxIndepCount(100), minIndepCount(1), maxDelay(2000) {}
 };
 
-class FrequentInfrequentEnumerator
-    :public ISolver
-{
+class FrequentInfrequentEnumerator : public ISolver {
 
     FrequentInfrequentTask const* _task;
 
@@ -63,7 +49,7 @@ class FrequentInfrequentEnumerator
     bit_vector _supportMask;
 
     PosetItems _current;
-    
+
     PosetItems _forCover;
 
     PosetItems _indep;
@@ -76,70 +62,60 @@ class FrequentInfrequentEnumerator
 
     PosetItems _enumerated3;
 
-	std::vector<PosetItems> _nonsupportItems;
+    std::vector<PosetItems> _nonsupportItems;
 
     std::vector<int> _support;
 
-	//! Ѕулева€ матрица, с отметками несравнимых координат
-	bit_matrix _supportBitMap;
+    //! Ѕулева€ матрица, с отметками несравнимых координат
+    bit_matrix _supportBitMap;
 
 public:
-
     FrequentThresholdDivisions Results;
 
     FrequentInfrequentEnumeratorOptions Options;
-        
+
     void Enumerate(FrequentInfrequentTask const& task);
 
-    virtual void Solve( ITask* task )
-    {
+    virtual void Solve(ITask* task) {
         throw std::exception();
     }
 
-    virtual std::string GetResultDescription() const
-    {
+    virtual std::string GetResultDescription() const {
         throw std::exception();
     }
 
 private:
-
     void FindMaximalFrequent(int threshold, PosetItems& current);
 
-    
-	void FindMinimalInfrequent(int threshold, PosetItems& current);
+    void FindMinimalInfrequent(int threshold, PosetItems& current);
 
-	void SetSupportedToMinimalIndependent(PosetItems &current);
+    void SetSupportedToMinimalIndependent(PosetItems& current);
 
-	void SetUnsupportedToMinimal(PosetItems &current);
+    void SetUnsupportedToMinimal(PosetItems& current);
 
     /*!
         ”величить частоту встречаемоти в пределах допустимого порога
     */
     void IncreaseFrequency(int threshold, PosetItems& current);
 
-	
-
     /*!
         ”меньшить число удовлетвор€ющих строк, увеличив одну из координат
     */
     void DecreaseFrequency(int threshold, PosetItems& current, std::vector<int>& support);
-    
+
     void DoEnumerate(FrequentInfrequentDivision& division);
 
     void AddResults(PosetItemsMatrix const& items);
 
-    void AddMaximalFrequent(FrequentInfrequentDivision& division,
-        PosetItems& items);
+    void AddMaximalFrequent(FrequentInfrequentDivision& division, PosetItems& items);
 
-    void AddMinimalInfrequent(FrequentInfrequentDivision& division,
-        PosetItems& items);
-    
-    int CountSupportLevel( int threshold, PosetItems const& current, std::vector<int> const& unsupport );
+    void AddMinimalInfrequent(FrequentInfrequentDivision& division, PosetItems& items);
 
-	int BuildSupportBitMap(PosetItems const& items);
+    int CountSupportLevel(int threshold, PosetItems const& current, std::vector<int> const& unsupport);
 
-	int UpdateSupportBitMap(int j, PosetItem const& a);
+    int BuildSupportBitMap(PosetItems const& items);
 
+    int UpdateSupportBitMap(int j, PosetItem const& a);
 };
 
-}
+}  // namespace PosetDualization

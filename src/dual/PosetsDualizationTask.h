@@ -1,65 +1,53 @@
 #pragma once
 
-
 #include "Configurable.h"
 #include "IPoset.h"
-#include "Registrator.h"
 #include "ISolver.h"
 #include "PosetsProduct.h"
-
-
+#include "Registrator.h"
 
 /*!
     Dualization task over posets
 */
-class PosetsDualizationTask
-    :public IConfigurable, public ITask
-{
+class PosetsDualizationTask : public IConfigurable, public ITask {
 
     mutable PosetsProduct _posetsProduct;
-            
-    mutable PosetItemsMatrix _idealBase; ///< Items for ideal generation grouped by columns
 
-    mutable PosetItemsMatrix _filterBase; ///< Items for filter generation grouped by columns
-    
+    mutable PosetItemsMatrix _idealBase;  ///< Items for ideal generation grouped by columns
+
+    mutable PosetItemsMatrix _filterBase;  ///< Items for filter generation grouped by columns
+
 public:
-        
     /// Register factory of this type by name 'PosetsDualizationTask'
     static void Register();
 
     /// Get product of posets
-    PosetsProduct const& GetPosetsProduct() const
-    {
+    PosetsProduct const& GetPosetsProduct() const {
         return _posetsProduct;
     }
-        
-    /// Get product of posets 
-    PosetsProduct& GetPosetsProduct()
-    {
+
+    /// Get product of posets
+    PosetsProduct& GetPosetsProduct() {
         return _posetsProduct;
     }
 
     /// Get items of ideal base grouped by columns
-    PosetItemsMatrix const& GetIdealBase() const
-    {
+    PosetItemsMatrix const& GetIdealBase() const {
         return _idealBase;
     }
 
     /// Get items of ideal base grouped by columns
-    PosetItemsMatrix const& GetFilterBase() const
-    {
+    PosetItemsMatrix const& GetFilterBase() const {
         return _filterBase;
     }
 
     /// Get items of ideal base grouped by columns
-    PosetItemsMatrix& GetIdealBase()
-    {
+    PosetItemsMatrix& GetIdealBase() {
         return _idealBase;
     }
 
     /// Get items of ideal base grouped by columns
-    PosetItemsMatrix& GetFilterBase()
-    {
+    PosetItemsMatrix& GetFilterBase() {
         return _filterBase;
     }
 
@@ -74,16 +62,13 @@ public:
     // Load filter base from CSV file.
     // Parameter 'options' contains CSV import settings.
     void LoadFilterBase(std::string const& filename, Options const& options);
-   
+
     // Configure task
-    virtual void SetOptions( Options const& options );
-        
+    virtual void SetOptions(Options const& options);
+
     // Reset all posets
     virtual void SetDefaultOptions();
-    
-    // Reverse posets and swap ideal and filter
-    void ReverseTask() const;        
-    
-    
-};
 
+    // Reverse posets and swap ideal and filter
+    void ReverseTask() const;
+};

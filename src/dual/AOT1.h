@@ -2,129 +2,114 @@
 
 #include <vector>
 
-#include "marked.h"
-#include "bit_chunk.h"
 #include "DualizationBacktrackAlgorithmBase.h"
+#include "bit_chunk.h"
+#include "marked.h"
 #include <boost/move/move.hpp>
 
-namespace AOT1
-{
+namespace AOT1 {
 
-    //typedef raw_vector<marked<range>> marked_ranges;
-    typedef std::vector<bit_chunk> rows;
-    typedef rows::iterator rows_iterator;
-    typedef rows::const_iterator rows_citerator;
+//typedef raw_vector<marked<range>> marked_ranges;
+typedef std::vector<bit_chunk> rows;
+typedef rows::iterator rows_iterator;
+typedef rows::const_iterator rows_citerator;
 
-    enum AlgorithmType
-    {
-        AO1,
-        AO2,
-        AO1K,
-        AO2K,
-        AO1M,
-        AO2M
+enum AlgorithmType {
+    AO1,
+    AO2,
+    AO1K,
+    AO2K,
+    AO1M,
+    AO2M
+};
+
+class GlobalState;
+
+// Локальное состояние алгоритма типа AOT1
+class LocalState {
+
+    BOOST_MOVABLE_BUT_NOT_COPYABLE(LocalState)
+
+    friend class GlobalState;
+
+    enum AddResult {
+        Inner,
+        Cover,
+        Uncompatable,
+        Uncoverable
     };
 
-    class GlobalState;
+private:
+    // Непокрытые строки
+    rows _uncovered;
 
-    // Локальное состояние алгоритма типа AOT1
-    class LocalState
-    {
+    // Конкурентные строки
+    rows _competing;
 
-        BOOST_MOVABLE_BUT_NOT_COPYABLE(LocalState)
+    // Оставшиеся столбцы
+    bit_chunk _restCols;
 
-        friend class GlobalState;
+public:
+    LocalState(){};
 
-        enum AddResult
-        {
-            Inner,
-            Cover,
-            Uncompatable,
-            Uncoverable
-        };
+    LocalState(LocalState&& s);
 
-    private:
+    LocalState& operator=(LocalState&& s);
 
-        // Непокрытые строки
-        rows _uncovered;
+    // Инициализировать локальное состояние
+    void Init(GlobalState& g);
 
-        // Конкурентные строки
-        rows _competing;
-                
-        // Оставшиеся столбцы
-        bit_chunk _restCols;
+    AddResult AddItem(GlobalState& g, LocalState const& l, int i, int j);
 
-    public:
+    void RemCol(int j);
 
-        LocalState(){};
+    bool IsCover() const;
 
-        LocalState(LocalState&& s);
+    // Получить набор оставшихся столбцов
+    bit_chunk GetRestCols() const;
 
-        LocalState& operator =(LocalState&& s);
+    // Вернуть ненулевые столбцы
+    bit_chunk CollectRestCols();
 
-        // Инициализировать локальное состояние
-        void Init(GlobalState& g);
+    // Получить первую непокрытую
+    bit_chunk GetFrontUncovered() const;
 
-        AddResult AddItem(GlobalState& g, LocalState const& l, int i, int j);
+    // Найти минимальную непокрытую строку
+    bit_chunk GetMinUncovered(int mc = 0) const;
 
-        void RemCol(int j);
-                
-        bool IsCover() const;
+    // Удалить охватывающие строки
+    void RemoveDependentRows();
 
-        // Получить набор оставшихся столбцов
-        bit_chunk GetRestCols() const;
+    // Удалить охватывающие строки и нулевые столбцы и получить оставшиеся столбцы
+    bit_chunk GetNonZeroCols(GlobalState& g);
 
-        // Вернуть ненулевые столбцы
-        bit_chunk CollectRestCols();
+    bit_chunk GetCols(GlobalState& g, AlgorithmType alg);
+};
 
-        // Получить первую непокрытую
-        bit_chunk GetFrontUncovered() const;
-                
-        // Найти минимальную непокрытую строку
-        bit_chunk GetMinUncovered(int mc = 0) const;
+// Глобальное состояние алгоритма типа AOT1
+class GlobalState : public DualizationBacktrackAlgorithmBase {
+private:
+    friend class LocalState;
 
-        // Удалить охватывающие строки
-        void RemoveDependentRows();
+    typedef std::vector<LocalState> LocalStates;
 
-        // Удалить охватывающие строки и нулевые столбцы и получить оставшиеся столбцы
-        bit_chunk GetNonZeroCols(GlobalState& g);
+    bit_matrix _tempMatrix;
 
-        bit_chunk GetCols(GlobalState& g, AlgorithmType alg);
-    };
+    bit_chunk _tempRow;
 
+    LocalStates _states;
 
-    // Глобальное состояние алгоритма типа AOT1
-    class GlobalState
-		:public DualizationBacktrackAlgorithmBase
-    {
-    private:
+    AlgorithmType _type;
 
-        friend class LocalState;
+public:
+    GlobalState(AlgorithmType type = AlgorithmType::AO1M) : _type(type) {}
 
-        typedef std::vector<LocalState> LocalStates;
-        
-        bit_matrix _tempMatrix;
+    void Dualize();
 
-        bit_chunk _tempRow;
+private:
+    bool DoDualize(int stateNum);
 
-        LocalStates _states;
+    LocalState* GetLocalState(int stateNum);
+};
 
-        AlgorithmType _type;
-
-    public:
-
-        GlobalState(AlgorithmType type = AlgorithmType::AO1M)
-			: _type(type)
-        {}
-                        
-        void Dualize();
-
-    private:
-
-        bool DoDualize(int stateNum);
-				
-		LocalState* GetLocalState(int stateNum);
-    };
-
-
-}
+}  // namespace AOT1

@@ -1,34 +1,29 @@
 #pragma once
 
 #include "IPoset.h"
-#include "PosetsDualizationTask.h"
-#include "PosetsDualizationNode.h"
 #include "PosetItemsMatrix.h"
+#include "PosetsDualizationNode.h"
+#include "PosetsDualizationTask.h"
 
-namespace PosetDualization
-{
+namespace PosetDualization {
 
-    enum CallbackResult
-    {
-        Stop,
-        Continue,
-        Prun,
-        WasDelayed
-    };
+enum CallbackResult {
+    Stop,
+    Continue,
+    Prun,
+    WasDelayed
+};
 
-    // Интерфейс обратного вызова
-    struct ICallback
-    {
-        virtual CallbackResult Call(
-            PosetsDualizationTask const& task, 
-            PosetsDualizationNode& current) = 0;
+// Интерфейс обратного вызова
+struct ICallback {
+    virtual CallbackResult Call(PosetsDualizationTask const& task, PosetsDualizationNode& current) = 0;
 
-        virtual void Reset() = 0;
+    virtual void Reset() = 0;
 
-        virtual ~ICallback(){};
-    };
+    virtual ~ICallback(){};
+};
 
-    /*
+/*
     template<typename C1, typename C2>
     struct CallbacksPair:
         ICallback
@@ -128,48 +123,33 @@ namespace PosetDualization
         }
     };*/
 
+class ResultsCSVFileWriter : public ICallback {
+protected:
+    FILE_ptr _output;
+    std::string _filename;
 
-    class ResultsCSVFileWriter
-        :public ICallback
-    {
-    protected:    
+public:
+    void SetFilename(std::string const& filename);
 
-        FILE_ptr _output;
-        std::string _filename;
+    std::string const& GetFilename() const {
+        return _filename;
+    }
 
-    public:
+    void Reset();
 
-        void SetFilename(std::string const& filename);
+    virtual CallbackResult Call(PosetsDualizationTask const& task, PosetsDualizationNode& x);
+};
 
-        std::string const& GetFilename() const
-        {
-            return _filename;
-        }
+class DecisionTreeCSVFileWriter : public ResultsCSVFileWriter {
+    PosetItemsMatrix _branch;
 
-        void Reset();
+public:
+    virtual CallbackResult Call(PosetsDualizationTask const& task, PosetsDualizationNode& x);
 
-        virtual CallbackResult Call( 
-            PosetsDualizationTask const& task, 
-            PosetsDualizationNode& x );
-    };
+    virtual void Reset();
+};
 
-    class DecisionTreeCSVFileWriter
-        :public ResultsCSVFileWriter
-    {
-        PosetItemsMatrix _branch;   
-
-    public:
-
-        virtual CallbackResult Call( 
-            PosetsDualizationTask const& task, 
-            PosetsDualizationNode& x );
-
-        virtual void Reset();
-    };
-
-
-
-    /*!
+/*!
     * Callback for dualization algorithm over posets
     * that collect all results in memory
     
@@ -187,4 +167,4 @@ namespace PosetDualization
         virtual void Reset();
     };*/
 
-}
+}  // namespace PosetDualization

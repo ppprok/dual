@@ -1,15 +1,12 @@
 #pragma once
 
-#include <string>
 #include <exception>
+#include <string>
 
 #include <boost/exception/all.hpp>
 #include <boost/function.hpp>
 
-struct error 
-    : virtual std::exception, virtual boost::exception 
-{	
-};
+struct error : virtual std::exception, virtual boost::exception {};
 
 typedef boost::error_info<struct tag_message, std::string> message;
 typedef boost::error_info<struct tag_arg_name, std::string> arg_name;

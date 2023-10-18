@@ -4,20 +4,16 @@
 #include "PosetBase.h"
 #include "Registrator.h"
 
-
 //////////////////////////////////////////////////////////////////////////
 // Implementation of numeric chain
 //////////////////////////////////////////////////////////////////////////
-class NumberChain:
-    public PosetBase
-{
-    
+class NumberChain : public PosetBase {
+
     //double _epsilon;
 
     typedef PosetItem::ChainNumber Number;
 
 public:
-
     //NumberChain();
 
     static void Register();
@@ -26,77 +22,74 @@ public:
 
     //virtual void SetDefaultOptions();
 
-    virtual bool Equal( PosetItem const& left, PosetItem const& right ) const;
+    virtual bool Equal(PosetItem const& left, PosetItem const& right) const;
 
-    virtual bool Prec( PosetItem const& left, PosetItem const& right ) const;
-        
-    virtual bool IsMaximal( PosetItem const& a ) const;
-    
-    virtual void SelectMaximal( PosetItems& A ) const;
+    virtual bool Prec(PosetItem const& left, PosetItem const& right) const;
 
-    virtual void SelectIndependent( PosetItems const& A, PosetItems const& B, PosetItems& X ) const;
+    virtual bool IsMaximal(PosetItem const& a) const;
 
-    virtual void SelectFilterIndependent( PosetItems const& A, PosetItems& B ) const;
+    virtual void SelectMaximal(PosetItems& A) const;
 
-    virtual void SelectIdealIndependent( PosetItems const& A, PosetItems& B ) const;
+    virtual void SelectIndependent(PosetItems const& A, PosetItems const& B, PosetItems& X) const;
 
-    virtual void SelectIdeal( PosetItems const& A, PosetItems& B ) const;
+    virtual void SelectFilterIndependent(PosetItems const& A, PosetItems& B) const;
 
-    virtual void SelectFilter( PosetItems const& A, PosetItems& B ) const;
+    virtual void SelectIdealIndependent(PosetItems const& A, PosetItems& B) const;
 
-    virtual void SelectUnique( PosetItems& items ) const;
+    virtual void SelectIdeal(PosetItems const& A, PosetItems& B) const;
 
-    virtual void TopologicalSort( PosetItems& items ) const;
-        
-    virtual bool IsMinimal( PosetItem const& a ) const;
-    
-    virtual void SelectMinimal( PosetItems& A ) const;
+    virtual void SelectFilter(PosetItems const& A, PosetItems& B) const;
 
-    virtual bool Preceq( PosetItem const& left, PosetItem const& right ) const;
+    virtual void SelectUnique(PosetItems& items) const;
 
-    virtual bool IsItem( PosetItem const& a ) const;
+    virtual void TopologicalSort(PosetItems& items) const;
 
-    virtual bool IsMaximalIndependent( PosetItem const& a, PosetItems const& A ) const;
+    virtual bool IsMinimal(PosetItem const& a) const;
 
-    virtual bool IsMinimalIndependent( PosetItem const& a, PosetItems const& B ) const;
+    virtual void SelectMinimal(PosetItems& A) const;
 
-    virtual void GetMaximal( PosetItems& maximal ) const;
+    virtual bool Preceq(PosetItem const& left, PosetItem const& right) const;
 
-    virtual void GetMinimal( PosetItems& minimal ) const;
-        
-    virtual void GetMaximalIndependent( PosetItems const& A, PosetItems& maximal ) const;
+    virtual bool IsItem(PosetItem const& a) const;
 
-    virtual void GetMinimalIndependent( PosetItems const& B, PosetItems& minimal ) const;
+    virtual bool IsMaximalIndependent(PosetItem const& a, PosetItems const& A) const;
 
-    virtual std::string ToString( PosetItem const& item ) const;
+    virtual bool IsMinimalIndependent(PosetItem const& a, PosetItems const& B) const;
 
-    virtual PosetItem FromString( char const* begin, char const* end ) const;
+    virtual void GetMaximal(PosetItems& maximal) const;
 
-    virtual void GetAllItems( PosetItems& items ) const;
+    virtual void GetMinimal(PosetItems& minimal) const;
+
+    virtual void GetMaximalIndependent(PosetItems const& A, PosetItems& maximal) const;
+
+    virtual void GetMinimalIndependent(PosetItems const& B, PosetItems& minimal) const;
+
+    virtual std::string ToString(PosetItem const& item) const;
+
+    virtual PosetItem FromString(char const* begin, char const* end) const;
+
+    virtual void GetAllItems(PosetItems& items) const;
 
     virtual PosetItem GetUniversalMaximal() const;
 
     virtual PosetItem GetUniversalMinimal() const;
 
-    virtual void GetIndependentIntervals( PosetItems const& A, PosetItems const& B, PosetIntervals& independent ) const;
+    virtual void GetIndependentIntervals(PosetItems const& A, PosetItems const& B, PosetIntervals& independent) const;
 
-    virtual bool IsTopologicalOrdered( PosetItems const& items ) const;
+    virtual bool IsTopologicalOrdered(PosetItems const& items) const;
 
-    virtual bool PrecImmediate( PosetItem const& a, PosetItem const& b ) const;
+    virtual bool PrecImmediate(PosetItem const& a, PosetItem const& b) const;
 
-    virtual void GetImmediatePrec( PosetItem const& item, PosetItems& items ) const;
+    virtual void GetImmediatePrec(PosetItem const& item, PosetItems& items) const;
 
-    virtual void GetImmediateSucc( PosetItem const& item, PosetItems& items ) const;
+    virtual void GetImmediateSucc(PosetItem const& item, PosetItems& items) const;
 
-    virtual void GetMinUpperBounds( PosetItems const& items, PosetItems& upperBounds ) const;
+    virtual void GetMinUpperBounds(PosetItems const& items, PosetItems& upperBounds) const;
 
-    virtual void GetMaxLowerBounds( PosetItems const& items, PosetItems& lowerBounds ) const;
-
+    virtual void GetMaxLowerBounds(PosetItems const& items, PosetItems& lowerBounds) const;
 
 protected:
+    Number GetMinimalNumber(PosetItems const& A) const;
 
-    Number GetMinimalNumber( PosetItems const& A) const;
-
-    Number GetMaximalNumber( PosetItems const& A) const;
-
+    Number GetMaximalNumber(PosetItems const& A) const;
 };

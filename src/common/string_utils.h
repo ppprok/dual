@@ -4,17 +4,13 @@
 
 #include "containers.h"
 
-
-inline char const* c_str(char const* c)
-{
+inline char const* c_str(char const* c) {
     return c;
 }
 
-inline char const* c_str(std::string const& s)
-{
+inline char const* c_str(std::string const& s) {
     return s.c_str();
 }
-
 
 /*
 inline std::string unescape(std::string const& s)
@@ -58,25 +54,16 @@ inline std::string unescape(std::string const& s)
 
 typedef std::vector<std::string> Strings;
 
-
-inline bool streq(char const* begin1, char const* end1, 
-           char const* begin2)
-{
+inline bool streq(char const* begin1, char const* end1, char const* begin2) {
     int n = end1 - begin1;
-    return n == strlen(begin2) &&
-        strncmp(begin1, begin2, n) == 0;
+    return n == strlen(begin2) && strncmp(begin1, begin2, n) == 0;
 }
 
-inline bool streq(char const* begin1, char const* end1, 
-           char const* begin2, char const* end2)
-{
+inline bool streq(char const* begin1, char const* end1, char const* begin2, char const* end2) {
     int n = end1 - begin1;
-    return n == begin2 - end2 &&
-        strncmp(begin1, begin2, n) == 0;
+    return n == begin2 - end2 && strncmp(begin1, begin2, n) == 0;
 }
 
-inline bool streq(char const* begin1,
-           char const* begin2)
-{
+inline bool streq(char const* begin1, char const* begin2) {
     return strcmp(begin1, begin2) == 0;
 }

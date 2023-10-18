@@ -1,31 +1,23 @@
 #pragma once
 
-template <typename IteratorT>
-struct IteratorRange
-{
+template<typename IteratorT>
+struct IteratorRange {
     typedef IteratorT iterator;
-    
+
     iterator _begin;
 
     iterator _end;
-        
-    IteratorRange()
-        :_begin(iterator()), _end(iterator())
-    {
-    }
 
-    IteratorRange(iterator begin, iterator end)
-        :_begin(begin), _end(end)
-    {
-    }
+    IteratorRange() : _begin(iterator()), _end(iterator()) {}
+
+    IteratorRange(iterator begin, iterator end) : _begin(begin), _end(end) {}
 
     template<typename C>
-    IteratorRange(C& objects, int from, int to)
-    {
+    IteratorRange(C& objects, int from, int to) {
         if (from < 0)
             from = 0;
-        
-        int m = (int)objects.size();
+
+        int m = (int) objects.size();
         if (to > m)
             to = m;
         if (from > to)
@@ -39,36 +31,29 @@ struct IteratorRange
     }
 
     template<typename C>
-    IteratorRange(C& objects)
-    {
+    IteratorRange(C& objects) {
         _begin = std::begin(objects);
         _end = std::end(objects);
     }
 
-    bool empty() const
-    {
+    bool empty() const {
         return _begin == _end;
     }
 
-    int size() const
-    {
+    int size() const {
         if (empty())
             return 0;
         return _end - _begin;
     }
 
-    iterator begin() const
-    {
+    iterator begin() const {
         return _begin;
     }
 
-    iterator end() const
-    {
+    iterator end() const {
         return _end;
     }
-
 };
-
 
 /*template <typename C>
 IteratorRange<typename C::iterator> make_iterator_range(C& c)
@@ -76,12 +61,10 @@ IteratorRange<typename C::iterator> make_iterator_range(C& c)
     return IteratorRange<typename C::iterator>(c);
 }*/
 
-
 // Объединить диапазоны объектов
 // Собрать в случае необходимости в одну коллекцию buffer
-template <typename IteratorRange, typename Buffer>
-IteratorRange join_ranges(IteratorRange const& r1, IteratorRange const& r2, Buffer& buffer)
-{
+template<typename IteratorRange, typename Buffer>
+IteratorRange join_ranges(IteratorRange const& r1, IteratorRange const& r2, Buffer& buffer) {
     if (r1.end() == r2.begin())
         return IteratorRange(r1.begin(), r2.end());
 
@@ -95,4 +78,3 @@ IteratorRange join_ranges(IteratorRange const& r1, IteratorRange const& r2, Buff
 
     return IteratorRange(buffer);
 }
-

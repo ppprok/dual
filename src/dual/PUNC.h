@@ -2,114 +2,97 @@
 
 #include <vector>
 
-#include "bit_mask.h"
 #include "DualizationBacktrackAlgorithmBase.h"
+#include "bit_mask.h"
 #include "bit_vector.h"
 #include "move_default.h"
 
 // Задание веса порядковому номеру
-struct OrderByWeight
-{
+struct OrderByWeight {
     int order;
     Weight weight;
 
-    OrderByWeight(int o = -1, Weight w = 0)
-        :order(o), weight(w)       
-    {
-    }
+    OrderByWeight(int o = -1, Weight w = 0) : order(o), weight(w) {}
 };
 
 typedef std::vector<OrderByWeight> OrderByWeights;
 
+namespace PUNC {
 
-namespace PUNC
-{
+typedef std::vector<std::pair<int, int>> SupportRows;
 
-    
-    typedef std::vector<std::pair<int, int>> SupportRows;
+// Локальное состояние алгоритма PUNC
+struct LocalState {
 
+    UTILITY_MOVE_DEFAULT_MEMBERS(LocalState, (supportRows) (usedColumns) (restColumns) (topRow) (columnsOrder));
 
-    // Локальное состояние алгоритма PUNC
-    struct LocalState
-    {
-        
-        UTILITY_MOVE_DEFAULT_MEMBERS(LocalState, 
-            (supportRows)(usedColumns)(restColumns)(topRow)(columnsOrder));
-        
-	    
-        int topRow;
+    int topRow;
 
-        SupportRows supportRows;
-    
-        bit_vector usedColumns;
-                
-        bit_vector restColumns;
+    SupportRows supportRows;
 
-        OrderByWeights columnsOrder;
-            
-        LocalState():topRow(-1){};
-        
-    };
+    bit_vector usedColumns;
 
-    typedef std::vector<LocalState> LocalStates;
+    bit_vector restColumns;
 
-    
-    // Глобальное состояние алгоритма PUNC
-    class GlobalState
-	    :public DualizationBacktrackAlgorithmBase
-    {
-        
-        LocalStates _states;
-        
-        bit_vector _tempRow;
+    OrderByWeights columnsOrder;
 
-        // Порядок строк
-        OrderByWeights _rowsOrder;
+    LocalState() : topRow(-1){};
+};
 
-        // Порядок столбцов
-        Weights _colsWeights;
+typedef std::vector<LocalState> LocalStates;
 
-    public:
+// Глобальное состояние алгоритма PUNC
+class GlobalState : public DualizationBacktrackAlgorithmBase {
 
-        // Установить порядок обхода строк
-        void SetRowsOrder(Weights const& weights);
-        
-        // Установить порядок обхода столбцов
-        void SetColsOrder(Weights weights);
+    LocalStates _states;
 
-        // Выполнить полную дуализацию
-        void Dualize();
+    bit_vector _tempRow;
 
-    private:
+    // Порядок строк
+    OrderByWeights _rowsOrder;
 
-        // Выполнить дуализацию начиная с указанного уровня
-        bool DoDualize(int level);       
+    // Порядок столбцов
+    Weights _colsWeights;
 
-        // Получить локальное состояние по уровню
-        LocalState& GetLocalState(int level);
+public:
+    // Установить порядок обхода строк
+    void SetRowsOrder(Weights const& weights);
 
-        // Найти верхнюю непокрытую строку
-        int FindTopUncoveredRow(LocalState& state);
+    // Установить порядок обхода столбцов
+    void SetColsOrder(Weights weights);
 
-        // Получить номер строки по порядку, в котором её необходимо покрыть
-        int GetRowOrder(int i) const;
+    // Выполнить полную дуализацию
+    void Dualize();
 
-        // Инициализировать корневое состояние
-        void InitState(LocalState& state);
+private:
+    // Выполнить дуализацию начиная с указанного уровня
+    bool DoDualize(int level);
 
-        // Получить набор непокрытых столбцов
-        bool CollectRestCols(LocalState& state);
+    // Получить локальное состояние по уровню
+    LocalState& GetLocalState(int level);
 
-        // Инициализировать дочернее состояние
-        void InitChildState(LocalState& child, LocalState const& parent, int j);
+    // Найти верхнюю непокрытую строку
+    int FindTopUncoveredRow(LocalState& state);
 
-        void SetOrder(Weights const& weights, int n, OrderByWeights& order);
+    // Получить номер строки по порядку, в котором её необходимо покрыть
+    int GetRowOrder(int i) const;
 
-        // Упорядочить по возрастанию весов
-        void Sort(OrderByWeights &order);
+    // Инициализировать корневое состояние
+    void InitState(LocalState& state);
 
-        // Сформировать набор столбцов в требуемом порядке
-        void CollectColsOrder(bit_chunk bits, OrderByWeights& order);
-    };
+    // Получить набор непокрытых столбцов
+    bool CollectRestCols(LocalState& state);
 
-}
+    // Инициализировать дочернее состояние
+    void InitChildState(LocalState& child, LocalState const& parent, int j);
+
+    void SetOrder(Weights const& weights, int n, OrderByWeights& order);
+
+    // Упорядочить по возрастанию весов
+    void Sort(OrderByWeights& order);
+
+    // Сформировать набор столбцов в требуемом порядке
+    void CollectColsOrder(bit_chunk bits, OrderByWeights& order);
+};
+
+}  // namespace PUNC

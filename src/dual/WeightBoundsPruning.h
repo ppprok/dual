@@ -2,13 +2,9 @@
 
 #include "DualizationBacktrackAlgorithmBase.h"
 
-
 // Усечение ветвей ДР по границам на суммарный вес столбцов
-class WeightBoundsPruningCallback
-    :public IDualizationCallback
-{
+class WeightBoundsPruningCallback : public IDualizationCallback {
 protected:
-
     // Веса столбцов
     Weights _weights;
 
@@ -36,11 +32,9 @@ protected:
     // Вес столбцов, для которых он не задан в массиве _weights;
     Weight _defaultWeight;
 
-    
 public:
-
     // Обработать покрытие
-    void PrunCoverNode( DualizationNode &node );
+    void PrunCoverNode(DualizationNode& node);
 
     WeightBoundsPruningCallback();
 
@@ -59,7 +53,7 @@ public:
     // Искать наибольшее значение
     void TargetToMax();
 
-    // Установить допустимый выход за пределы интервала 
+    // Установить допустимый выход за пределы интервала
     void SetEpsilon(Weight eps);
 
     // Установить вес по умолчанию
@@ -74,9 +68,9 @@ public:
     bool IsDefaultWeight(int j) const;
 
     // Пересчитать веса и обрубить ветвь в случае необходимости
-    virtual void Call( DualizationNode& node );
+    virtual void Call(DualizationNode& node);
 
-    void DecRestWeight( Weight w );
-    void IncRestWeight( Weight w );
-    void PrunInnerNode( DualizationNode &node );
+    void DecRestWeight(Weight w);
+    void IncRestWeight(Weight w);
+    void PrunInnerNode(DualizationNode& node);
 };

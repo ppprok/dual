@@ -2,20 +2,18 @@
 #include "ISolver.h"
 #include "MIGRAS.h"
 
-namespace PosetDualization {namespace MIGRAS{
+namespace PosetDualization {
+namespace MIGRAS {
 
-class Solver
-    :public ISolver, public IConfigurable
-{
+class Solver : public ISolver, public IConfigurable {
     DualizationAlgorithm _algorithm;
 
-   // PosetDualizationCallbacksPair<ItemsFilter, CSVFileWriter> _callbacksChain;
+    // PosetDualizationCallbacksPair<ItemsFilter, CSVFileWriter> _callbacksChain;
 
     ResultsCSVFileWriter _writer;
 
-public: 
-
-    virtual void Solve( ITask* task );
+public:
+    virtual void Solve(ITask* task);
 
     static void Register();
 
@@ -26,4 +24,5 @@ public:
     virtual std::string GetResultDescription() const;
 };
 
-}}
+}  // namespace MIGRAS
+}  // namespace PosetDualization

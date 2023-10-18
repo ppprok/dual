@@ -2,11 +2,11 @@
 #include "bit_chunk.h"
 #include "bit_matrix.h"
 //#include "PUNC.h"
+#include "Configurable.h"
+#include "IteratorRange.h"
 #include "Randomizer.h"
 #include "bit_vector.h"
 #include "blob.h"
-#include "Configurable.h"
-#include "IteratorRange.h"
 #include "move_default.h"
 
 typedef float Cost;
@@ -17,58 +17,44 @@ typedef blob<Gene> Genes;
 
 typedef float Weight;
 
-
 // Особь генетического алгоритма
-struct Individual
-{
+struct Individual {
     // Порядок обработки строк алгоритмом дуализации
     Genes rowsOrder;
-    
+
     // Порядок обработки столбцов алгоритмом дуализации
     Genes colsOrder;
 
     // Неизменяемые биты покрытия (набор столбцов, с которого начинается построение)
     bit_vector fixed;
-    
+
     // Покрытие, найденное в заданном генами порядке
     bit_vector cover;
 
     // Вес найденного покрытия, возвращаемый целевой функцией
     Cost cost;
 
-    Individual() : cost(0)
-    {
-    }
-    
-    Individual(int gm, int gn, int n) 
-        : cost(0), rowsOrder(gm), cover(n), colsOrder(gn), fixed(n)
-    {        
-    }
+    Individual() : cost(0) {}
 
-    UTILITY_MOVE_DEFAULT_MEMBERS(Individual, 
-        (rowsOrder)(colsOrder)(cover)(cost)(fixed));
+    Individual(int gm, int gn, int n) : cost(0), rowsOrder(gm), cover(n), colsOrder(gn), fixed(n) {}
 
-    Gene GetRowWeight(int i, int m) const
-    {
+    UTILITY_MOVE_DEFAULT_MEMBERS(Individual, (rowsOrder) (colsOrder) (cover) (cost) (fixed));
+
+    Gene GetRowWeight(int i, int m) const {
         return GetWeight(i, m, rowsOrder);
     }
 
-    Gene GetColWeight(int j, int n) const
-    {
+    Gene GetColWeight(int j, int n) const {
         return GetWeight(j, n, colsOrder);
     }
 
     Gene GetWeight(int i, int m, Genes const& genes) const;
-
-
-
 };
 
 typedef std::vector<Individual> Individuals;
 
 // Целевая функция, определяющая стоимость покрытия
-struct ITargetFunc
-{
+struct ITargetFunc {
     // Получить значение для покрытия
     virtual Cost GetCoveredRowsWeight(bit_chunk cover) const = 0;
 
@@ -80,14 +66,12 @@ struct ITargetFunc
 
     // Указать набор строк, для которых строится покрытие
     virtual void UpdateUncoveredRows(bit_matrix const& uncovered){};
-    
+
     virtual ~ITargetFunc(){};
 };
 
-
 // Опции генетического алгоритма
-struct GAOptions
-{
+struct GAOptions {
     // Число итераций
     int iterationCount;
 
@@ -117,44 +101,37 @@ struct GAOptions
 
     // Максимальное число используемых генов
     int genesLimit;
-    
-    
-    GAOptions()
-        :eliteCount(5),
-        populationSize(10),
-        iterationCount(10),
-        mutationScale0(1.0f),
-        mutationScaleScale(0.01f),
-        crossoverScale0(1.0f),
-        crossoverScaleScale(0.01f),
-        coverRowsLimit(20),
-        genesLimit(20)
-    {
-    }
+
+    GAOptions() :
+            eliteCount(5),
+            populationSize(10),
+            iterationCount(10),
+            mutationScale0(1.0f),
+            mutationScaleScale(0.01f),
+            crossoverScale0(1.0f),
+            crossoverScaleScale(0.01f),
+            coverRowsLimit(20),
+            genesLimit(20) {}
 };
 
 // Взвешенная строка
-struct WeightedRow
-{
+struct WeightedRow {
     //int id;
     Weight weight;
     bit_chunk bits;
 
-    WeightedRow(bit_chunk b, Weight w = 0/*, int id_ = -1*/)
-    {
+    WeightedRow(bit_chunk b, Weight w = 0 /*, int id_ = -1*/) {
         bits = b;
         weight = w;
         //id = id_;
     }
-    
-    WeightedRow(Weight w = 0/*, int id_ = -1*/)
-    {
+
+    WeightedRow(Weight w = 0 /*, int id_ = -1*/) {
         weight = w;
         //id = id_;
     }
 
-    bool operator <(WeightedRow const& wr) const
-    {
+    bool operator<(WeightedRow const& wr) const {
         return weight < wr.weight;
     }
 };
@@ -165,11 +142,10 @@ typedef std::vector<WeightedRow> WeightedRows;
 typedef IteratorRange<typename WeightedRows::const_iterator> WeightedRowsRange;
 
 // Интерфейс источника покрываемых строк
-struct IRowsSource
-{
+struct IRowsSource {
     // Число столбцов
     virtual int GetWidth() const = 0;
-    
+
     // Загрузить очередной набор строк, которые необходимо покрыть
     virtual void LoadUncoveredRows(bit_chunk fixedColumns, int maxCount, WeightedRows& rows) = 0;
 
@@ -178,29 +154,25 @@ struct IRowsSource
 
     // Получить следующую строку, по которой настраивается вес покрятия, или пустой набор, если строк больше нет.
     //virtual WeightedRow GetNextTargetRow() = 0;
-    
+
     // Вернуть результат, была ли последняя строка покрыта уже имеющимися битами
     //virtual void CoverTargetRowCallback(WeightedRow const& r){};
 
     // Сбросить источник строк
     virtual void Reset(){};
-    
+
     // Виртуальный деструктор
     virtual ~IRowsSource(){};
 };
 
-
-
 // Генетический алгоритм поиска оптимальных покрытий
-class GeneticDualizer
-    :public IConfigurable
-{
-    
+class GeneticDualizer : public IConfigurable {
+
     // Текущая популяция
     Individuals _population;
-            
+
     // Целевая функция
-    ITargetFunc* _targetFunc;   
+    ITargetFunc* _targetFunc;
 
     // Источник строк
     IRowsSource* _rowsSource;
@@ -222,11 +194,10 @@ class GeneticDualizer
 
     // Текущий размер популяции
     int _populationSize;
-    
-public:
 
+public:
     GAOptions CurrentOptions;
-    
+
     // Иниицализировать целевой функцией
     GeneticDualizer();
 
@@ -235,10 +206,10 @@ public:
 
     // Установить источник строк
     void SetRowsSource(IRowsSource* rowsSource);
-    
+
     // Установить матрицу, у которой ищутся покрытия
     //void SetRows(int n, bit_chunks rows);
-        
+
     // Довести размер популяции до указанного
     void GrowPopulation(int count);
 
@@ -250,10 +221,10 @@ public:
 
     // Отобрать лучших особей
     void Select(int count);
-        
+
     // Получить следующую популяцию
     void MakePopulation(int t);
-        
+
     // Сбросить состояние алгоритма
     void Reset();
 
@@ -262,11 +233,11 @@ public:
 
     // Отобрать элиту, упорядочив по возрастанию целевого значения
     void SelectElite();
-    
+
     void SelectElite(int count);
-    
-        // Установить опции
-    virtual void SetOptions( Options const& options );
+
+    // Установить опции
+    virtual void SetOptions(Options const& options);
 
     // Установить опции по умолчанию
     virtual void SetDefaultOptions();
@@ -276,18 +247,17 @@ public:
 
     // Загрузить строки, по которым оценивается покрытие
     //void LoadTargetRows();
-        
+
     // Зафиксировать покрытия, удалить покрытые строки и зугрузить новые
     void FixCovers();
 
     // Выполнить поиск оптимальных покрытий
     void Search();
-    
-private:
 
+private:
     //void FinallyLoadTargetRows();
 
-    // Породить дочерних особей после фиксации 
+    // Породить дочерних особей после фиксации
     void RandomizeGenesAfterFixCovers();
 
     // Удалить целевые строки, зависящие от непокрытых строк
@@ -301,33 +271,33 @@ private:
     Gene GetCrossoverScale(int t) const;
 
     Gene GetMutationScale(int t) const;
-        
+
     // Найти покрытие для особи
     void FindCover(Individual& ind);
-        
+
     // Найти столбец с наименьшим весом, покрывающий строку
     int FindMinWeightColumn(bit_chunk row, Individual const& ind);
 
     // Обновить покрытие, связанное с особью
     void UpdateIndividualCover(Individual& ind);
-    
+
     // Обновить вес особи
     void UpdateIndividualCost(Individual& ind) const;
 
     // Обновить особь после изменения генов
     void UpdateIndividual(Individual& ind);
-    
+
     // Сгенерировать случайне гены особи
-    void RandomIndividual(Individual&ind);
-   
+    void RandomIndividual(Individual& ind);
+
     // Выполнить попарное скрещивание особей
     void Crossover(Gene scale = 1);
 
     // Скрестить гены особей
-    void Crossover( Genes const& w1, Genes const& w2, Gene c1, Gene c2, Genes& w );
-    
+    void Crossover(Genes const& w1, Genes const& w2, Gene c1, Gene c2, Genes& w);
+
     // Скрестить особей
-    void Crossover( Individual const& i1, Individual const& i2, Gene c1 /*= 1*/, Gene c2 /*= 1*/, Individual& child);
+    void Crossover(Individual const& i1, Individual const& i2, Gene c1 /*= 1*/, Gene c2 /*= 1*/, Individual& child);
 
     // Получить вес особей, использующийся при скрещивании,
     // учитывая качество особей
@@ -347,9 +317,9 @@ private:
 
     // Нормировать веса
     void Normalize(Genes& weights, Gene min, Gene max);
-        
-    Individual& GetIndividual(int i);    
-   
+
+    Individual& GetIndividual(int i);
+
     //void RemoveFixedCoveredTargetRows();
 };
 

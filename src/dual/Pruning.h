@@ -4,23 +4,19 @@
 #include "WeightBoundsPruning.h"
 #include "move_default.h"
 
-
 // Усечение ветвей ДР по границам на суммарный вес покрытых строк
-class CoveredRowsWeighter
-    :public IDualizationCallback
-{
+class CoveredRowsWeighter : public IDualizationCallback {
     // Строки, которые надо покрыть
     bit_chunks _targetRows;
 
     typedef std::vector<int> IntVector;
 
-    struct CoveredRow
-    {
-        int i; // Номер строки
-        int j; // Номер столбца
-        Weight w; // Вес строки
+    struct CoveredRow {
+        int i;     // Номер строки
+        int j;     // Номер столбца
+        Weight w;  // Вес строки
     };
-    
+
     // Покрытые строки
     std::vector<CoveredRow> _coveredRows;
 
@@ -31,28 +27,22 @@ class CoveredRowsWeighter
     WeightBoundsPruningCallback _pruner;
 
 public:
-
-    struct Options
-    {
+    struct Options {
         // Строки, которые будут покрываться
         bit_chunks TargetRows;
-        
+
         // Веса строк
         Weights RowsWeights;
-        
+
         // Вес по умолчанию
         Weight DefaultWeight;
 
-        Options()
-            :DefaultWeight(0)
-        {
-        }
-        
-        UTILITY_MOVE_DEFAULT_MEMBERS(Options, (TargetRows)(DefaultWeight)(RowsWeights));
+        Options() : DefaultWeight(0) {}
+
+        UTILITY_MOVE_DEFAULT_MEMBERS(Options, (TargetRows) (DefaultWeight) (RowsWeights));
     };
 
 public:
-
     CoveredRowsWeighter();
 
     // Сбросить параметры по умолчанию
@@ -60,9 +50,9 @@ public:
 
     // Установить вес по умолчанию
     void SetOptions(Options options);
-        
+
     // Пересчитать веса и обрубить ветвь в случае необходимости
-    virtual void Call( DualizationNode& node );
+    virtual void Call(DualizationNode& node);
 
     // Установить строгую верхную границу
     void FixMaxBound(Weight bound);
@@ -76,16 +66,13 @@ public:
     // Искать наибольшее значение
     void TargetToMax();
 
-    // Установить допустимый выход за пределы интервала 
+    // Установить допустимый выход за пределы интервала
     void SetEpsilon(Weight eps);
-    
+
 private:
-        
     // Вычислить вес нового узла ДР
-    void WeightNewNode( DualizationNode &node );
+    void WeightNewNode(DualizationNode& node);
 
     // Пересчитать вес при возвращении на уровень вверх
-    void WeightBacktrackNode( DualizationNode &node );
+    void WeightBacktrackNode(DualizationNode& node);
 };
-
-

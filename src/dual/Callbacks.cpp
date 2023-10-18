@@ -3,10 +3,9 @@
 
 #include "Callbacks.h"
 
-namespace PosetDualization
-{
-    
-    /*
+namespace PosetDualization {
+
+/*
 CallbackResult ResultsCollector::Call( PosetsDualizationTask const& task, 
                                 PosetsDualizationNode& x )
 {
@@ -27,19 +26,16 @@ void ResultsCollector::Reset()
     results.clear();
 }*/
 
-
-CallbackResult ResultsCSVFileWriter::Call( PosetsDualizationTask const& task, PosetsDualizationNode& x )
-{
-    if (x.Type != PosetsDualizationNode::Result)// || x.Stoped || x.Pruned)
+CallbackResult ResultsCSVFileWriter::Call(PosetsDualizationTask const& task, PosetsDualizationNode& x) {
+    if (x.Type != PosetsDualizationNode::Result)  // || x.Stoped || x.Pruned)
         return CallbackResult::Continue;
     auto f = _output.get();
     assert(f);
 
     int n = x.CurrentPosetItems.size();
-    for (int j = 0; j != n; ++j)
-    {
-        write(f, task.GetPosetsProduct().GetPosets()[j]->ToString(x.CurrentPosetItems[j]));                
-        if (j != n-1)
+    for (int j = 0; j != n; ++j) {
+        write(f, task.GetPosetsProduct().GetPosets()[j]->ToString(x.CurrentPosetItems[j]));
+        if (j != n - 1)
             fputc(',', f);
     }
 
@@ -48,79 +44,69 @@ CallbackResult ResultsCSVFileWriter::Call( PosetsDualizationTask const& task, Po
     return CallbackResult::Continue;
 }
 
-void ResultsCSVFileWriter::SetFilename(std::string const& filename )
-{
+void ResultsCSVFileWriter::SetFilename(std::string const& filename) {
     _output.reset();
-    _filename.clear();   
-    
-    if (! filename.empty())
-    {
+    _filename.clear();
+
+    if (!filename.empty()) {
         _output = create_file_for_write(filename);
         _filename = filename;
     }
 }
 
-void ResultsCSVFileWriter::Reset()
-{
-    if (! _filename.empty())
-    {
+void ResultsCSVFileWriter::Reset() {
+    if (!_filename.empty()) {
         std::string filename = _filename;
         SetFilename(filename);
     }
 }
 
-void DecisionTreeCSVFileWriter::Reset()
-{
+void DecisionTreeCSVFileWriter::Reset() {
     _branch.Clear();
     ResultsCSVFileWriter::Reset();
 }
 
-CallbackResult DecisionTreeCSVFileWriter::Call( 
-    PosetsDualizationTask const& task, 
-    PosetsDualizationNode& x )
-{
-    
+CallbackResult DecisionTreeCSVFileWriter::Call(PosetsDualizationTask const& task, PosetsDualizationNode& x) {
+
     if (x.Type == PosetsDualizationNode::Inner)
-        while(_branch.GetHeight() > 0 && 
-            ! task.GetPosetsProduct().Preceq(x.CurrentPosetItems, _branch.GetBackRow()))
+        while (_branch.GetHeight() > 0 && !task.GetPosetsProduct().Preceq(x.CurrentPosetItems, _branch.GetBackRow()))
             _branch.DropRow();
-        
-    if (_branch.GetHeight() > 0)
-    {
+
+    if (_branch.GetHeight() > 0) {
         auto f = _output.get();
         assert(f);
-    
+
         auto row = _branch[_branch.GetHeight() - 1];
-        
-        switch (x.Type)
-        {
-        case PosetsDualizationNode::Result:
-            write(f, "Result,"); break;
-        case PosetsDualizationNode::Inner:
-            write(f, "Inner,"); break;
-        case PosetsDualizationNode::Extra:
-            write(f, "Extra,"); break;
+
+        switch (x.Type) {
+            case PosetsDualizationNode::Result:
+                write(f, "Result,");
+                break;
+            case PosetsDualizationNode::Inner:
+                write(f, "Inner,");
+                break;
+            case PosetsDualizationNode::Extra:
+                write(f, "Extra,");
+                break;
         }
-        
+
         int n = x.CurrentPosetItems.size();
-        for (int j = 0; j != n; ++j)
-        {
+        for (int j = 0; j != n; ++j) {
             write(f, task.GetPosetsProduct().GetPosets()[j]->ToString(row[j]));
             fputc(',', f);
         }
-        for (int j = 0; j != n; ++j)
-        {
+        for (int j = 0; j != n; ++j) {
             write(f, task.GetPosetsProduct().GetPosets()[j]->ToString(x.CurrentPosetItems[j]));
-            if (j != n-1)
+            if (j != n - 1)
                 fputc(',', f);
         }
-        
-        fputc('\n', f);        
+
+        fputc('\n', f);
     }
-            
+
     _branch.AddRow(x.CurrentPosetItems);
 
     return CallbackResult::Continue;
 }
 
-} //namespace PosetsDualization
+}  // namespace PosetDualization

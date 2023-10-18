@@ -1,31 +1,24 @@
 #include "GeneticDualizer.h"
-#include "containers.h"
 #include "BoolMatrixPreparation.h"
 #include "IteratorRange.h"
-
-
-
+#include "containers.h"
 
 // Нормировать последовательность генов, чтобы она лежала в пределах от minw до maxw
-void GeneticDualizer::Normalize( Genes& weights, Gene minw, Gene maxw )
-{
+void GeneticDualizer::Normalize(Genes& weights, Gene minw, Gene maxw) {
     Gene dw = 1 / (maxw - minw);
-    
-    for (int i = 0, m = weights.size(); i < m; ++i)
-    {
+
+    for (int i = 0, m = weights.size(); i < m; ++i) {
         weights[i] = (weights[i] - minw) * dw;
     }
 }
 
 // Осуществить мутацию генов с указанным параметром разброса
-void GeneticDualizer::Mutate( Genes& weights, Gene sigma /*= 1*/ )
-{
+void GeneticDualizer::Mutate(Genes& weights, Gene sigma /*= 1*/) {
     Gene minw = std::numeric_limits<Gene>::max();
     Gene maxw = -minw;
 
-    for (int i = 0; i < (int)weights.size(); ++i)
-    {
-        auto w = weights[i] + RandomSampler<boost::uniform_01<Gene>>::RandomValue(-sigma,  2*sigma);
+    for (int i = 0; i < (int) weights.size(); ++i) {
+        auto w = weights[i] + RandomSampler<boost::uniform_01<Gene>>::RandomValue(-sigma, 2 * sigma);
         if (minw > w)
             minw = w;
         if (maxw < w)
@@ -39,50 +32,39 @@ void GeneticDualizer::Mutate( Genes& weights, Gene sigma /*= 1*/ )
         Normalize(weights, minw, maxw);
 }
 
-
 // Осуществить мутацию генов особи
-void GeneticDualizer::Mutate( Individual& ind, Gene sigma /*= 1*/ )
-{
+void GeneticDualizer::Mutate(Individual& ind, Gene sigma /*= 1*/) {
     Mutate(ind.colsOrder, sigma);
     Mutate(ind.rowsOrder, sigma);
 }
 
-void GeneticDualizer::Mutate(int eliteCount, Gene sigma)
-{
-    for (int i = eliteCount; i < _populationSize; ++i)
-    {
+void GeneticDualizer::Mutate(int eliteCount, Gene sigma) {
+    for (int i = eliteCount; i < _populationSize; ++i) {
         Mutate(_population[i], sigma);
         UpdateIndividual(_population[i]);
-    }    
+    }
 }
 
 // Выполнить скрещивание генов
-void GeneticDualizer::Crossover( 
-    Genes const& w1, 
-    Genes const& w2, 
-    Gene c1 /*= 1*/, 
-    Gene c2 /*= 1*/, 
-    Genes& w )
-{
+void GeneticDualizer::Crossover(Genes const& w1, Genes const& w2, Gene c1 /*= 1*/, Gene c2 /*= 1*/, Genes& w) {
     int n1 = w1.size();
     int n2 = w2.size();
-    
+
     assert(n1 == n2);
 
     Gene minw = std::numeric_limits<Gene>::max();
     Gene maxw = -minw;
 
-    for (int i = 0; i < n1; ++i)
-    {
+    for (int i = 0; i < n1; ++i) {
         Gene w0 = 0;
         if (i < n1)
             w0 += c1 * w1[i];
 
         if (i < n2)
             w0 += c2 * w2[i];
-        
+
         w[i] = w0;
-        
+
         if (minw > w0)
             minw = w0;
         if (maxw < w0)
@@ -91,20 +73,17 @@ void GeneticDualizer::Crossover(
 
     if (maxw - minw > 3)
         Normalize(w, minw, maxw);
-
 }
 
-void GeneticDualizer::Crossover( 
-    Individual const& i1, 
-    Individual const& i2, 
-    Gene c1 /*= 1*/, 
-    Gene c2 /*= 1*/,
-    Individual& child)
-{
+void GeneticDualizer::Crossover(Individual const& i1,
+                                Individual const& i2,
+                                Gene c1 /*= 1*/,
+                                Gene c2 /*= 1*/,
+                                Individual& child) {
     Crossover(i1.colsOrder, i2.colsOrder, c1, c2, child.colsOrder);
     Crossover(i1.rowsOrder, i2.rowsOrder, c1, c2, child.rowsOrder);
-    
-    auto r = RandomSampler<boost::uniform_01<Gene, Gene> >::RandomValue(0.0f, c1 + c2);
+
+    auto r = RandomSampler<boost::uniform_01<Gene, Gene>>::RandomValue(0.0f, c1 + c2);
 
     if (r < c1)
         child.fixed.assign(i1.fixed);
@@ -112,8 +91,7 @@ void GeneticDualizer::Crossover(
         child.fixed.assign(i2.fixed);
 }
 
-void GeneticDualizer::Crossover( Gene scale /*= 1*/ )
-{
+void GeneticDualizer::Crossover(Gene scale /*= 1*/) {
     int n = CurrentOptions.eliteCount;
     if (n < 2)
         n = 2;
@@ -121,50 +99,42 @@ void GeneticDualizer::Crossover( Gene scale /*= 1*/ )
         n = _populationSize;
 
     int n0 = _populationSize;
-    _population.reserve(n0 + n * (n-1) / 2);
+    _population.reserve(n0 + n * (n - 1) / 2);
 
     for (int i = 0; i < n - 1; ++i)
-        for (int j = i+1; j < n; ++j)
-        {
+        for (int j = i + 1; j < n; ++j) {
             auto& child = GetIndividual(_populationSize++);
 
-            Crossover(_population[i], _population[j], 
-                GetCrossoverCost((Gene)_population[i].cost, (Gene)_population[j].cost, scale),
-                GetCrossoverCost((Gene)_population[j].cost, (Gene)_population[i].cost, scale), 
-                child);
+            Crossover(_population[i],
+                      _population[j],
+                      GetCrossoverCost((Gene) _population[i].cost, (Gene) _population[j].cost, scale),
+                      GetCrossoverCost((Gene) _population[j].cost, (Gene) _population[i].cost, scale),
+                      child);
 
             UpdateIndividualCover(child);
         }
 
     _populationSize = RemoveDuplicateCovers(_population.begin() + n0, _population.begin() + _populationSize) + n0;
-        
-    for (int i = n0; i < _populationSize; ++i)
-    {
+
+    for (int i = n0; i < _populationSize; ++i) {
         UpdateIndividualCost(_population[i]);
     }
 
     _populationSize = RemoveDuplicateCovers(_population.begin(), _population.begin() + _populationSize);
 }
 
-
-void GeneticDualizer::RandomIndividual(Individual&ind)
-{
-    RandomSampler<boost::uniform_01<Gene> >::RandomValues(
-        ind.rowsOrder.begin(), ind.rowsOrder.end(), 0.0f, 1.0f);
-    RandomSampler<boost::uniform_01<Gene> >::RandomValues(
-        ind.colsOrder.begin(), ind.colsOrder.end(), 0.0f, 1.0f);
+void GeneticDualizer::RandomIndividual(Individual& ind) {
+    RandomSampler<boost::uniform_01<Gene>>::RandomValues(ind.rowsOrder.begin(), ind.rowsOrder.end(), 0.0f, 1.0f);
+    RandomSampler<boost::uniform_01<Gene>>::RandomValues(ind.colsOrder.begin(), ind.colsOrder.end(), 0.0f, 1.0f);
 }
 
-void GeneticDualizer::UpdateIndividual( Individual& ind )
-{
+void GeneticDualizer::UpdateIndividual(Individual& ind) {
     UpdateIndividualCover(ind);
     UpdateIndividualCost(ind);
 }
 
-void GeneticDualizer::UpdateIndividualCost( Individual& ind ) const
-{
-    if (_targetFunc)
-    {
+void GeneticDualizer::UpdateIndividualCost(Individual& ind) const {
+    if (_targetFunc) {
         ind.cost = _targetFunc->GetCoveredRowsWeight(ind.cover);
         return;
     }
@@ -177,47 +147,41 @@ void GeneticDualizer::UpdateIndividualCost( Individual& ind ) const
                 ind.cost += r.weight;
         return;
     }*/
-    
+
     ind.cost = static_cast<Cost>(ind.cover.count());
 }
 
-void GeneticDualizer::UpdateIndividualCover( Individual& ind )
-{
+void GeneticDualizer::UpdateIndividualCover(Individual& ind) {
     int m = _uncoveredRows.size();
     _orderedRows.resize(m);
 
-    for (int i = 0; i < m; ++i)
-    {
+    for (int i = 0; i < m; ++i) {
         _orderedRows[i].bits = _uncoveredRows[i].bits;
         _orderedRows[i].weight = ind.GetRowWeight(i, m);
     }
-    
+
     sort(_orderedRows);
 
     ind.cover.assign(ind.fixed);
 
-    for (int t = 0; t < m; ++t)
-    {
+    for (int t = 0; t < m; ++t) {
         auto row = _orderedRows[t].bits;
         if (row.intersects(ind.cover))
             continue;
 
         int j = FindMinWeightColumn(row, ind);
 
-        if (j < 0)
-        {
+        if (j < 0) {
             ind.cover.clear();
             return;
         }
 
-        ind.cover.set(j);        
+        ind.cover.set(j);
     }
 }
 
-void GeneticDualizer::Select( int count )
-{
-    if (count <= 0)
-    {
+void GeneticDualizer::Select(int count) {
+    if (count <= 0) {
         _populationSize = 0;
         return;
     }
@@ -225,12 +189,11 @@ void GeneticDualizer::Select( int count )
     if (count > _populationSize)
         count = _populationSize;
 
-    SelectElite(count);    
+    SelectElite(count);
     _populationSize = count;
 }
 
-Individuals const& GeneticDualizer::GetPopulation() const
-{
+Individuals const& GeneticDualizer::GetPopulation() const {
     return _population;
 }
 
@@ -255,67 +218,43 @@ void GeneticDualizer::SetRows(int n, bit_chunks rows)
 
 }*/
 
-GeneticDualizer::GeneticDualizer() 
-    :_n(0), _targetFunc(0), _populationSize(0), _rowsSource(0)
-{       
-}
+GeneticDualizer::GeneticDualizer() : _n(0), _targetFunc(0), _populationSize(0), _rowsSource(0) {}
 
 // Удалить особей, относящихся к одному и тому же покрытию
-int GeneticDualizer::RemoveDuplicateCovers( 
-    Individuals::iterator begin, 
-    Individuals::iterator end)
-{
+int GeneticDualizer::RemoveDuplicateCovers(Individuals::iterator begin, Individuals::iterator end) {
     if (begin == end)
         return 0;
-    
-    std::sort(begin, end,
-        [](Individual const& i1, Individual const& i2)
-    {
-        return i1.cover < i2.cover;
-    });
 
-    for (auto i = begin, j = begin+1; j != end; ++i, ++j)
-    {
+    std::sort(begin, end, [](Individual const& i1, Individual const& i2) { return i1.cover < i2.cover; });
+
+    for (auto i = begin, j = begin + 1; j != end; ++i, ++j) {
         if (i->cover == j->cover)
             i->cover.clear();
     }
 
-    return 
-        std::partition(begin, end,
-                [](Individual const& ind) 
-                    { 
-                        return ! ind.cover.empty(); 
-                    }) - begin;
+    return std::partition(begin, end, [](Individual const& ind) { return !ind.cover.empty(); }) - begin;
 }
 
-void GeneticDualizer::SelectElite()
-{
+void GeneticDualizer::SelectElite() {
     SelectElite(CurrentOptions.eliteCount);
 }
 
-void GeneticDualizer::SelectElite( int count )
-{
+void GeneticDualizer::SelectElite(int count) {
     if (count <= 0)
         return;
 
     std::random_shuffle(_population.begin(), _population.begin() + _populationSize);
-    
-    if  (count > _populationSize)
+
+    if (count > _populationSize)
         count = _populationSize;
-        
-    std::partial_sort(
-        _population.begin(), 
-        _population.begin() + count, 
-        _population.begin() + _populationSize,
-        [](Individual const& i1, Individual const& i2)
-    {
-        return i1.cost < i2.cost;
-    });
+
+    std::partial_sort(_population.begin(),
+                      _population.begin() + count,
+                      _population.begin() + _populationSize,
+                      [](Individual const& i1, Individual const& i2) { return i1.cost < i2.cost; });
 }
 
-
-void GeneticDualizer::MakePopulation(int t)
-{
+void GeneticDualizer::MakePopulation(int t) {
     //LoadUncoveredRows();
     GrowPopulation(CurrentOptions.populationSize);
     SelectElite();
@@ -324,8 +263,7 @@ void GeneticDualizer::MakePopulation(int t)
     Select(CurrentOptions.populationSize);
 }
 
-void GeneticDualizer::Reset()
-{
+void GeneticDualizer::Reset() {
     _population.clear();
     _populationSize = 0;
     _uncoveredRows.clear();
@@ -339,26 +277,21 @@ void GeneticDualizer::Reset()
         _rowsSource->Reset();
 }
 
-void GeneticDualizer::MakePopulations(int from, int to)
-{
+void GeneticDualizer::MakePopulations(int from, int to) {
     for (int t = from; t < to; ++t)
         MakePopulation(t);
 }
 
-
-int GeneticDualizer::FindMinWeightColumn(bit_chunk row, Individual const& ind)
-{
+int GeneticDualizer::FindMinWeightColumn(bit_chunk row, Individual const& ind) {
     int j = row.find_first();
     if (j < 0)
         return j;
 
     Gene minw = ind.GetColWeight(j, _n);
-    
-    for (int k = row.find_next(j); k >=0; k = row.find_next(k))
-    {
+
+    for (int k = row.find_next(j); k >= 0; k = row.find_next(k)) {
         auto w = ind.GetColWeight(k, _n);
-        if (minw > w)
-        {
+        if (minw > w) {
             j = k;
             minw = w;
         }
@@ -367,40 +300,33 @@ int GeneticDualizer::FindMinWeightColumn(bit_chunk row, Individual const& ind)
     return j;
 }
 
-Gene GeneticDualizer::GetCrossoverCost( Gene c1, Gene c2, Gene scale /*= 1*/ )
-{
-    return 1 / (1 + exp(scale*(c1 - c2)));
+Gene GeneticDualizer::GetCrossoverCost(Gene c1, Gene c2, Gene scale /*= 1*/) {
+    return 1 / (1 + exp(scale * (c1 - c2)));
 }
 
-Individual& GeneticDualizer::GetIndividual( int i )
-{
+Individual& GeneticDualizer::GetIndividual(int i) {
     int gm = _uncoveredRows.size();
     int gn = _n;
 
-    if (CurrentOptions.genesLimit > 0)
-    {
+    if (CurrentOptions.genesLimit > 0) {
         if (CurrentOptions.genesLimit < gm)
             gm = CurrentOptions.genesLimit;
         if (CurrentOptions.genesLimit < gn)
             gn = CurrentOptions.genesLimit;
     }
-    
-    for (int d = i - (int)_population.size(); d >=0; --d)
-    {
+
+    for (int d = i - (int) _population.size(); d >= 0; --d) {
         _population.emplace_back(gm, gn, _n);
     }
-    
+
     return _population[i];
 }
 
-void GeneticDualizer::GrowPopulation(int count)
-{
+void GeneticDualizer::GrowPopulation(int count) {
     _population.reserve(count);
 
-    if (_populationSize <= 0)
-    {
-        for (; _populationSize < count; ++_populationSize)
-        {
+    if (_populationSize <= 0) {
+        for (; _populationSize < count; ++_populationSize) {
             auto& ind = GetIndividual(_populationSize);
             ind.fixed.assign(_commonFixed);
             RandomIndividual(ind);
@@ -412,10 +338,9 @@ void GeneticDualizer::GrowPopulation(int count)
 
     //int ccount = count / _populationSize;
     //while (_populationSize * ccount < count)
-      //  ++ccount;
+    //  ++ccount;
 
-    for (int k = 0; k < _populationSize && _populationSize < count; ++k)
-    {
+    for (int k = 0; k < _populationSize && _populationSize < count; ++k) {
         auto& ind = GetIndividual(_populationSize);
         ind.fixed.assign(_population[k].fixed);
         RandomIndividual(ind);
@@ -423,65 +348,54 @@ void GeneticDualizer::GrowPopulation(int count)
     }
 }
 
-Gene GeneticDualizer::GetCrossoverScale(int t) const
-{
+Gene GeneticDualizer::GetCrossoverScale(int t) const {
     return CurrentOptions.crossoverScale0 * exp(-CurrentOptions.crossoverScaleScale * t);
 }
 
-Gene GeneticDualizer::GetMutationScale(int t) const
-{
+Gene GeneticDualizer::GetMutationScale(int t) const {
     return CurrentOptions.mutationScale0 * exp(-CurrentOptions.mutationScaleScale * t);
 }
 
-
-void GeneticDualizer::SetOptions( Options const& options )
-{
-    GAOptions def;    
-    CurrentOptions.coverRowsLimit =      options.get<int>("coverRowsLimit", def.coverRowsLimit);
-    CurrentOptions.targetRowsLimit =     options.get<int>("targetRowsLimit", def.targetRowsLimit);
-    CurrentOptions.genesLimit =          options.get<int>("genesLimit", def.genesLimit);
-    CurrentOptions.iterationCount =      options.get<int>("iterationCount", def.iterationCount);
-    CurrentOptions.populationSize =      options.get<int>("populationSize", def.populationSize);
-    CurrentOptions.eliteCount =          options.get<int>("eliteCount", def.eliteCount);
-    CurrentOptions.crossoverScale0 =     options.get<Gene>("crossoverScale0", def.crossoverScale0);
+void GeneticDualizer::SetOptions(Options const& options) {
+    GAOptions def;
+    CurrentOptions.coverRowsLimit = options.get<int>("coverRowsLimit", def.coverRowsLimit);
+    CurrentOptions.targetRowsLimit = options.get<int>("targetRowsLimit", def.targetRowsLimit);
+    CurrentOptions.genesLimit = options.get<int>("genesLimit", def.genesLimit);
+    CurrentOptions.iterationCount = options.get<int>("iterationCount", def.iterationCount);
+    CurrentOptions.populationSize = options.get<int>("populationSize", def.populationSize);
+    CurrentOptions.eliteCount = options.get<int>("eliteCount", def.eliteCount);
+    CurrentOptions.crossoverScale0 = options.get<Gene>("crossoverScale0", def.crossoverScale0);
     CurrentOptions.crossoverScaleScale = options.get<Gene>("crossoverScaleScale", def.crossoverScaleScale);
-    CurrentOptions.mutationScale0 =      options.get<Gene>("mutationScale0", def.mutationScale0);
-    CurrentOptions.mutationScaleScale =  options.get<Gene>("mutationScaleScale", def.mutationScaleScale);
+    CurrentOptions.mutationScale0 = options.get<Gene>("mutationScale0", def.mutationScale0);
+    CurrentOptions.mutationScaleScale = options.get<Gene>("mutationScaleScale", def.mutationScaleScale);
 }
 
-void GeneticDualizer::SetDefaultOptions()
-{
+void GeneticDualizer::SetDefaultOptions() {
     CurrentOptions = GAOptions();
 }
 
-void GeneticDualizer::SetTargetFunc( ITargetFunc* target )
-{
+void GeneticDualizer::SetTargetFunc(ITargetFunc* target) {
     _targetFunc = target;
 }
 
-void GeneticDualizer::SetRowsSource( IRowsSource* rowsSource )
-{
+void GeneticDualizer::SetRowsSource(IRowsSource* rowsSource) {
     _rowsSource = rowsSource;
     _uncoveredRows.clear();
     //_targetRows.clear();
-    
-    if (_rowsSource)
-    {
+
+    if (_rowsSource) {
         _n = _rowsSource->GetWidth();
         _commonFixed = bit_vector(_n);
         //_rowsSource->Reset();
         _uncoveredRows.reserve(CurrentOptions.coverRowsLimit);
         _rowsSource->LoadUncoveredRows(_commonFixed, CurrentOptions.coverRowsLimit, _uncoveredRows);
-    }
-    else
-    {
+    } else {
         _n = 0;
         _commonFixed = bit_vector(0);
     }
 }
 
-int GeneticDualizer::GetPopulationSize() const
-{
+int GeneticDualizer::GetPopulationSize() const {
     return _populationSize;
 }
 
@@ -539,10 +453,10 @@ int GeneticDualizer::GetPopulationSize() const
     /*RemoveDependentTargetRows(
         WeightedRowsRange(_uncoveredRows.begin() + m0, _uncoveredRows.end()));    */
 
-    //if (_uncoveredRows.empty())
-        //return;
+//if (_uncoveredRows.empty())
+//return;
 
-    /*for (int i = 0; i < _populationSize; ++i)
+/*for (int i = 0; i < _populationSize; ++i)
         UpdateIndividualCover(_population[i]);
 
     _populationSize = RemoveDuplicateCovers(_population.begin(), _population.begin() + _populationSize);
@@ -598,29 +512,23 @@ void GeneticDualizer::LoadTargetRows()
         UpdateIndividualCost(_population[i]);
 }*/
 
-void GeneticDualizer::FixCovers()
-{
+void GeneticDualizer::FixCovers() {
     if (_populationSize > 0)
         _commonFixed.assign(_population[0].cover);
     else
         _commonFixed.clear();
-    
-    for (int i = 0; i < _populationSize; ++i)
-    {
-        if (! _commonFixed.empty())
+
+    for (int i = 0; i < _populationSize; ++i) {
+        if (!_commonFixed.empty())
             _commonFixed.assign_and(_commonFixed, _population[i].cover);
 
         _population[i].fixed.assign(_population[i].cover);
     }
 
     //RemoveFixedCoveredTargetRows();
-    
-/*    for (auto& ur:_uncoveredRows)
-        _rowsSource->CoverUncoveredRowCallback(ur);*/
-    
-    
-    
 
+    /*    for (auto& ur:_uncoveredRows)
+        _rowsSource->CoverUncoveredRowCallback(ur);*/
 }
 
 /*bool GeneticDualizer::IsTargetRowDependentOfUncovered( 
@@ -685,11 +593,9 @@ void GeneticDualizer::RemoveFixedCoveredTargetRows()
     _targetRows.erase(mid, end);
 }*/
 
-void GeneticDualizer::RandomizeGenesAfterFixCovers()
-{
-    
-    for (int i = 0; i < _populationSize; ++i)
-    {
+void GeneticDualizer::RandomizeGenesAfterFixCovers() {
+
+    for (int i = 0; i < _populationSize; ++i) {
         RandomIndividual(_population[i]);
         UpdateIndividualCover(_population[i]);
     }
@@ -733,10 +639,8 @@ void GeneticDualizer::RandomizeGenesAfterFixCovers()
         SelectElite();
 }*/
 
-void GeneticDualizer::Search()
-{
-    for(;;)
-    {
+void GeneticDualizer::Search() {
+    for (;;) {
         MakePopulations(0, CurrentOptions.iterationCount);
         FixCovers();
 
@@ -747,7 +651,7 @@ void GeneticDualizer::Search()
 
         if (_uncoveredRows.empty())
             break;
-        
+
         RandomizeGenesAfterFixCovers();
         GrowPopulation(CurrentOptions.populationSize * 2);
         Select(CurrentOptions.populationSize);
@@ -851,8 +755,7 @@ void CoveredRowsWeightTargetFunc::RemoveDependentRows(bit_chunks const& masterRo
 }
 */
 
-Gene Individual::GetWeight( int i, int m, Genes const& genes ) const
-{
+Gene Individual::GetWeight(int i, int m, Genes const& genes) const {
     int m0 = genes.size();
     if (m0 == 0)
         return 0;
@@ -860,18 +763,17 @@ Gene Individual::GetWeight( int i, int m, Genes const& genes ) const
     if (m0 == 1 || i <= 0)
         return genes.front();
 
-    if (i >= m-1)
+    if (i >= m - 1)
         return genes.back();
 
     if (m <= m0)
         return genes[i];
 
-    Gene p = (Gene)i * m0 / m;        
+    Gene p = (Gene) i * m0 / m;
     // Определение номеров ближайших генов
-    int p0 = (int)floor(p);
+    int p0 = (int) floor(p);
     int p1 = p0 + 1;
-    if (p1 >= m0)
-    {
+    if (p1 >= m0) {
         p1 = m0 - 1;
         p0 = m0 - 2;
     }
@@ -879,5 +781,5 @@ Gene Individual::GetWeight( int i, int m, Genes const& genes ) const
     Gene y0 = genes[p0];
     Gene y1 = genes[p1];
     // Линейная интерполяция i-го веса
-    return (p - p0)*(y1-y0) + y0;
+    return (p - p0) * (y1 - y0) + y0;
 }

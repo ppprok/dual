@@ -2,15 +2,14 @@
 #include <string>
 
 // Счётчики результатов выполнения дуализации
-struct DualizationCounters
-{
+struct DualizationCounters {
     typedef long long int Int;
 
-    Int results;    ///< Число найденных решений
-    Int inners;     ///< Число внутренних состояний
-    Int extras;     ///< Число лишних шагов
-    Int currentDelay;   ///< Текущая задержка
-    Int maxDelay;       ///< Максимальная задержка
+    Int results;       ///< Число найденных решений
+    Int inners;        ///< Число внутренних состояний
+    Int extras;        ///< Число лишних шагов
+    Int currentDelay;  ///< Текущая задержка
+    Int maxDelay;      ///< Максимальная задержка
 
     // Сбросить счётчики
     void Reset();
@@ -21,25 +20,21 @@ struct DualizationCounters
     // Преобразовать счётчики в текстовый вид
     std::string ToString() const;
 
-    void IncResult()
-    {
+    void IncResult() {
         ++results;
         if (results == 1)
             maxDelay = currentDelay;
-        else
-            if (maxDelay < currentDelay)
-                maxDelay = currentDelay;
+        else if (maxDelay < currentDelay)
+            maxDelay = currentDelay;
         currentDelay = 0;
     }
 
-    void IncExtra()
-    {
+    void IncExtra() {
         ++extras;
         ++currentDelay;
     }
 
-    void IncInners()
-    {
+    void IncInners() {
         ++inners;
         ++currentDelay;
     }

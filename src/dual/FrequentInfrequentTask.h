@@ -1,89 +1,74 @@
 #pragma once
-#include "PosetsProduct.h"
 #include "ISolver.h"
+#include "PosetsProduct.h"
 
-class FrequentInfrequentTask    
-        :public IConfigurable, public ITask
-    {
+class FrequentInfrequentTask : public IConfigurable, public ITask {
 
-        PosetsProduct _posetsProduct;
+    PosetsProduct _posetsProduct;
 
-        PosetItemsMatrix _database; ///< Columns of database 
+    PosetItemsMatrix _database;  ///< Columns of database
 
-        typedef std::vector<int> Thresholds;
-        
-        Thresholds _thresholds;
+    typedef std::vector<int> Thresholds;
 
-    public:
+    Thresholds _thresholds;
 
-        /// Register factory of this type by name 'PosetsDualizationTask'
-        static void Register();
+public:
+    /// Register factory of this type by name 'PosetsDualizationTask'
+    static void Register();
 
-        /*!
+    /*!
             Пороги частоты встречаемости наборов
         */
-        Thresholds const& GetThresholds() const
-        {
-            return _thresholds;
-        }
+    Thresholds const& GetThresholds() const {
+        return _thresholds;
+    }
 
-        /*!
+    /*!
             Пороги частоты встречаемости наборов
         */
-        Thresholds& GetThresholds()
-        {
-            return _thresholds;
-        }
+    Thresholds& GetThresholds() {
+        return _thresholds;
+    }
 
-
-        /*!
+    /*!
             Произведение частичных порядков
         */
-        PosetsProduct const& GetPosetsProduct() const
-        {
-            return _posetsProduct;
-        }
+    PosetsProduct const& GetPosetsProduct() const {
+        return _posetsProduct;
+    }
 
-        /*!
+    /*!
             Произведение частичных порядков
         */
-        PosetsProduct& GetPosetsProduct()
-        {
-            return _posetsProduct;
-        }
+    PosetsProduct& GetPosetsProduct() {
+        return _posetsProduct;
+    }
 
-        /*!
+    /*!
             Столбцы базы данных
         */
-        PosetItemsMatrix const& GetDatabase() const
-        {
-            return _database;
-        }
-                
-        /*!
+    PosetItemsMatrix const& GetDatabase() const {
+        return _database;
+    }
+
+    /*!
             Столбцы базы данных
         */
-        PosetItemsMatrix& GetDatabase()
-        {
-            return _database;
-        }
+    PosetItemsMatrix& GetDatabase() {
+        return _database;
+    }
 
-        // Load database from CSV files.
-        // Parameter 'options' contains file names and CSV import settings.
-        void LoadDatabase(Options const& options);
-        
-        // Load database from CSV file.
-        // Parameter 'options' contains CSV import settings.
-        void LoadDatabase(std::string const& filename, Options const& options);
-                
-        // Configure task
-        virtual void SetOptions( Options const& options );
+    // Load database from CSV files.
+    // Parameter 'options' contains file names and CSV import settings.
+    void LoadDatabase(Options const& options);
 
-        // Reset all posets
-        virtual void SetDefaultOptions();
+    // Load database from CSV file.
+    // Parameter 'options' contains CSV import settings.
+    void LoadDatabase(std::string const& filename, Options const& options);
 
+    // Configure task
+    virtual void SetOptions(Options const& options);
 
-    };
-    
-
-
+    // Reset all posets
+    virtual void SetDefaultOptions();
+};

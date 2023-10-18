@@ -8,50 +8,41 @@
 #define UTILITY_MOVE_DEFAULT_DETAIL_CONSTRUCTOR(pR, pData, pMember) pMember(std::move(pOther.pMember))
 #define UTILITY_MOVE_DEFAULT_DETAIL_ASSIGNMENT(pR, pData, pMember) pMember = std::move(pOther.pMember);
 
-#define UTILITY_MOVE_DEFAULT_DETAIL(pT, pBases, pMembers)                                               \
-    pT(pT&& pOther) :                                                                               \
-    BOOST_PP_SEQ_ENUM(BOOST_PP_SEQ_TRANSFORM(                                                       \
-    UTILITY_MOVE_DEFAULT_DETAIL_CONSTRUCTOR_BASE, BOOST_PP_EMPTY, pBases))                      \
-    ,                                                                                               \
-    BOOST_PP_SEQ_ENUM(BOOST_PP_SEQ_TRANSFORM(                                                       \
-    UTILITY_MOVE_DEFAULT_DETAIL_CONSTRUCTOR, BOOST_PP_EMPTY, pMembers))                         \
-        {}                                                                                              \
-        \
-        pT& operator=(pT&& pOther)                                                                      \
-        {                                                                                               \
-        BOOST_PP_SEQ_FOR_EACH(UTILITY_MOVE_DEFAULT_DETAIL_ASSIGNMENT_BASE, BOOST_PP_EMPTY, pBases)  \
-        BOOST_PP_SEQ_FOR_EACH(UTILITY_MOVE_DEFAULT_DETAIL_ASSIGNMENT, BOOST_PP_EMPTY, pMembers)     \
-        \
-        return *this;                                                                               \
-        }
+#define UTILITY_MOVE_DEFAULT_DETAIL(pT, pBases, pMembers)                                                              \
+    pT(pT&& pOther) :                                                                                                  \
+            BOOST_PP_SEQ_ENUM(                                                                                         \
+                    BOOST_PP_SEQ_TRANSFORM(UTILITY_MOVE_DEFAULT_DETAIL_CONSTRUCTOR_BASE, BOOST_PP_EMPTY, pBases)),     \
+            BOOST_PP_SEQ_ENUM(                                                                                         \
+                    BOOST_PP_SEQ_TRANSFORM(UTILITY_MOVE_DEFAULT_DETAIL_CONSTRUCTOR, BOOST_PP_EMPTY, pMembers)) {}      \
+                                                                                                                       \
+    pT& operator=(pT&& pOther) {                                                                                       \
+        BOOST_PP_SEQ_FOR_EACH(UTILITY_MOVE_DEFAULT_DETAIL_ASSIGNMENT_BASE, BOOST_PP_EMPTY, pBases)                     \
+        BOOST_PP_SEQ_FOR_EACH(UTILITY_MOVE_DEFAULT_DETAIL_ASSIGNMENT, BOOST_PP_EMPTY, pMembers)                        \
+                                                                                                                       \
+        return *this;                                                                                                  \
+    }
 
-#define UTILITY_MOVE_DEFAULT_BASES_DETAIL(pT, pBases)                                                   \
-    pT(pT&& pOther) :                                                                               \
-    BOOST_PP_SEQ_ENUM(BOOST_PP_SEQ_TRANSFORM(                                                       \
-    UTILITY_MOVE_DEFAULT_DETAIL_CONSTRUCTOR_BASE, BOOST_PP_EMPTY, pBases))                      \
-        {}                                                                                              \
-        \
-        pT& operator=(pT&& pOther)                                                                      \
-        {                                                                                               \
-        BOOST_PP_SEQ_FOR_EACH(UTILITY_MOVE_DEFAULT_DETAIL_ASSIGNMENT_BASE, BOOST_PP_EMPTY, pBases)  \
-        \
-        return *this;                                                                               \
-        }
+#define UTILITY_MOVE_DEFAULT_BASES_DETAIL(pT, pBases)                                                                  \
+    pT(pT&& pOther) :                                                                                                  \
+            BOOST_PP_SEQ_ENUM(                                                                                         \
+                    BOOST_PP_SEQ_TRANSFORM(UTILITY_MOVE_DEFAULT_DETAIL_CONSTRUCTOR_BASE, BOOST_PP_EMPTY, pBases)) {}   \
+                                                                                                                       \
+    pT& operator=(pT&& pOther) {                                                                                       \
+        BOOST_PP_SEQ_FOR_EACH(UTILITY_MOVE_DEFAULT_DETAIL_ASSIGNMENT_BASE, BOOST_PP_EMPTY, pBases)                     \
+                                                                                                                       \
+        return *this;                                                                                                  \
+    }
 
-#define UTILITY_MOVE_DEFAULT_MEMBERS_DETAIL(pT, pMembers)                                               \
-    pT(pT&& pOther) :                                                                               \
-    BOOST_PP_SEQ_ENUM(BOOST_PP_SEQ_TRANSFORM(                                                       \
-    UTILITY_MOVE_DEFAULT_DETAIL_CONSTRUCTOR, BOOST_PP_EMPTY, pMembers))                         \
-        {}                                                                                              \
-        \
-        pT& operator=(pT&& pOther)                                                                      \
-        {                                                                                               \
-        BOOST_PP_SEQ_FOR_EACH(UTILITY_MOVE_DEFAULT_DETAIL_ASSIGNMENT, BOOST_PP_EMPTY, pMembers)     \
-        \
-        return *this;                                                                               \
-        }
-
-
+#define UTILITY_MOVE_DEFAULT_MEMBERS_DETAIL(pT, pMembers)                                                              \
+    pT(pT&& pOther) :                                                                                                  \
+            BOOST_PP_SEQ_ENUM(                                                                                         \
+                    BOOST_PP_SEQ_TRANSFORM(UTILITY_MOVE_DEFAULT_DETAIL_CONSTRUCTOR, BOOST_PP_EMPTY, pMembers)) {}      \
+                                                                                                                       \
+    pT& operator=(pT&& pOther) {                                                                                       \
+        BOOST_PP_SEQ_FOR_EACH(UTILITY_MOVE_DEFAULT_DETAIL_ASSIGNMENT, BOOST_PP_EMPTY, pMembers)                        \
+                                                                                                                       \
+        return *this;                                                                                                  \
+    }
 
 // move bases and members
 #define UTILITY_MOVE_DEFAULT(pT, pBases, pMembers) UTILITY_MOVE_DEFAULT_DETAIL(pT, pBases, pMembers)

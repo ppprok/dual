@@ -4,20 +4,17 @@
 /**
     Interface of solvable task
 */
-struct ITask    
-{
+struct ITask {
     virtual ~ITask(){};
 };
 
 typedef std::shared_ptr<ITask> ITaskPtr;
 
-
 /**
     Interface of common task solver
 */
-struct ISolver
-{
-    
+struct ISolver {
+
     /// Solve task
     virtual void Solve(ITask* task) = 0;
 

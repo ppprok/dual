@@ -1,34 +1,31 @@
 #pragma once
-#include "PosetBase.h"
 #include "Configurable.h"
+#include "PosetBase.h"
+#include "Registrator.h"
 #include "RuncFixed.h"
 #include "bits.h"
-#include "Registrator.h"
 
 /*!
     Решетка подмножеств
 */
-class SubsetsPoset
-    :public PosetBase, public IConfigurable
-{
+class SubsetsPoset : public PosetBase, public IConfigurable {
     int _size;
-    
+
     PosetItem _universalMaximal;
 
     typedef RuncFixed<PosetItem::Subset> Dualizer;
-    
+
     mutable Dualizer _dualizer;
 
     mutable Dualizer::Rows _idealRows;
-    
+
     mutable Dualizer::Rows _filterRows;
 
 public:
-    
-    SubsetsPoset(int size = sizeof(PosetItem::Subset)*8);
+    SubsetsPoset(int size = sizeof(PosetItem::Subset) * 8);
 
     void SetSize(int size);
-    
+
     virtual bool Equal(PosetItem const& left, PosetItem const& right) const;
 
     virtual bool Prec(PosetItem const& left, PosetItem const& right) const;
@@ -79,7 +76,7 @@ public:
 
     static void Register();
 
-    virtual void GetMinUpperBounds( PosetItems const& items, PosetItems& upperBounds ) const;
+    virtual void GetMinUpperBounds(PosetItems const& items, PosetItems& upperBounds) const;
 
-    virtual void GetMaxLowerBounds( PosetItems const& items, PosetItems& lowerBounds ) const;
+    virtual void GetMaxLowerBounds(PosetItems const& items, PosetItems& lowerBounds) const;
 };

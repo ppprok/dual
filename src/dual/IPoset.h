@@ -1,25 +1,22 @@
 #pragma once
 
-#include <vector>
-#include <memory>
 #include "CSVLoader.h"
 #include "PosetItem.h"
+#include <memory>
+#include <vector>
 
 // type of item
 //typedef int ItemId;
 
 //typedef __int64 Number;
 
-
-struct too_many_items_error:virtual error{};
-
+struct too_many_items_error : virtual error {};
 
 //////////////////////////////////////////////////////////////////////////
 // Partialy ordered set (poset) interface
 //////////////////////////////////////////////////////////////////////////
-struct IPoset
-{
-    
+struct IPoset {
+
     // Check relation left <= right
     virtual bool Preceq(PosetItem const& left, PosetItem const& right) const = 0;
 
@@ -36,7 +33,7 @@ struct IPoset
     virtual bool IsMinimal(PosetItem const& a, PosetItems const& A) const = 0;
 
     // Is "a" belong to poset
-    virtual bool IsItem(PosetItem const& a) const = 0;    
+    virtual bool IsItem(PosetItem const& a) const = 0;
 
     // Is "a" maximal item
     virtual bool IsMaximal(PosetItem const& a) const = 0;
@@ -58,10 +55,10 @@ struct IPoset
 
     // Any b in A : a <= b
     virtual bool InFilter(PosetItem const& a, PosetItems const& A) const = 0;
-            
+
     // Get maximal items from A
     virtual void SelectMaximal(PosetItems& A) const = 0;
-    
+
     // Get minimal items from A
     virtual void SelectMinimal(PosetItems& A) const = 0;
 
@@ -76,7 +73,7 @@ struct IPoset
 
     // Get ideal of A intersected with B
     virtual void SelectIdeal(PosetItems const& A, PosetItems& B) const = 0;
-        
+
     // Get filter of A intersected with B
     virtual void SelectFilter(PosetItems const& A, PosetItems& B) const = 0;
 
@@ -85,7 +82,7 @@ struct IPoset
 
     // Select all items of poset
     virtual void GetAllItems(PosetItems& items) const = 0;
-    
+
     // Get all maximal items
     virtual void GetMaximal(PosetItems& maximal) const = 0;
 
@@ -104,18 +101,20 @@ struct IPoset
     // Get all minimal independent for filder A items
     virtual void GetMinimalIndependent(PosetItems const& A, PosetItems& minimal) const = 0;
 
-    // Enumerate all intervals (x, y), 
-    // where x <= y, 
-    // y --- maximal independent for ideal A, 
+    // Enumerate all intervals (x, y),
+    // where x <= y,
+    // y --- maximal independent for ideal A,
     // x --- minimal independent for filter B
-    virtual void GetIndependentIntervals(PosetItems const& A, PosetItems const& B, PosetIntervals& independent) const = 0;
-    
+    virtual void GetIndependentIntervals(PosetItems const& A,
+                                         PosetItems const& B,
+                                         PosetIntervals& independent) const = 0;
+
     // Get text presentation of item
     virtual std::string ToString(PosetItem const& item) const = 0;
-        
+
     // Convert string to poset item
     virtual PosetItem FromString(char const* begin, char const* end) const = 0;
-            
+
     // Order items topologicaly: (a_i<=a_j) => (i<=j)
     virtual void TopologicalSort(PosetItems& items) const = 0;
 
@@ -127,7 +126,7 @@ struct IPoset
 
     // Get immediate precessors, a: a < item, a --- maximal
     virtual void GetImmediatePrec(PosetItem const& item, PosetItems& items) const = 0;
-        
+
     // Get immediate successors, a: a > item, a --- minimal
     virtual void GetImmediateSucc(PosetItem const& item, PosetItems& items) const = 0;
 
@@ -152,7 +151,6 @@ struct IPoset
 typedef std::shared_ptr<IPoset> IPosetPtr;
 
 typedef std::vector<IPosetPtr> Posets;
-
 
 std::string ToString(IPosetPtr poset, PosetItems const& items, std::string const& separator = " ");
 

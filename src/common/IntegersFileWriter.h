@@ -7,41 +7,34 @@
 
 typedef std::vector<int> Positions;
 
-
 // Реализация вывода целых чисел файл
-class IntegersFileWriter
-	:boost::noncopyable
-{
-    
-	FILE_ptr _output;
+class IntegersFileWriter : boost::noncopyable {
+
+    FILE_ptr _output;
 
 public:
-
-	IntegersFileWriter(std::string const& filename);
+    IntegersFileWriter(std::string const& filename);
 
     IntegersFileWriter();
-        
-	// Закрыть файл
+
+    // Закрыть файл
     void CloseOutputFile();
 
     // Создать файл для записи
-	void CreateOutputFile(std::string const& outputFileName);
+    void CreateOutputFile(std::string const& outputFileName);
 
     // Символ
-    void WriteChar(char c)
-    {
+    void WriteChar(char c) {
         putc(c, _output.get());
     }
 
     // Цифра
-    void WriteDigit(int digit)
-    {
+    void WriteDigit(int digit) {
         WriteChar(digit + '0');
     }
 
     // Конец строки
-    void WriteEOL()
-    {
+    void WriteEOL() {
         WriteChar('\n');
     }
 
@@ -49,45 +42,39 @@ public:
     void WriteInteger(int i, int pad = 0);
 
     void WriteNumber(double v, int precision = 3, int pad = 0);
-    
-	template <typename C>
-	void WriteIntegers(C const& c) 
-	{
-		WriteIntegers(c.begin(), c.end());
-	}
+
+    template<typename C>
+    void WriteIntegers(C const& c) {
+        WriteIntegers(c.begin(), c.end());
+    }
 
     // Вывести список чисел в файл
-    template <typename Iter>
-	void WriteIntegers(Iter beg, Iter end) 
-	{
-		if (beg == end)
+    template<typename Iter>
+    void WriteIntegers(Iter beg, Iter end) {
+        if (beg == end)
             return;
-        
-        for( ; ; )
-        {
+
+        for (;;) {
             WriteInteger(*beg);
             if (++beg == end)
                 break;
             WriteChar(' ');
         }
-	}
+    }
 
-	template<typename Matrix>
-	void WriteIntegerMatrix(Matrix const& c)
-	{
-		WriteIntegerMatrix(c.begin(), c.end());
-	}
+    template<typename Matrix>
+    void WriteIntegerMatrix(Matrix const& c) {
+        WriteIntegerMatrix(c.begin(), c.end());
+    }
 
     // Записать вершины набор массивов в файл --- каждый массив в отдельной строке
     // [beg, end) --- список, каждый элемент которого является массивом целых
-    template <typename Iter>
-    void WriteIntegerMatrix(Iter beg, Iter end)
-    {
+    template<typename Iter>
+    void WriteIntegerMatrix(Iter beg, Iter end) {
         if (beg == end)
             return;
 
-        for (;;)
-        {
+        for (;;) {
             WriteIntegers(std::begin(*beg), std::end(*beg));
             if (++beg == end)
                 break;
@@ -103,9 +90,4 @@ public:
 
     // Записать булеву матрицу в виде гиперграфа
     void WriteBitMatrix(bit_chunks const& rows);
-    
-
 };
-
-
-

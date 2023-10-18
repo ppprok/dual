@@ -1,35 +1,32 @@
 #pragma once
-#include "PosetItem.h"
 #include "IPoset.h"
+#include "PosetItem.h"
 #include "bit_vector.h"
 #include "move_default.h"
 
-namespace PosetDualization
-{
-    
+namespace PosetDualization {
 
 /*!
     Decision tree node of dualization algorithm over posets
 */
-struct PosetsDualizationNode
-{
+struct PosetsDualizationNode {
     /// Types of decision tree nodes
-    enum NodeType
-    {
+    enum NodeType {
         Extra = -1,
         Inner = 0,
         Result = 1
     };
 
     UTILITY_MOVE_DEFAULT_MEMBERS(
-        PosetsDualizationNode, (CurrentPosetItems)(Type)(_usedItems)(_usedItemsSizes)(_settedItems)(_replacesItems));
+            PosetsDualizationNode,
+            (CurrentPosetItems) (Type) (_usedItems) (_usedItemsSizes) (_settedItems) (_replacesItems));
 
     /// Current item
     PosetItems CurrentPosetItems;
-    
+
     /// Type of decision tree node
     NodeType Type;
-        
+
     /// Stop enumeration flag
     //bool Stoped;
 
@@ -47,11 +44,11 @@ struct PosetsDualizationNode
     void RestoreUsedItemsSizes();
 
     void Use(int j, PosetItem const& a);
-    
+
     void Set(int j);
-    
+
     void Set(int j, PosetItem const& a);
-    
+
     void Reset(int j);
 
     bool WasUsed(IPoset const& poset, int j, PosetItem const& a) const;
@@ -59,16 +56,14 @@ struct PosetsDualizationNode
     bool IsSetted(int j) const;
 
 private:
-
     /// Списки использованных элементов
     std::vector<PosetItems> _usedItems;
     /// Стек размеров списков использованных элементов
     std::vector<int> _usedItemsSizes;
     /// Флаги для пометки установленных координат
-    bit_vector _settedItems;    
+    bit_vector _settedItems;
     /// Значения элементов до их перезаписи
     PosetItems _replacesItems;
 };
 
-
-}
+}  // namespace PosetDualization

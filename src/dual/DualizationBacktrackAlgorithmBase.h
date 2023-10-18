@@ -1,29 +1,26 @@
 #pragma once
 
-
-#include "raw_vector.h"
 #include "bit_matrix.h"
-
+#include "raw_vector.h"
 
 typedef std::vector<int> Columns;
 
-struct NodeType{enum Enum
-{
-    CoverNode, // Узел покрытия
-    NewNode,  // Новый узел
-    BacktrackNode,   // Предыдущий узел
-    ExtraNode,  // Лишний узел
-    RootNode    // Корень
-};};
+struct NodeType {
+    enum Enum {
+        CoverNode,      // Узел покрытия
+        NewNode,        // Новый узел
+        BacktrackNode,  // Предыдущий узел
+        ExtraNode,      // Лишний узел
+        RootNode        // Корень
+    };
+};
 
 typedef float Weight;
 
 typedef std::vector<Weight> Weights;
 
-
 // Узел дерева решений
-struct DualizationNode
-{
+struct DualizationNode {
 
     // Столбцы
     Columns columns;
@@ -37,50 +34,41 @@ struct DualizationNode
     NodeType::Enum type;
     // Текущий вес покрытия
     Weight weight;
-	// Остановить построение ДР
-	bool stoped;
-	// Отсечь текущую ветку
-	bool pruned;
+    // Остановить построение ДР
+    bool stoped;
+    // Отсечь текущую ветку
+    bool pruned;
     // Ограничение на допустимые столбцы
     //bit_chunk restriction;
-    
-    DualizationNode()
-    {
+
+    DualizationNode() {
         Reset();
     }
 
-    void AddColumn(int j)
-    {
+    void AddColumn(int j) {
         columns.push_back(j);
         lastColumn = j;
         ++nodeID;
-        if (type != NodeType::NewNode)
-		{
-			type = NodeType::NewNode;
-			++branchID;
-		}
-		pruned = false;
+        if (type != NodeType::NewNode) {
+            type = NodeType::NewNode;
+            ++branchID;
+        }
+        pruned = false;
         //restriction.reset();
     }
 
-    void Backtrack()
-    {
-        if (! columns.empty())
-        {
+    void Backtrack() {
+        if (!columns.empty()) {
             lastColumn = columns.back();
             columns.pop_back();
-        }
-        else
-        {
+        } else {
             lastColumn = -1;
         }
-        type = NodeType::BacktrackNode;        
+        type = NodeType::BacktrackNode;
         //restriction.reset();
     }
 
-
-    void Reset(int n = 0)
-    {
+    void Reset(int n = 0) {
         columns.clear();
         if (n > 0)
             columns.reserve(n);
@@ -89,29 +77,24 @@ struct DualizationNode
         nodeID = 0;
         branchID = 0;
         weight = 0;
-		stoped = false;
-		pruned = false;
+        stoped = false;
+        pruned = false;
         //restriction.reset();
     }
 
-	void Prun(bool p)
-	{
-		pruned |= p;
-	}
+    void Prun(bool p) {
+        pruned |= p;
+    }
 
-	bool IsCover() const
-	{
-		return ! stoped && ! pruned && type == NodeType::CoverNode;
-	}
+    bool IsCover() const {
+        return !stoped && !pruned && type == NodeType::CoverNode;
+    }
 };
 
-
-
 // Интерфейс обратного вызова
-struct IDualizationCallback
-{
+struct IDualizationCallback {
     virtual void Call(DualizationNode& node) = 0;
-    
+
     virtual ~IDualizationCallback(){};
 };
 
@@ -121,27 +104,22 @@ typedef std::vector<IDualizationCallbackPtr> DualizationCallbacks;
 
 // Склеивание двух обратных вызовов в цепочку
 template<typename C1, typename C2>
-struct ChainCallback:
-    IDualizationCallback
-{
+struct ChainCallback : IDualizationCallback {
     C1 callback1;
     C2 callback2;
 
-    virtual void Call( DualizationNode& node )
-    {
+    virtual void Call(DualizationNode& node) {
         callback1.Call(node);
         if (node.stoped)
             return;
-        
+
         callback2.Call(node);
     }
 };
 
 // Базовый класс для backtrack-алгоритма дуализации
-class DualizationBacktrackAlgorithmBase
-{
+class DualizationBacktrackAlgorithmBase {
 protected:
-
     DualizationNode _currentNode;
 
     bit_matrix _matrix;
@@ -149,15 +127,14 @@ protected:
     bit_matrix _restrictions;
 
 public:
-
-	DualizationBacktrackAlgorithmBase();
+    DualizationBacktrackAlgorithmBase();
 
     IDualizationCallback* InnerCallback;
 
     IDualizationCallback* CoverCallback;
-    
+
     void SetMatrix(bit_matrix matrix);
-    
+
     void LoadMatrix(std::string const& filename);
 
     void SetRestrictions(bit_matrix const& restrictions);
@@ -167,9 +144,8 @@ public:
     virtual void Dualize() = 0;
 
     virtual ~DualizationBacktrackAlgorithmBase(){};
-        
-protected:	
 
+protected:
     void DoInnerCallback();
 
     bool DoCoverCallback();
@@ -179,6 +155,4 @@ protected:
     void Backtrack();
 
     void ResetCurrentNode(int n = 0);
-
 };
-
