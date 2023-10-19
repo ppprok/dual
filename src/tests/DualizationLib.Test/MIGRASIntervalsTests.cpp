@@ -1,20 +1,14 @@
-#include "stdafx.h"
-#include "CppUnitTest.h"
 #include "MIGRAS.h"
 #include "Counters.h"
 #include "NumberChain.h"
 #include "GraphPoset.h"
 #include "IntervalLattice.h"
 #include <iterator>
-#include <boost\format.hpp>
-#include "UnitTesting.h"
 #include "ReversedPoset.h"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 using namespace PosetDualization;
 using namespace PosetDualization::MIGRAS;
-using namespace UtilsLib;
 
 namespace DualizationLibTest
 {
@@ -86,7 +80,7 @@ namespace DualizationLibTest
             }
             else
             {
-                Assert::AreEqual(count, (int)A.Counters.results);
+                CHECK_EQ(count, (int)A.Counters.results);
             }
             //int id = 0;
 
@@ -118,14 +112,14 @@ namespace DualizationLibTest
                 }
                 else
                 {
-                    Assert::AreEqual(count, (int)A.Counters.results);
+                    CHECK_EQ(count, (int)A.Counters.results);
                 }
 
                 /*if (! A.IdealIndependent.empty())
                 {
                     unique(A.IdealIndependent);
                     UT::Log("unique:%1%\n", A.IdealIndependent.size());
-                    Assert::AreEqual((int)A.Counters.results, (int)A.IdealIndependent.size());
+                    CHECK_EQ((int)A.Counters.results, (int)A.IdealIndependent.size());
                 }
                                 
                 if (! results.empty())
@@ -140,7 +134,7 @@ namespace DualizationLibTest
                     if (! diff.empty())
                         UT::Log("diff:%1%", diff.size());
                     
-                    Assert::IsTrue(diff.empty());
+                    CHECK(diff.empty());
                 }
                 else
                 {
@@ -153,7 +147,7 @@ namespace DualizationLibTest
         
         
         
-        TEST_METHOD(DualizeIntervalsMIGRASTest1)
+        TEST_CASE("DualizeIntervalsMIGRASTest1)
         {
             DoTest(
                 "../dualizationlib.test/data/A7.csv", 
@@ -162,7 +156,7 @@ namespace DualizationLibTest
                 -1);    
         }
 
-        TEST_METHOD(DualizeIntervalsMIGRASTest2)
+        TEST_CASE("DualizeIntervalsMIGRASTest2)
         {
             DoTest(
                 "../dualizationlib.test/data/A1.csv", 
@@ -171,7 +165,7 @@ namespace DualizationLibTest
                 -1);    
         }
 
-        TEST_METHOD(DualizeIntervalsMIGRASMaxResultsTest)
+        TEST_CASE("DualizeIntervalsMIGRASMaxResultsTest)
         {
             PosetsDualizationTask task;
             auto opt = read_options("../dualizationlib.test/data/dual-posets-task1.info");
@@ -184,7 +178,7 @@ namespace DualizationLibTest
             A.Options.MaxResults = 10;
 
             A.DualizeIntervals(task);
-            Assert::AreEqual(10, (int)A.Counters.results);            
+            CHECK_EQ(10, (int)A.Counters.results);
         }      
 
         

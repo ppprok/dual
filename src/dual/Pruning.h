@@ -2,7 +2,6 @@
 
 #include "DualizationBacktrackAlgorithmBase.h"
 #include "WeightBoundsPruning.h"
-#include "move_default.h"
 
 // Усечение ветвей ДР по границам на суммарный вес покрытых строк
 class CoveredRowsWeighter : public IDualizationCallback {
@@ -38,8 +37,6 @@ public:
         Weight DefaultWeight;
 
         Options() : DefaultWeight(0) {}
-
-        UTILITY_MOVE_DEFAULT_MEMBERS(Options, (TargetRows) (DefaultWeight) (RowsWeights));
     };
 
 public:

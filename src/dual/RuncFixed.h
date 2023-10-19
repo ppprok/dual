@@ -1,5 +1,5 @@
 #pragma once
-#include <boost/function.hpp>
+#include <functional>
 #include <vector>
 
 #include "bits.h"
@@ -56,7 +56,7 @@ public:
     Rows filterIndep;
 
     //! Output callback
-    boost::function<bool(RuncFixed*)> callback;
+    std::function<bool(RuncFixed*)> callback;
 
     //! Delay before make callback
     int callbackDelay;

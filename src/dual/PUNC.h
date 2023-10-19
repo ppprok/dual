@@ -5,7 +5,6 @@
 #include "DualizationBacktrackAlgorithmBase.h"
 #include "bit_mask.h"
 #include "bit_vector.h"
-#include "move_default.h"
 
 // Задание веса порядковому номеру
 struct OrderByWeight {
@@ -23,8 +22,6 @@ typedef std::vector<std::pair<int, int>> SupportRows;
 
 // Локальное состояние алгоритма PUNC
 struct LocalState {
-
-    UTILITY_MOVE_DEFAULT_MEMBERS(LocalState, (supportRows) (usedColumns) (restColumns) (topRow) (columnsOrder));
 
     int topRow;
 

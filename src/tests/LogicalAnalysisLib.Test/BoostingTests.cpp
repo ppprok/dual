@@ -13,7 +13,7 @@ namespace LogicalAnalysisLibTest
 	{
 	public:
 		
-		TEST_METHOD(ClassSelectionTest)
+		TEST_CASE("ClassSelectionTest)
 		{
 			BoostingLearner bl;
             bl.CurrentOptions.iterationsCount = 3;

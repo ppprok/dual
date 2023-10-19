@@ -1,5 +1,6 @@
-
 #include "SubsetsPoset.h"
+
+#include <string_view>
 
 void SubsetsPoset::Register() {
     Registrator<IPosetPtr>::Instance().RegisterFactory("SubsetsPoset",
@@ -40,18 +41,18 @@ PosetItem SubsetsPoset::FromString(char const* begin, char const* end) const {
 
     for (auto i = begin; i != end; ++i) {
         if (*i == '|' || i != begin) {
-            auto j = boost::lexical_cast<int>(begin, i - begin);
+            auto j = std::stoi(std::string{begin, i});
             if (j < 0 || j >= _size)
-                BOOST_THROW_EXCEPTION(std::out_of_range("Item number is out of range"));
+                throw std::out_of_range("Item number is out of range");
             subset |= 1 << j;
             begin = i + 1;
         }
     }
 
     if (begin != end) {
-        auto j = boost::lexical_cast<int>(begin, end - begin);
+        auto j = std::stoi(std::string{begin, end});
         if (j < 0 || j >= _size)
-            BOOST_THROW_EXCEPTION(std::out_of_range("Item number is out of range"));
+            throw std::out_of_range("Item number is out of range");
         subset |= 1 << j;
     }
 
@@ -206,7 +207,7 @@ bool SubsetsPoset::Equal(PosetItem const& left, PosetItem const& right) const {
 
 void SubsetsPoset::SetSize(int size) {
     if (size <= 0 || size > sizeof(PosetItem::Subset) * 8)
-        BOOST_THROW_EXCEPTION(std::out_of_range("Size is out of range"));
+        throw std::out_of_range("Size is out of range");
 
     _size = size;
     _universalMaximal.value.subset = (((PosetItem::Subset) 1) << _size) - 1;

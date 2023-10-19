@@ -7,7 +7,6 @@
 #include "Randomizer.h"
 #include "bit_vector.h"
 #include "blob.h"
-#include "move_default.h"
 
 typedef float Cost;
 
@@ -37,8 +36,6 @@ struct Individual {
     Individual() : cost(0) {}
 
     Individual(int gm, int gn, int n) : cost(0), rowsOrder(gm), cover(n), colsOrder(gn), fixed(n) {}
-
-    UTILITY_MOVE_DEFAULT_MEMBERS(Individual, (rowsOrder) (colsOrder) (cover) (cost) (fixed));
 
     Gene GetRowWeight(int i, int m) const {
         return GetWeight(i, m, rowsOrder);

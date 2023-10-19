@@ -4,15 +4,8 @@
 #include <string>
 
 #include "blob.h"
-#include "errors.h"
 
 typedef std::shared_ptr<FILE> FILE_ptr;
-
-struct file_error : virtual error {};
-struct file_open_error : virtual file_error {};
-struct file_create_error : virtual file_error {};
-struct file_read_error : virtual file_error {};
-struct file_write_error : virtual file_error {};
 
 FILE_ptr open_file_for_read(std::string const& filename);
 

@@ -38,7 +38,7 @@ Options read_options(std::string const& filename) {
     else if (strcasecmp(ext.c_str(), ".xml") == 0)
         boost::property_tree::read_xml(filename.c_str(), opt);
     else
-        BOOST_THROW_EXCEPTION(file_format_error() << boost::errinfo_file_name(filename));
+        throw std::runtime_error("file format error");
 
     return opt;
 }

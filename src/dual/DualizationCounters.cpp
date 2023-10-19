@@ -1,10 +1,11 @@
-#include <boost/format.hpp>
-
 #include "DualizationCounters.h"
 
+#include <sstream>
+
 std::string DualizationCounters::ToString() const {
-    return boost::str(boost::format("inner: %1%\nextra: %2%\ncount: %3%\nmax delay: %4%\n") % inners % extras % results
-                      % maxDelay);
+    std::stringstream ss;
+    ss << "inner:" << inners << "extra: " << extras << "count " << results << "max delay: " << maxDelay;
+    return ss.str();
 }
 
 DualizationCounters::DualizationCounters() {

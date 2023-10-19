@@ -106,14 +106,14 @@ namespace DualizationLibTest
                 }
                 else
                 {
-                    Assert::AreEqual(count, (int)A.Counters.results);
+                    CHECK_EQ(count, (int)A.Counters.results);
                 }
 
                 if (A.IdealIndependent.GetHeight() > 0)
                 {
                     A.IdealIndependent.DeleteDuplicateRows();
                     UT::Log("unique:%1%\n", A.IdealIndependent.GetHeight());
-                    Assert::AreEqual((int)A.Counters.results, (int)A.IdealIndependent.GetHeight());
+                    CHECK_EQ((int)A.Counters.results, (int)A.IdealIndependent.GetHeight());
                 }
                                 
                 /*if (! results.empty())
@@ -128,7 +128,7 @@ namespace DualizationLibTest
                     if (! diff.empty())
                         UT::Log("diff:%1%", diff.size());
                     
-                    Assert::IsTrue(diff.empty());
+                    CHECK(diff.empty());
                 }
                 else
                 {
@@ -141,7 +141,7 @@ namespace DualizationLibTest
         
         
         
-        TEST_METHOD(DualizeMIGRASTest1)
+        TEST_CASE("DualizeMIGRASTest1)
         {
             DoTest(
                 "../dualizationlib.test/data/A1.csv", 
@@ -150,7 +150,7 @@ namespace DualizationLibTest
                 -1);    
         }
 
-        TEST_METHOD(DualizeMIGRASTest2)
+        TEST_CASE("DualizeMIGRASTest2)
         {
             DoTest(
                 "../dualizationlib.test/data/A2.csv", 
@@ -159,7 +159,7 @@ namespace DualizationLibTest
                 -1);    
         }
 
-        TEST_METHOD(DualizeMIGRASTest3)
+        TEST_CASE("DualizeMIGRASTest3)
         {
             DoTest(
                 "../dualizationlib.test/data/A3.csv", 
@@ -167,21 +167,21 @@ namespace DualizationLibTest
                 "../dualizationlib.test/data/dual-posets-task5.info");    
         }
         
-        TEST_METHOD(DualizeMIGRASTest4)
+        TEST_CASE("DualizeMIGRASTest4)
         {
             DoTest(
                 "../dualizationlib.test/data/A4.csv", 
                 "IA4.csv",//"../dualizationlib.test/data/IA4.csv", 
                 "../dualizationlib.test/data/dual-posets-task2.info");    
         }
-        /*TEST_METHOD(DualizeMIGRASTest5)
+        /*TEST_CASE("DualizeMIGRASTest5)
         {
             DoTest(
                 "../dualizationlib.test/data/numberchains-20x10-norm-0-1.csv", 
                 "",//"../dualizationlib.test/data/numberchains-20x10-norm-0-1-output.csv", 
                 "../dualizationlib.test/data/numberchains-10.json");    
         }*/
-       /* TEST_METHOD(DualizeMIGRASTest6)
+       /* TEST_CASE("DualizeMIGRASTest6)
         {
             DoTest(
                 "../dualizationlib.test/data/pricegraph-10x10-uniform-10.csv", 
@@ -189,7 +189,7 @@ namespace DualizationLibTest
                 "../dualizationlib.test/data/pricegraph-10.json");    
         }*/
 
-        TEST_METHOD(DualizeMIGRASTest7)
+        TEST_CASE("DualizeMIGRASTest7)
         {
             DoTest(
                 "../dualizationlib.test/data/pricegraph-5x5-uniform-10.csv", 
@@ -198,7 +198,7 @@ namespace DualizationLibTest
         }
 
         
-        TEST_METHOD(DualizeMIGRASTest8)
+        TEST_CASE("DualizeMIGRASTest8)
         {
             DoTest(
                 "../dualizationlib.test/data/A5.csv", 
@@ -206,7 +206,7 @@ namespace DualizationLibTest
                 "../dualizationlib.test/data/dual-posets-task3.info");    
         }
 
-        TEST_METHOD(DualizeMIGRASTest9)
+        TEST_CASE("DualizeMIGRASTest9)
         {
             DoTest(
                 "../dualizationlib.test/data/A6.csv", 

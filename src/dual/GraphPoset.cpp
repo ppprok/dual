@@ -16,12 +16,12 @@ void GraphPoset::SetOptions(Options const& options) {
 
     DirectedEdges edges;
     for (auto& b : options.get_child("DirectedEdges", Options())) {
-        auto v1 = boost::lexical_cast<int>(b.first.empty() ? b.second.data() : b.first);
+        auto v1 = std::stoi({b.first.empty() ? b.second.data() : b.first});
         if (n <= v1)
             n = v1 + 1;
 
         for (auto& a : b.second) {
-            auto v2 = boost::lexical_cast<int>(a.first.empty() ? a.second.data() : a.first);
+            auto v2 = std::stoi({a.first.empty() ? a.second.data() : a.first});
             if (n <= v2)
                 n = v2 + 1;
 
@@ -58,7 +58,7 @@ bool GraphPoset::Preceq(PosetItem const& left, PosetItem const& right) const {
 
 void GraphPoset::SetGraph(int n, DirectedEdges const& edges) {
     if (n < 0)
-        BOOST_THROW_EXCEPTION(std::out_of_range("Size of graph must be not negative"));
+        throw std::out_of_range("Size of graph must be not negative");
 
     _size = n;
 
@@ -193,7 +193,7 @@ PosetItem GraphPoset::GetUniversalMinimal() const {
 
 std::string GraphPoset::ToString(PosetItem const& item) const {
     if (IsItem(item))
-        return boost::lexical_cast<std::string>(item.value.vertex);
+        return std::to_string(item.value.vertex);
 
     if (IsUniversalMaximal(item))
         return "+\\infty";
@@ -201,7 +201,7 @@ std::string GraphPoset::ToString(PosetItem const& item) const {
     if (IsUniversalMinimal(item))
         return "-\\infty";
 
-    return boost::lexical_cast<std::string>(item.value.vertex);
+    return std::to_string(item.value.vertex);
 }
 
 PosetItem GraphPoset::FromString(char const* begin, char const* end) const {
@@ -211,7 +211,7 @@ PosetItem GraphPoset::FromString(char const* begin, char const* end) const {
     if (streq(begin, end, "-\\infty"))
         return GetUniversalMinimal();
 
-    return boost::lexical_cast<int>(begin, end - begin);
+    return std::stoi(std::string{begin, end});
 }
 
 int GraphPoset::GetSize() const {

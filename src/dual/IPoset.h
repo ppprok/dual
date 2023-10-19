@@ -10,7 +10,7 @@
 
 //typedef __int64 Number;
 
-struct too_many_items_error : virtual error {};
+struct too_many_items_error : std::runtime_error {};
 
 //////////////////////////////////////////////////////////////////////////
 // Partialy ordered set (poset) interface

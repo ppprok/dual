@@ -1,13 +1,9 @@
-#include "stdafx.h"
-#include "CppUnitTest.h"
 #include "AlgorithmEstimator.h"
 #include "BoostingLearner.h"
 #include "FTVotingLearner.h"
 #include "InitECFeatureSelector.h"
-#include "logging_utils.h"
 #include "ECVotingLearner.h"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace LogicalAnalysisLibTest
 {
@@ -15,7 +11,7 @@ namespace LogicalAnalysisLibTest
 	{
 	public:
 		
-		TEST_METHOD(LeaveOneOutCrossValidationTest)
+		TEST_CASE("LeaveOneOutCrossValidationTest)
 		{
 			AlgorithmEstimator ae;
             

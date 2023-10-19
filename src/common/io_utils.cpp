@@ -1,37 +1,33 @@
-
-#include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/string_file.hpp>
-#include <unistd.h>
-
-#include "errors.h"
 #include "io_utils.h"
+
+#include <filesystem>
+#include <fstream>
+#include <stdexcept>
 
 std::shared_ptr<FILE> open_file_for_read(std::string const& filename) {
     FILE* f = fopen(filename.c_str(), "rb");
 
     if (!f)
-        BOOST_THROW_EXCEPTION(file_open_error()
-                              << boost::errinfo_api_function("fopen") << boost::errinfo_errno(errno)
-                              << boost::errinfo_file_name(filename) << boost::errinfo_file_open_mode("rb"));
+        throw std::runtime_error("Open file error");
 
-    return std::shared_ptr<FILE>(f, fclose);
+    return {f, fclose};
 }
 
 FILE_ptr create_file_for_write(std::string const& filename) {
     FILE* f = fopen(filename.c_str(), "wb");
 
     if (!f)
-        BOOST_THROW_EXCEPTION(file_create_error()
-                              << boost::errinfo_api_function("fopen") << boost::errinfo_errno(errno)
-                              << boost::errinfo_file_name(filename) << boost::errinfo_file_open_mode("wb"));
+        throw std::runtime_error("Create file error");
 
-    return std::shared_ptr<FILE>(f, fclose);
+    return {f, fclose};
 }
 
 std::string read_all(std::string const& filename) {
-    std::string buffer;
-    boost::filesystem::load_string_file(filename, buffer);
-    return std::move(buffer);
+    auto size = std::filesystem::file_size(filename);
+    std::string buffer(size, '\0');
+    std::ifstream f(filename, std::ios::binary | std::ios::in);
+    f.read(buffer.data(), size);
+    return buffer;
 }
 
 void write(FILE* file, char const* begin, char const* end) {
@@ -41,8 +37,7 @@ void write(FILE* file, char const* begin, char const* end) {
         return;
 
     if (fwrite(reinterpret_cast<void*>(const_cast<char*>(begin)), 1, count, file) != count) {
-        BOOST_THROW_EXCEPTION(file_write_error()
-                              << boost::errinfo_api_function("fwrite") << boost::errinfo_errno(errno));
+        throw std::runtime_error("Write to file error");
     }
 }
 
@@ -53,8 +48,7 @@ void write(FILE* file, std::string const& str) {
         return;
 
     if (fwrite(reinterpret_cast<void*>(const_cast<char*>(&str[0])), 1, count, file) != count) {
-        BOOST_THROW_EXCEPTION(file_write_error()
-                              << boost::errinfo_api_function("fwrite") << boost::errinfo_errno(errno));
+        throw std::runtime_error("Write to file error");
     }
 }
 
@@ -64,7 +58,6 @@ void write(FILE* file, char const* begin) {
     for (; *begin && r != EOF; ++begin)
         r = fputc(*begin, file);
     if (r == EOF) {
-        BOOST_THROW_EXCEPTION(file_write_error()
-                              << boost::errinfo_api_function("fputc") << boost::errinfo_errno(errno));
+        throw std::runtime_error("Write to file error");
     }
 }

@@ -1,16 +1,15 @@
 #pragma once
 
-#include <boost/function.hpp>
+#include <functional>
 #include <map>
+#include <stdexcept>
+#include <string>
 
-#include "errors.h"
-
-// ����������� ���������� �������� � ������ �������� ���������� ���� �� �����
 template<typename T>
 class Registrator {
     typedef std::map<std::string, T> InstanceMap;
 
-    typedef boost::function<T()> Factory;
+    typedef std::function<T()> Factory;
 
     typedef std::map<std::string, Factory> FactoryMap;
 
@@ -47,14 +46,14 @@ public:
     T& Get(std::string const& name) {
         auto pos = _instances.find(name);
         if (pos == _instances.end())
-            BOOST_THROW_EXCEPTION(error() << message("Object isn't registered") << object_name(name));
+            throw std::runtime_error("Object isn't registered " + name);
         return pos->second;
     }
 
     T Create(std::string const& name) {
         auto pos = _factories.find(name);
         if (pos == _factories.end())
-            BOOST_THROW_EXCEPTION(error() << message("Factory isn't registered") << object_name(name));
+            throw std::runtime_error("Factory isn't registered " + name);
         return pos->second();
     }
 

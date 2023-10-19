@@ -81,7 +81,7 @@ std::vector<bits32> IntegersFileReader::ReadBitMatrix32(int first) {
         if (IsDigitChar(_lastChar)) {
             int j = ReadUnsignedInteger(_lastChar - '0') - first;
             if (j < 0 || j > 31)
-                BOOST_THROW_EXCEPTION(std::out_of_range("input more than 32 bits"));
+                throw std::out_of_range("input more than 32 bits");
             row |= (bits32) 1 << j;
         }
 
@@ -109,7 +109,7 @@ std::vector<bits64> IntegersFileReader::ReadBitMatrix64(int first) {
         if (IsDigitChar(_lastChar)) {
             int j = ReadUnsignedInteger(_lastChar - '0') - first;
             if (j < 0 || j > 63)
-                BOOST_THROW_EXCEPTION(std::out_of_range("input more than 64 bits"));
+                throw std::out_of_range("input more than 64 bits");
             row |= ((bits64) 1) << j;
         }
 

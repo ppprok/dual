@@ -32,24 +32,24 @@ namespace DualizationLibTest
             graphPoset->SetGraph(7, edges);
         }
 
-        TEST_METHOD(SetOptionsTest)
+        TEST_CASE("SetOptionsTest)
         {
             auto options = read_json_options("../DualizationLib.Test/data/graphposet1.json");
             GraphPoset poset;
             poset.SetOptions(options);
 
-            Assert::AreEqual(7, poset.GetSize());
+            CHECK_EQ(7, poset.GetSize());
             PosetItems items;
             poset.GetAllItems(items);
 
             for(auto& a:items)
                 for (auto& b: items)
-                    Assert::AreEqual(poset.Preceq(a, b), tester.GetPoset()->Preceq(a, b));
+                    CHECK_EQ(poset.Preceq(a, b), tester.GetPoset()->Preceq(a, b));
 
         }
         
 
-        TEST_METHOD(SelectFilterTest)
+        TEST_CASE("SelectFilterTest)
         {
             PosetItems A = list_of(1)(4)(2)(4);
             PosetItems D = list_of(2)(5)(3)(1)(4)(6);
@@ -57,17 +57,17 @@ namespace DualizationLibTest
             PosetItems selected = tester.SelectFilterSelfTest(A, D);
             PosetItems expected = list_of(2)(5)(1)(4);
 
-            Assert::IsTrue(tester.Equals(expected, selected));
+            CHECK(tester.Equals(expected, selected));
         }
 
-        TEST_METHOD(SelectFilterEmptyTest)
+        TEST_CASE("SelectFilterEmptyTest)
         {
             PosetItems D = list_of(2)(5)(3)(3)(4)(6);
             PosetItems selected = tester.SelectFilterSelfTest(PosetItems(), D);			
-            Assert::IsTrue(selected.empty());
+            CHECK(selected.empty());
         }
 
-        TEST_METHOD(SelectIdealTest)
+        TEST_CASE("SelectIdealTest)
         {
             PosetItems A = list_of(1)(1)(3)(0)(4);
             PosetItems D = list_of(2)(5)(7)(3)(4)(6);
@@ -75,17 +75,17 @@ namespace DualizationLibTest
             PosetItems selected = tester.SelectIdealSelfTest(A, D);
             PosetItems expected = list_of(2)(7)(3)(4)(6);
 
-            Assert::IsTrue(tester.Equals(expected, selected));
+            CHECK(tester.Equals(expected, selected));
         }
 
-        TEST_METHOD(SelectIdealEmptyTest)
+        TEST_CASE("SelectIdealEmptyTest)
         {
             PosetItems D = list_of(2)(5)(0)(3)(4)(6);
             PosetItems selected = tester.SelectIdealSelfTest(PosetItems(), D);			
-            Assert::IsTrue(selected.empty());
+            CHECK(selected.empty());
         }
 
-        TEST_METHOD(SelectFilterIndependentTest)
+        TEST_CASE("SelectFilterIndependentTest)
         {
             PosetItems A = list_of(1)(4)(2)(4);
             PosetItems D = list_of(2)(5)(0)(3)(4)(6);
@@ -93,17 +93,17 @@ namespace DualizationLibTest
             PosetItems selected = tester.SelectFilterIndependentSelfTest(A, D);
             PosetItems expected = list_of(3)(6);
 
-            Assert::IsTrue(tester.Equals(expected, selected));
+            CHECK(tester.Equals(expected, selected));
         }
 
-        TEST_METHOD(SelectFilterIndependentEmptyTest)
+        TEST_CASE("SelectFilterIndependentEmptyTest)
         {
             PosetItems D = list_of(2)(5)(0)(3)(4)(6);
             PosetItems selected = tester.SelectFilterIndependentSelfTest(PosetItems(), D);
-            Assert::IsTrue(tester.Equals(selected, D));
+            CHECK(tester.Equals(selected, D));
         }
 
-        TEST_METHOD(SelectIdealIndependentTest)
+        TEST_CASE("SelectIdealIndependentTest)
         {
             PosetItems A = list_of(1)(1)(3)(0)(4);
             PosetItems D = list_of(2)(5)(7)(3)(4)(6);
@@ -111,79 +111,79 @@ namespace DualizationLibTest
             PosetItems selected = tester.SelectIdealIndependentSelfTest(A, D);
             PosetItems expected = list_of(5);
 
-            Assert::IsTrue(tester.Equals(expected, selected));
+            CHECK(tester.Equals(expected, selected));
         }
 
-        TEST_METHOD(SelectIdealIndependentEmptyTest)
+        TEST_CASE("SelectIdealIndependentEmptyTest)
         {
             PosetItems D = list_of(2)(5)(3)(3)(4)(6);
             PosetItems selected = tester.SelectIdealIndependentSelfTest(PosetItems(), D);			
-            Assert::IsTrue(tester.Equals(selected, D));
+            CHECK(tester.Equals(selected, D));
         }
 
-        TEST_METHOD(SelectMaximalTest)
+        TEST_CASE("SelectMaximalTest)
         {
             PosetItems D = list_of(2)(5)(3)(3)(4);
 
             PosetItems selected = tester.SelectMaximalSelfTest(D);
             PosetItems expected = list_of(3)(3)(4);
 
-            Assert::IsTrue(tester.Equals(expected, selected));
+            CHECK(tester.Equals(expected, selected));
         }
 
-        TEST_METHOD(SelectMinimalTest)
+        TEST_CASE("SelectMinimalTest)
         {
             PosetItems D = list_of(6)(3)(4)(6);
 
             PosetItems selected = tester.SelectMinimalSelfTest(D);
             PosetItems expected = list_of(3)(4);
 
-            Assert::IsTrue(tester.Equals(expected, selected));
+            CHECK(tester.Equals(expected, selected));
         }
 
-        TEST_METHOD(SelectUniqueTest)
+        TEST_CASE("SelectUniqueTest)
         {
             PosetItems D = list_of(0)(5)(0)(3)(3)(5);
 
             PosetItems selected = tester.SelectUniqueSelfTest(D);
             PosetItems expected = list_of(0)(3)(5);
 
-            Assert::IsTrue(tester.Equals(expected, selected));
+            CHECK(tester.Equals(expected, selected));
         }
 
-        TEST_METHOD(PreceqTest)
+        TEST_CASE("PreceqTest)
         {
             PosetItems A = list_of(1)(4)(3)(2)(4)(0);			
             tester.PreceqSelfTest(A);
         }
 
-        TEST_METHOD(PrecTest)
+        TEST_CASE("PrecTest)
         {
             PosetItems A = list_of(1)(4)(3)(2)(9)(0);			
             tester.PrecSelfTest(A);
         }
 
-        TEST_METHOD(EqualTest)
+        TEST_CASE("EqualTest)
         {
             PosetItems A = list_of(1)(4)(3)(2)(8)(0)(3)(9);			
             tester.EqualSelfTest(A);
         }
 
-        TEST_METHOD(IsMaximalFromTest)
+        TEST_CASE("IsMaximalFromTest)
         {
             PosetItems A = list_of(1)(4)(3)(2)(4)(0)(3)(4);			
             int r = tester.IsMaximalFromSelfTest(A);
-            Assert::AreEqual(5, r);
+            CHECK_EQ(5, r);
         }
 
-        TEST_METHOD(IsMinimalFromTest)
+        TEST_CASE("IsMinimalFromTest)
         {
             PosetItems A = list_of(1)(4)(3)(2)(4)(0)(3)(4);
             int r = tester.IsMinimalFromSelfTest(A);
-            Assert::AreEqual(2, r);
+            CHECK_EQ(2, r);
         }
 
-        TEST_METHOD(IsItemTest)
+        TEST_CASE("IsItemTest)
         {
             PosetItems A = list_of(1)(3)(2)(4)(0)(4);
             PosetItems B = list_of(-2)(14)(-1)(10);
@@ -192,7 +192,7 @@ namespace DualizationLibTest
             tester.IsItemSelfTest(A, B);
         }
 
-        TEST_METHOD(ToStringTest)
+        TEST_CASE("ToStringTest)
         {
             PosetItems A = list_of(1)(3)(2)(4)(0)(4);
             A.push_back(tester.GetPoset()->GetUniversalMaximal());
@@ -201,13 +201,13 @@ namespace DualizationLibTest
             tester.ToStringConvertSelfTest(A);
         }
 
-        TEST_METHOD(FromStringTest)
+        TEST_CASE("FromStringTest)
         {
             Strings A = list_of("1")("3")("2")("4")("0")("9")("+\\infty")("-\\infty");
             tester.FromStringConvertSelfTest(A);
         }
 
-        TEST_METHOD(GetMinimalTest)
+        TEST_CASE("GetMinimalTest)
         {
             PosetItems A = list_of(1)(3)(2)(4)(0)(9);
             A.push_back(tester.GetPoset()->GetUniversalMaximal());
@@ -215,10 +215,10 @@ namespace DualizationLibTest
 
             auto minimal = tester.GetMinimalSelfTest(A);
             PosetItems expected = list_of(0)(1)(5);
-            Assert::IsTrue(tester.Equals(expected, minimal));
+            CHECK(tester.Equals(expected, minimal));
         }
 
-        TEST_METHOD(GetMaximalTest)
+        TEST_CASE("GetMaximalTest)
         {
             PosetItems A = list_of(1)(3)(2)(4)(0)(9);
             A.push_back(tester.GetPoset()->GetUniversalMaximal());
@@ -226,10 +226,10 @@ namespace DualizationLibTest
 
             auto maximal = tester.GetMaximalSelfTest(A);
             PosetItems expected=list_of(3)(6);
-            Assert::IsTrue(tester.Equals(expected, maximal));
+            CHECK(tester.Equals(expected, maximal));
         }
 
-        TEST_METHOD(TopologicalSortTest)
+        TEST_CASE("TopologicalSortTest)
         {
             PosetItems A = list_of(1)(4)(3)(2)(4)(0)(3)(4);			
             A.push_back(tester.GetPoset()->GetUniversalMaximal());
@@ -237,11 +237,11 @@ namespace DualizationLibTest
             auto B = tester.TopologicalSortSelfTest(A);            
             PosetItems C = list_of(tester.GetPoset()->GetUniversalMaximal())
                 (3)(3)(4)(4)(4)(2)(0)(1);
-            Assert::IsTrue(tester.Equals(B, C));
+            CHECK(tester.Equals(B, C));
         }
 
 
-        TEST_METHOD(PrecImmediateTest)
+        TEST_CASE("PrecImmediateTest)
         {
             PosetItems A;
             tester.GetPoset()->GetAllItems(A);
@@ -251,7 +251,7 @@ namespace DualizationLibTest
             tester.PrecImmediateSelfTest(A);
         }
 
-        TEST_METHOD(GetImmediatePrecTest)
+        TEST_CASE("GetImmediatePrecTest)
         {
             PosetItems A;
             tester.GetPoset()->GetAllItems(A);
@@ -262,7 +262,7 @@ namespace DualizationLibTest
         }
 
 
-        TEST_METHOD(GetImmediateSuccTest)
+        TEST_CASE("GetImmediateSuccTest)
         {
             PosetItems A;
             tester.GetPoset()->GetAllItems(A);
@@ -272,7 +272,7 @@ namespace DualizationLibTest
             tester.GetImmediateSuccSelfTest(A);
         }
 
-        TEST_METHOD(IsMinimalIndependentTest)
+        TEST_CASE("IsMinimalIndependentTest)
         {
             PosetItems candidates;
             tester.GetPoset()->GetAllItems(candidates);
@@ -285,7 +285,7 @@ namespace DualizationLibTest
         }
 
 
-        TEST_METHOD(GetMinimalIndependentTest)
+        TEST_CASE("GetMinimalIndependentTest)
         {
             PosetItems candidates;
             tester.GetPoset()->GetAllItems(candidates);
@@ -296,10 +296,10 @@ namespace DualizationLibTest
             auto indep =  tester.GetMinimalIndependentSelfTest(A, candidates);
 
             PosetItems expected = list_of(4);
-            Assert::IsTrue(tester.Equals(expected, indep));
+            CHECK(tester.Equals(expected, indep));
         }
 
-        TEST_METHOD(IsMaximalIndependentTest)
+        TEST_CASE("IsMaximalIndependentTest)
         {
             PosetItems candidates;
             tester.GetPoset()->GetAllItems(candidates);
@@ -312,7 +312,7 @@ namespace DualizationLibTest
         }
 
 
-        TEST_METHOD(GetMaximalIndependentTest)
+        TEST_CASE("GetMaximalIndependentTest)
         {
             PosetItems candidates;
             tester.GetPoset()->GetAllItems(candidates);
@@ -324,10 +324,10 @@ namespace DualizationLibTest
             auto indep = tester.GetMaximalIndependentSelfTest(A, candidates);
 
             PosetItems expected = list_of(0)(5);
-            Assert::IsTrue(tester.Equals(expected, indep));
+            CHECK(tester.Equals(expected, indep));
         }
 
-        TEST_METHOD(GetIndependentIntervalsTest)
+        TEST_CASE("GetIndependentIntervalsTest)
         {
             PosetItems candidates;
             tester.GetPoset()->GetAllItems(candidates);
@@ -339,7 +339,7 @@ namespace DualizationLibTest
 
             auto indep = tester.GetIndependentIntervalsSelfTest(A, B, candidates);
 
-            Assert::AreEqual(4, indep);
+            CHECK_EQ(4, indep);
         }
 
 

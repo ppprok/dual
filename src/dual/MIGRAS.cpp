@@ -1,5 +1,3 @@
-#include "logging_utils.h"
-
 #include "MIGRAS.h"
 
 namespace PosetDualization {
@@ -496,9 +494,6 @@ void DualizationAlgorithm::Dualize(PosetsDualizationTask const& task) {
     _n = task.GetPosetsProduct().GetPosets().size();
     int m = task.GetIdealBase().GetHeight();
 
-    LOG_SEV(info) << "IdealBaseSize: " << m;
-    LOG_SEV(info) << "Posets: " << _n;
-
     _localStatesPool.Reserve(m + _n + 1);
 
     IdealIndependent.Resize(0, _n);
@@ -526,10 +521,6 @@ void DualizationAlgorithm::DualizeIntervals(PosetsDualizationTask const& task) {
     _n = task.GetPosetsProduct().GetPosets().size();
     int m1 = task.GetIdealBase().GetHeight();
     int m2 = task.GetFilterBase().GetHeight();
-
-    LOG_SEV(info) << "Posets: " << _n;
-    LOG_SEV(info) << "IdealBaseSize: " << m1;
-    LOG_SEV(info) << "FilterBaseSize: " << m2;
 
     _localStatesPool.Reserve(m1 + _n * 2 + m2);
 

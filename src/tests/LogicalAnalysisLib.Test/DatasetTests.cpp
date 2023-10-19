@@ -11,27 +11,27 @@ namespace LogicalAnalysisLibTest
 	{
 	public:
 		
-        TEST_METHOD(LoadEx6)
+        TEST_CASE("LoadEx6)
         {
 
             Dataset ds;
 
             ds.Load("../ao.test/datasets/ex6.txt");
 
-            Assert::IsTrue(ds.objects.size() == 12);
-            Assert::IsTrue(ds.classes.size() == 2);
+            CHECK(ds.objects.size() == 12);
+            CHECK(ds.classes.size() == 2);
 
 
         }
 
-        TEST_METHOD(LoadIris)
+        TEST_CASE("LoadIris)
         {
             Dataset ds;
 
             ds.Load("../ao.test/datasets/iris.txt");
 
-            Assert::IsTrue(ds.objects.size() == 77);
-            Assert::IsTrue(ds.classes.size() == 3);
+            CHECK(ds.objects.size() == 77);
+            CHECK(ds.classes.size() == 3);
         }
 
 	};

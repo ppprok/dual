@@ -1,35 +1,20 @@
-#include "stdafx.h"
-#include "CppUnitTest.h"
-#include "..\UtilsLib\CSVLoader.h"
+#include <doctest.h>
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+#include "CSVLoader.h"
 
-namespace UtilsLibTest
-{
-    TEST_CLASS(CSVTests)
-    {
-    public:
+TEST_CASE("load_CSV_and_create_columns") {
+    CSVLoader csv;
+    csv.Load("data/winequality-red.csv");
+    csv.CreateColumns([](char c) { return c == ';'; }, [](char c) { return c == '\n'; });
+    csv.TrimSpaces(CharMap(std::string("\"\t \r")));
 
+    REQUIRE_EQ((int) csv.GetColumns().size(), 12);
+    CHECK(csv.GetColumns()[3].GetName() == std::string("residual sugar"));
+    CHECK_EQ(csv.GetColumns()[4].GetValue<double>(4), 0.075);
 
-        TEST_METHOD(load_CSV_and_create_columns)
-        {
-            CSVLoader csv;
-            csv.Load("../UtilsLib.Test/data/winequality-red.csv");
-            csv.CreateColumns(
-                [](char c){return c == ';';},                
-                [](char c){return c == '\n';});
-            csv.TrimSpaces(CharMap(std::string("\"\t \r")));
+    for (int i = 0; i < 12; ++i) {
+        CHECK_EQ(1600, (int) csv.GetColumns()[i].values.size());
+    }
 
-            Assert::AreEqual((int)csv.GetColumns().size(), 12);
-            Assert::IsTrue(csv.GetColumns()[3].GetName() == std::string("residual sugar"));
-            Assert::AreEqual(csv.GetColumns()[4].GetValue<double>(4), 0.075);
-
-            for (int i = 0; i < 12; ++i)
-            {
-                Assert::AreEqual(1600, (int) csv.GetColumns()[i].values.size());
-            }
-
-            Assert::AreEqual(csv.GetColumns()[11].GetValue<int>(1599), 6);
-        }
-    };
+    CHECK_EQ(csv.GetColumns()[11].GetValue<int>(1599), 6);
 }

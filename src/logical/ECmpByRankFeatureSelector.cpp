@@ -1,9 +1,7 @@
-
 #include "ECmpByRankFeatureSelector.h"
 
 #include "Configurable.h"
 #include "containers.h"
-#include "logging_utils.h"
 
 void ECmpByRankFeatureSelector::SetOptions( ::Options const& options )
 {
@@ -37,8 +35,6 @@ void ECmpByRankFeatureSelector::Init( Dataset const& ds )
     }
 
     unique(_ecmpSet);
-    
-    LOG_SEV(trace) << "localBasis.size()=" << _ecmpSet.size();
 }
 
 
@@ -120,8 +116,6 @@ ECmpRelationTypes ECmpByRankFeatureSelector::GetRelationTypes( ::Options const& 
             relations.push_back(ECmp::NotAnd);
         else if (s == "OR")
             relations.push_back(ECmp::Or);
-        else
-            LOG_SEV(warning) << "Unknown relation type " << s;
     }
 
     return std::move(relations);

@@ -102,7 +102,7 @@ std::string NumberChain::ToString(PosetItem const& item) const {
     if (IsMinimal(item))
         return "-\\infty";
 
-    return boost::lexical_cast<std::string>(item.value.dnumber);
+    return std::to_string(item.value.dnumber);
 }
 
 PosetItem NumberChain::FromString(char const* begin, char const* end) const {
@@ -112,7 +112,7 @@ PosetItem NumberChain::FromString(char const* begin, char const* end) const {
     if (streq(begin, end, "-\\infty"))
         return GetUniversalMinimal();
 
-    return boost::lexical_cast<Number>(std::string(begin, end));
+    return static_cast<Number>(std::stol(std::string(begin, end)));
 }
 
 void NumberChain::SelectUnique(PosetItems& items) const {
@@ -236,7 +236,7 @@ void NumberChain::GetMinimalIndependent(PosetItems const& B, PosetItems& minimal
 }
 
 void NumberChain::GetAllItems(PosetItems& items) const {
-    BOOST_THROW_EXCEPTION(too_many_items_error());
+    throw std::runtime_error("Too many items in poset");
 }
 
 void NumberChain::GetIndependentIntervals(PosetItems const& A, PosetItems const& B, PosetIntervals& independent) const {

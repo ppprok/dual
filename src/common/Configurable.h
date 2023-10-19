@@ -50,11 +50,6 @@ T TryCreateChild(Options const& options, std::string const& node) {
     return child;
 }
 
-/*!
-    Исключение при попытке загрузить файл неизвестного формата
-*/
-struct file_format_error : virtual error {};
-
 // Read options from file of json-format
 Options read_json_options(std::string const& filename);
 

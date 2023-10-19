@@ -8,7 +8,6 @@
 #include "bit_mask.h"
 #include "bit_vector.h"
 #include "marked.h"
-#include "move_default.h"
 #include "range.h"
 
 namespace Runc {
@@ -35,9 +34,6 @@ class LocalState {
         Uncoverable
     };
 
-    /*private:
-
-    BOOST_MOVABLE_BUT_NOT_COPYABLE(LocalState)*/
 
     friend class GlobalState;
 
@@ -55,7 +51,6 @@ private:
     bit_vector _restCols;
 
 public:
-    UTILITY_MOVE_DEFAULT_MEMBERS(LocalState, (_uncovered) (_support) (_supportGroups) (_restCols));
 
     LocalState();
 

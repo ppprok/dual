@@ -2,7 +2,6 @@
 #include "IPoset.h"
 #include "PosetItem.h"
 #include "bit_vector.h"
-#include "move_default.h"
 
 namespace PosetDualization {
 
@@ -16,10 +15,6 @@ struct PosetsDualizationNode {
         Inner = 0,
         Result = 1
     };
-
-    UTILITY_MOVE_DEFAULT_MEMBERS(
-            PosetsDualizationNode,
-            (CurrentPosetItems) (Type) (_usedItems) (_usedItemsSizes) (_settedItems) (_replacesItems));
 
     /// Current item
     PosetItems CurrentPosetItems;

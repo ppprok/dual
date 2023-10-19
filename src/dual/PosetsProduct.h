@@ -237,7 +237,7 @@ public:
 
     std::string ToString(PosetItemsMatrix const& matrix,
                          std::string const& separator = ",",
-                         std::string rowSep = "\n") const;
+                         const std::string& rowSep = "\n") const;
 
 private:
     // Is i-th item support for x item

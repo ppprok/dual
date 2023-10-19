@@ -18,7 +18,7 @@ void GeneticDualizer::Mutate(Genes& weights, Gene sigma /*= 1*/) {
     Gene maxw = -minw;
 
     for (int i = 0; i < (int) weights.size(); ++i) {
-        auto w = weights[i] + RandomSampler<boost::uniform_01<Gene>>::RandomValue(-sigma, 2 * sigma);
+        auto w = weights[i] + RandomSampler<std::uniform_real_distribution<Gene>>::RandomValue(-sigma, 2 * sigma);
         if (minw > w)
             minw = w;
         if (maxw < w)
@@ -83,7 +83,7 @@ void GeneticDualizer::Crossover(Individual const& i1,
     Crossover(i1.colsOrder, i2.colsOrder, c1, c2, child.colsOrder);
     Crossover(i1.rowsOrder, i2.rowsOrder, c1, c2, child.rowsOrder);
 
-    auto r = RandomSampler<boost::uniform_01<Gene, Gene>>::RandomValue(0.0f, c1 + c2);
+    auto r = RandomSampler<std::uniform_real_distribution<Gene>>::RandomValue(0.0f, c1 + c2);
 
     if (r < c1)
         child.fixed.assign(i1.fixed);
@@ -124,8 +124,8 @@ void GeneticDualizer::Crossover(Gene scale /*= 1*/) {
 }
 
 void GeneticDualizer::RandomIndividual(Individual& ind) {
-    RandomSampler<boost::uniform_01<Gene>>::RandomValues(ind.rowsOrder.begin(), ind.rowsOrder.end(), 0.0f, 1.0f);
-    RandomSampler<boost::uniform_01<Gene>>::RandomValues(ind.colsOrder.begin(), ind.colsOrder.end(), 0.0f, 1.0f);
+    RandomSampler<std::uniform_real_distribution<Gene>>::RandomValues(ind.rowsOrder.begin(), ind.rowsOrder.end(), 0.0f, 1.0f);
+    RandomSampler<std::uniform_real_distribution<Gene>>::RandomValues(ind.colsOrder.begin(), ind.colsOrder.end(), 0.0f, 1.0f);
 }
 
 void GeneticDualizer::UpdateIndividual(Individual& ind) {

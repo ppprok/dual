@@ -130,7 +130,7 @@ std::string Antichain::ToString(PosetItem const& item) const {
     if (IsUniversalMinimal(item))
         return "-\\infty";
 
-    return boost::lexical_cast<std::string>(item.value.vertex);
+    return std::to_string(item.value.vertex);
 }
 
 PosetItem Antichain::FromString(char const* begin, char const* end) const {
@@ -141,7 +141,7 @@ PosetItem Antichain::FromString(char const* begin, char const* end) const {
     if (streq(begin, end, "-\\infty"))
         return GetUniversalMinimal();
 
-    return boost::lexical_cast<int>(begin, end - begin);
+    return std::stoi(std::string({begin, end}));
 }
 
 bool Antichain::IsUniversalMinimal(PosetItem const& item) const {

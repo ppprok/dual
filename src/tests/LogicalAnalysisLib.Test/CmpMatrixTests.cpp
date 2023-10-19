@@ -1,21 +1,13 @@
-#include "stdafx.h"
-#include "CppUnitTest.h"
 #include "CmpMatrix.h"
-#include <CppUnitTestAssert.h>
 #include "Dataset.h"
 #include "FTFeatureSelector.h"
-#include "logging_utils.h"
 #include "CmpFitMatrixBuilder.h"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-
-namespace LogicalAnalysisLibTest
-{
     TEST_CLASS(CmpMatrixTests)
     {
     public:
 
-        TEST_METHOD(LoadFittingObjectsTest)
+        TEST_CASE("LoadFittingObjectsTest)
         {
             Dataset ds;
             ds.Load("../datasets/soybean-small.int");
@@ -58,4 +50,3 @@ namespace LogicalAnalysisLibTest
         }
 
     };
-}

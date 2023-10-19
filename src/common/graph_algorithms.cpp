@@ -1,6 +1,3 @@
-
-#include <boost/format.hpp>
-
 #include "bit_vector.h"
 #include "graph_algorithms.h"
 
@@ -35,8 +32,7 @@ void do_topological_order(int n, int i, bit_matrix const& adj_mat, std::vector<i
 
         if (adj_mat.get(i, t)) {
             if (order[t] == 1)
-                BOOST_THROW_EXCEPTION(not_acyclic_graph_error()
-                                      << message(boost::str(boost::format("Edge (%1%, %2%) close cycle") % i % t)));
+                throw std::runtime_error("not acyclic graph error");
             if (order[t] == 0)
                 do_topological_order(n, t, adj_mat, order);
         }
@@ -67,7 +63,7 @@ void topological_order(bit_matrix const& adj_mat, std::vector<int>& order) {
 bool is_topological_order(bit_matrix const& adj_mat, std::vector<int> const& order) {
     int n = adj_mat.height();
     if (n != order.size())
-        BOOST_THROW_EXCEPTION(std::invalid_argument("Length of array 'order' must be equal to number of verticies"));
+        throw std::invalid_argument("Length of array 'order' must be equal to number of verticies");
 
     if (n == 0)
         return true;

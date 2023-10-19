@@ -1,6 +1,5 @@
 #include "PSVotingLearner.h"
 #include "ECVoting.h"
-#include "logging_utils.h"
 
 
 IBinaryClassifierPtr PSVotingLearner::Train(
@@ -37,7 +36,6 @@ IBinaryClassifierPtr PSVotingLearner::Train(
     }
     
     MergeCollectedECSet();    
-    LOG_SEV(trace) << "ecset.size()=" << _ecset.size();        
     return std::make_shared<ECVoting>(_ecset);
 }
 

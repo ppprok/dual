@@ -14,7 +14,7 @@ namespace LogicalAnalysisLibTest
 	{
 	public:
 		
-        TEST_METHOD(BoostingFeatureSelectorTest)
+        TEST_CASE("BoostingFeatureSelectorTest)
         {
             Dataset ds;
             ds.Load("../datasets/iris.int");
@@ -24,12 +24,12 @@ namespace LogicalAnalysisLibTest
             
             for(auto& c : ds.classes)
             {
-                Assert::IsFalse(
+                CHECK_FALSE(
                     FeatureSelectorBase::AnyDefectPairs(bfs, c.positive, c.negative));
             }
         }
 
-        TEST_METHOD(BoostingFeatureSelectorTest2)
+        TEST_CASE("BoostingFeatureSelectorTest2)
         {
             Dataset ds;
             ds.Load("../datasets/mushrooms.int");
@@ -39,12 +39,12 @@ namespace LogicalAnalysisLibTest
 
             for(auto& c : ds.classes)
             {
-                Assert::IsFalse(
+                CHECK_FALSE(
                     FeatureSelectorBase::AnyDefectPairs(bfs, c.positive, c.negative));
             }
         }
 
-        TEST_METHOD(BinaryECFeatureSelectorTest2)
+        TEST_CASE("BinaryECFeatureSelectorTest2)
         {
             Dataset ds;
             ds.Load("../datasets/mushrooms.int");
@@ -58,9 +58,9 @@ namespace LogicalAnalysisLibTest
             bfs.Select(parts.first.classes[0], parts.second.classes[0]);
                         
             
-            Assert::IsFalse(
+            CHECK_FALSE(
                 FeatureSelectorBase::AnyDefectPairs(bfs, parts.first.classes[0].positive, parts.first.classes[0].negative));
-            Assert::IsFalse(
+            CHECK_FALSE(
                 FeatureSelectorBase::AnyDefectPairs(bfs, parts.first.classes[1].positive, parts.first.classes[1].negative));
             
         }

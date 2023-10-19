@@ -17,7 +17,7 @@ namespace LogicalAnalysisLibTest
     {
     public:
 
-        TEST_METHOD(ECmpVotingCorrect)
+        TEST_CASE("ECmpVotingCorrect)
         {
             Dataset ds;
             ds.Load("../ao.test/datasets/iris.txt");
@@ -38,7 +38,7 @@ namespace LogicalAnalysisLibTest
             for (auto& p:correct.positive)
             {
                 LOG_SEV(trace) << "p:correct.positive: " << cls->Apply(*p);
-                Assert::IsTrue(cls->Apply(*p) > 0);
+                CHECK(cls->Apply(*p) > 0);
             }
 
             for (auto& p:fitting.positive)
@@ -53,81 +53,81 @@ namespace LogicalAnalysisLibTest
 
             for (auto& no:correct.negative)
             {
-                Assert::IsTrue(cls->Apply(*no) == 0);
+                CHECK(cls->Apply(*no) == 0);
             }
         }
 
-        TEST_METHOD(MbyBforIris)
+        TEST_CASE("MbyBforIris)
         {
             auto e = CheckMultiByBinaryLearner("../datasets/iris.int");
-            Assert::IsTrue(e == 0);
+            CHECK(e == 0);
         }
 
-        TEST_METHOD(MbyBforSoybean)
+        TEST_CASE("MbyBforSoybean)
         {
             auto e = CheckMultiByBinaryLearner("../datasets/soybean-large.int");
-            Assert::IsTrue(e  == 0);
+            CHECK(e  == 0);
         }
 
-        TEST_METHOD(MbyBforBalanceScale)
+        TEST_CASE("MbyBforBalanceScale)
         {
             auto e = CheckMultiByBinaryLearner("../datasets/balance-scale.int");
-            Assert::IsTrue(e == 0);
+            CHECK(e == 0);
         }
 
-        TEST_METHOD(BoostingForIris)
+        TEST_CASE("BoostingForIris)
         {
             auto e = CheckBoostingLearner("../datasets/iris.int");
-            Assert::IsTrue(e == 0);
+            CHECK(e == 0);
         }
 
-        TEST_METHOD(BoostingForSoybean)
+        TEST_CASE("BoostingForSoybean)
         {
             auto e = CheckBoostingLearner("../datasets/soybean-large.int");
-            Assert::IsTrue(e == 0);
+            CHECK(e == 0);
         }
 
-        TEST_METHOD(BoostingForBalanceScale)
+        TEST_CASE("BoostingForBalanceScale)
         {
             auto e = CheckBoostingLearner("../datasets/balance-scale.int");
-            Assert::IsTrue(e == 0);
+            CHECK(e == 0);
         }
 
-        TEST_METHOD(CVMbyBforIris)
+        TEST_CASE("CVMbyBforIris)
         {
             auto e = CVMultiByBinaryLearner("../datasets/iris.int");
-            Assert::IsTrue(e < 0.4);
+            CHECK(e < 0.4);
         }
 
-        TEST_METHOD(CVMbyBforSoybean)
+        TEST_CASE("CVMbyBforSoybean)
         {
             auto e = CVMultiByBinaryLearner("../datasets/soybean-large.int");
-            Assert::IsTrue(e < 0.3);
+            CHECK(e < 0.3);
         }
 
-        TEST_METHOD(CVMbyBforBalanceScale)
+        TEST_CASE("CVMbyBforBalanceScale)
         {
             auto e = CVMultiByBinaryLearner("../datasets/balance-scale.int");
-            Assert::IsTrue(e < 0.9);
+            CHECK(e < 0.9);
         }
 
 
-        TEST_METHOD(CVBoostingForIris)
+        TEST_CASE("CVBoostingForIris)
         {
             auto e = CVBoostingLearner("../datasets/iris.int");
-            Assert::IsTrue(e < 0.1);
+            CHECK(e < 0.1);
         }
 
-/*        TEST_METHOD(CVBoostingForSoybean)
+/*        TEST_CASE("CVBoostingForSoybean)
         {
             auto e = CVBoostingLearner("../datasets/soybean-large.int");
-            Assert::IsTrue(e < 0.1);
+            CHECK(e < 0.1);
         }*/
 
-        TEST_METHOD(CVBoostingForBalanceScale)
+        TEST_CASE("CVBoostingForBalanceScale)
         {
             auto e = CVBoostingLearner("../datasets/balance-scale.int");
-            Assert::IsTrue(e < 0.25);
+            CHECK(e < 0.25);
         }
 
 

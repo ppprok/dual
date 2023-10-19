@@ -8,18 +8,18 @@ void PosetSelfTester::EqualSelfTest(PosetItems const& items)
 	for (auto& a : items)
 	{
 		// antireflection
-		Assert::IsTrue(_poset->Equal(a, a));
+		CHECK(_poset->Equal(a, a));
 
 		for (auto& b : items)
 		{
 			// antisimmetry
 			if (_poset->Equal(a, b))
 			{
-				Assert::IsFalse(_poset->Prec(a, b));
-				Assert::IsTrue(_poset->Preceq(a, b));
-				Assert::IsTrue(_poset->Equal(b, a));
-				Assert::IsFalse(_poset->Prec(b, a));
-				Assert::IsTrue(_poset->Preceq(b, a));
+				CHECK_FALSE(_poset->Prec(a, b));
+				CHECK(_poset->Preceq(a, b));
+				CHECK(_poset->Equal(b, a));
+				CHECK_FALSE(_poset->Prec(b, a));
+				CHECK(_poset->Preceq(b, a));
 			}
 
 			for (auto& c : items)
@@ -27,7 +27,7 @@ void PosetSelfTester::EqualSelfTest(PosetItems const& items)
 				// transitive
 
 				if (_poset->Equal(a, b) && _poset->Equal(b, c))
-					Assert::IsTrue(_poset->Equal(a, c));
+					CHECK(_poset->Equal(a, c));
 
 			}
 		}
@@ -39,30 +39,30 @@ void PosetSelfTester::PrecSelfTest(PosetItems const& items)
 	for (auto& a : items)
 	{
 		// antireflection
-		Assert::IsTrue(! _poset->Prec(a, a));
+		CHECK(! _poset->Prec(a, a));
 
 		for (auto& b : items)
 		{
 			// antisimmetry
 			if (_poset->Prec(a, b))
 			{
-				Assert::IsFalse(_poset->Equal(a, b));
-				Assert::IsTrue(_poset->Preceq(a, b));
+				CHECK_FALSE(_poset->Equal(a, b));
+				CHECK(_poset->Preceq(a, b));
 
-				Assert::IsFalse(_poset->Equal(b, a));
-				Assert::IsFalse(_poset->Prec(b, a));
-				Assert::IsFalse(_poset->Preceq(b, a));
+				CHECK_FALSE(_poset->Equal(b, a));
+				CHECK_FALSE(_poset->Prec(b, a));
+				CHECK_FALSE(_poset->Preceq(b, a));
 			}
 
 			if (_poset->Preceq(a, b))
 			{
-				Assert::IsFalse(_poset->Prec(b, a));
+				CHECK_FALSE(_poset->Prec(b, a));
 			}
 
 			if (_poset->Equal(a, b))
 			{
-				Assert::IsFalse(_poset->Prec(a, b));
-				Assert::IsFalse(_poset->Prec(b, a));
+				CHECK_FALSE(_poset->Prec(a, b));
+				CHECK_FALSE(_poset->Prec(b, a));
 			}
 
 			for (auto& c : items)
@@ -70,7 +70,7 @@ void PosetSelfTester::PrecSelfTest(PosetItems const& items)
 				// transitive
 
 				if (_poset->Prec(a, b) && _poset->Prec(b, c))
-					Assert::IsTrue(_poset->Prec(a, c));
+					CHECK(_poset->Prec(a, c));
 
 			}
 		}
@@ -82,20 +82,20 @@ void PosetSelfTester::PreceqSelfTest(PosetItems const& items)
 	for (auto& a : items)
 	{
 		// reflection
-		Assert::IsTrue(_poset->Preceq(a, a));
+		CHECK(_poset->Preceq(a, a));
 
 		for (auto& b : items)
 		{
 			// antisimmetry
 			if (_poset->Preceq(a, b) && _poset->Preceq(b, a))
-				Assert::IsTrue(_poset->Equal(a, b));
+				CHECK(_poset->Equal(a, b));
 
 			for (auto& c : items)
 			{
 				// transitive
 
 				if (_poset->Preceq(a, b) && _poset->Preceq(b, c))
-					Assert::IsTrue(_poset->Preceq(a, c));
+					CHECK(_poset->Preceq(a, c));
 
 			}
 		}
@@ -131,13 +131,13 @@ int PosetSelfTester::IsMaximalFromSelfTest(PosetItems const& items)
 
 			for (auto& b : items)
 			{
-				Assert::IsFalse(_poset->Prec(a, b));
+				CHECK_FALSE(_poset->Prec(a, b));
 			}
 		}
 	}
 
 	if (! items.empty())
-		Assert::IsTrue(count > 0);
+		CHECK(count > 0);
 
 	return count;
 }
@@ -154,13 +154,13 @@ int PosetSelfTester::IsMinimalFromSelfTest(PosetItems const& items)
 
 			for (auto& b : items)
 			{
-				Assert::IsFalse(_poset->Prec(b, a));
+				CHECK_FALSE(_poset->Prec(b, a));
 			}
 		}
 	}
 
 	if (! items.empty())
-		Assert::IsTrue(count > 0);
+		CHECK(count > 0);
 
 	return count;
 }
@@ -169,12 +169,12 @@ void PosetSelfTester::IsItemSelfTest(PosetItems const& items, PosetItems const& 
 {
 	for (auto& a: items)
 	{
-		Assert::IsTrue(_poset->IsItem(a));
+		CHECK(_poset->IsItem(a));
 	}
 
 	for (auto& b: notItems)
 	{
-		Assert::IsFalse(_poset->IsItem(b));
+		CHECK_FALSE(_poset->IsItem(b));
 	}
 }
 
@@ -226,11 +226,11 @@ PosetItems PosetSelfTester::DoSelectMethodSelfTest(PosetItems const& items, Sele
 	selector(_poset, selected);
 
 	for (auto& a:selected)
-		Assert::IsTrue(predicate(_poset, a));
+		CHECK(predicate(_poset, a));
 
 	for (auto& b:items)
 		if (! contains(selected, b))
-			Assert::IsFalse(predicate(_poset, b));
+			CHECK_FALSE(predicate(_poset, b));
 
 	return selected;
 }
@@ -260,18 +260,18 @@ PosetItems PosetSelfTester::SelectUniqueSelfTest(PosetItems const& A)
 
 	for(auto& a : selected)
 	{
-        Assert::IsTrue(find_if(A, 
+        CHECK(find_if(A,
             [this, a](PosetItem b){return _poset->Equal(a, b);})!=-1);
 		for (auto& b : selected)
 		{
 			if (&a != &b)
-				Assert::IsFalse(_poset->Equal(a, b));
+				CHECK_FALSE(_poset->Equal(a, b));
 		}
 	}
 
 	for (auto& a : A)
 	{
-        Assert::IsTrue(find_if(selected, 
+        CHECK(find_if(selected,
             [this, a](PosetItem b){return _poset->Equal(a, b);})!=-1);
 	}
 
@@ -284,7 +284,7 @@ void PosetSelfTester::ToStringConvertSelfTest(PosetItems const& items)
 	{
 		auto str = _poset->ToString(a);
 		auto b = _poset->FromString(str.c_str(), str.c_str() + str.length());
-		Assert::IsTrue(_poset->Equal(a, b));
+		CHECK(_poset->Equal(a, b));
 	}
 }
 
@@ -294,7 +294,7 @@ void PosetSelfTester::FromStringConvertSelfTest(Strings const& strs)
 	{
 		auto b = _poset->FromString(str.c_str(), str.c_str() + str.length());
 		auto str1 = _poset->ToString(b);
-		Assert::AreEqual(str, str1);
+		CHECK_EQ(str, str1);
 	}
 }
 
@@ -303,15 +303,15 @@ PosetItems PosetSelfTester::GetMinimalSelfTest(PosetItems const& testItems)
 	PosetItems minimal;
 	_poset->GetMinimal(minimal);
 
-	Assert::IsFalse(minimal.empty());
+	CHECK_FALSE(minimal.empty());
 	
 	for (auto& m : minimal)
 	{
-		Assert::IsTrue(_poset->IsItem(m));
-		Assert::IsTrue(_poset->IsMinimal(m));
+		CHECK(_poset->IsItem(m));
+		CHECK(_poset->IsMinimal(m));
 		for (auto& a : testItems)
             if (_poset->IsItem(a))
-                Assert::IsFalse(_poset->Prec(a, m));
+                CHECK_FALSE(_poset->Prec(a, m));
 	}
 
     return minimal;
@@ -322,15 +322,15 @@ PosetItems PosetSelfTester::GetMaximalSelfTest(PosetItems const& testItems)
     PosetItems maximal;
     _poset->GetMaximal(maximal);
 
-    Assert::IsFalse(maximal.empty());
+    CHECK_FALSE(maximal.empty());
 
     for (auto& m : maximal)
     {
-        Assert::IsTrue(_poset->IsItem(m));
-        Assert::IsTrue(_poset->IsMaximal(m));
+        CHECK(_poset->IsItem(m));
+        CHECK(_poset->IsMaximal(m));
         for (auto& a : testItems)
             if (_poset->IsItem(a))
-                Assert::IsFalse(_poset->Prec(m, a));
+                CHECK_FALSE(_poset->Prec(m, a));
     }
 
     return maximal;
@@ -342,18 +342,18 @@ PosetItems PosetSelfTester::TopologicalSortSelfTest( PosetItems const& items )
     _poset->TopologicalSort(A);
     
     for (auto& a: A)
-        Assert::IsTrue(contains(items, a));
+        CHECK(contains(items, a));
 
     for (auto& a: items)
-        Assert::IsTrue(contains(A, a));
+        CHECK(contains(A, a));
 
-    Assert::AreEqual(A.size(), items.size());
-    Assert::IsTrue(_poset->IsTopologicalOrdered(A));
+    CHECK_EQ(A.size(), items.size());
+    CHECK(_poset->IsTopologicalOrdered(A));
 
     for (int i = 0, n = A.size(); i != n; ++i )
         for (int j = 0; j != n; ++j)
             if (_poset->Prec(A[i], A[j]))
-                Assert::IsTrue(i > j);
+                CHECK(i > j);
 
     return A;
 }
@@ -366,7 +366,7 @@ void PosetSelfTester::PrecImmediateSelfTest( PosetItems const& items )
             if (_poset->PrecImmediate(a, b))
             {
                 for (auto& c : items)
-                    Assert::IsFalse(_poset->Prec(a, c) && _poset->Prec(c, b));                    
+                    CHECK_FALSE(_poset->Prec(a, c) && _poset->Prec(c, b));
             }
             else if (_poset->Prec(a, b))
             {
@@ -379,7 +379,7 @@ void PosetSelfTester::PrecImmediateSelfTest( PosetItems const& items )
                     if(_poset->Prec(a, c) && _poset->Prec(c, b))
                         ++r;
                 }
-                Assert::IsTrue(r>0);
+                CHECK(r>0);
             }
 
 
@@ -394,7 +394,7 @@ void PosetSelfTester::GetImmediatePrecSelfTest( PosetItems const& items )
         _poset->GetImmediatePrec(a, precessors);
         if (precessors.empty())
         {
-            Assert::IsTrue(! _poset->IsItem(a) || _poset->IsMinimal(a));
+            CHECK(! _poset->IsItem(a) || _poset->IsMinimal(a));
         }
         else
         {
@@ -402,7 +402,7 @@ void PosetSelfTester::GetImmediatePrecSelfTest( PosetItems const& items )
             {
                 auto r1 = contains(precessors, c);
                 auto r2 = _poset->PrecImmediate(c, a);
-                Assert::AreEqual(r1, r2);
+                CHECK_EQ(r1, r2);
             }
         }
     }
@@ -416,12 +416,12 @@ void PosetSelfTester::GetImmediateSuccSelfTest( PosetItems const& items )
         _poset->GetImmediateSucc(a, successors);
         if (successors.empty())
         {
-            Assert::IsTrue(! _poset->IsItem(a) || _poset->IsMaximal(a));
+            CHECK(! _poset->IsItem(a) || _poset->IsMaximal(a));
         }
         else
         {
             for (auto& c : successors)
-                Assert::AreEqual(contains(successors, c), _poset->PrecImmediate(a, c));
+                CHECK_EQ(contains(successors, c), _poset->PrecImmediate(a, c));
         }
     }
 }
@@ -430,33 +430,33 @@ void PosetSelfTester::IsMaximalIndependentSelfTest( PosetItems const& A, PosetIt
 {
     for (auto& c:A)
     {
-        Assert::AreEqual(
+        CHECK_EQ(
             _poset->IsMaximalIndependent(c, PosetItems()),
             _poset->IsMaximal(c));
     }
 
     for (auto& a:A)
     {
-        Assert::IsFalse(_poset->IsMaximalIndependent(a, A));
+        CHECK_FALSE(_poset->IsMaximalIndependent(a, A));
     }
 
     for (auto& a : candidates)
     {
         if (_poset->IsMaximalIndependent(a, A))
         {
-            Assert::IsFalse(_poset->InIdeal(a, A));
+            CHECK_FALSE(_poset->InIdeal(a, A));
 
             for (auto& c : candidates)
             {
                 if (_poset->Prec(a, c) && _poset->IsItem(c))
-                    Assert::IsTrue(_poset->InIdeal(c, A));
+                    CHECK(_poset->InIdeal(c, A));
             }
 
             PosetItems successors;
             _poset->GetImmediateSucc(a, successors);
             for (auto& c : successors)
             {
-                 Assert::IsTrue(_poset->InIdeal(c, A));
+                 CHECK(_poset->InIdeal(c, A));
             }
         }
         else
@@ -468,7 +468,7 @@ void PosetSelfTester::IsMaximalIndependentSelfTest( PosetItems const& A, PosetIt
                 bool r = false;
                 for (auto& c : successors)
                     r |= ! _poset->InIdeal(c, A);                    
-                Assert::IsTrue(r);
+                CHECK(r);
             }
         }
     }
@@ -479,33 +479,33 @@ void PosetSelfTester::IsMinimalIndependentSelfTest(
 {
     for (auto& c:A)
     {
-        Assert::AreEqual(
+        CHECK_EQ(
             _poset->IsMinimalIndependent(c, PosetItems()),
             _poset->IsMinimal(c));
     }
 
     for (auto& a:A)
     {
-        Assert::IsFalse(_poset->IsMinimalIndependent(a, A));
+        CHECK_FALSE(_poset->IsMinimalIndependent(a, A));
     }
 
     for (auto& a : candidates)
     {
         if (_poset->IsMinimalIndependent(a, A))
         {
-            Assert::IsFalse(_poset->InFilter(a, A));
+            CHECK_FALSE(_poset->InFilter(a, A));
 
             for (auto& c : candidates)
             {
                 if (_poset->Prec(c, a) && _poset->IsItem(c))
-                    Assert::IsTrue(_poset->InFilter(c, A));
+                    CHECK(_poset->InFilter(c, A));
             }
 
             PosetItems precessors;
             _poset->GetImmediatePrec(a, precessors);
             for (auto& c : precessors)
             {
-                Assert::IsTrue(_poset->InFilter(c, A));
+                CHECK(_poset->InFilter(c, A));
             }
         }
         else
@@ -517,7 +517,7 @@ void PosetSelfTester::IsMinimalIndependentSelfTest(
                 bool r = false;
                 for (auto& c : precessors)
                     r |= ! _poset->InFilter(c, A);                    
-                Assert::IsTrue(r);
+                CHECK(r);
             }
         }
     }
@@ -529,7 +529,7 @@ PosetItems PosetSelfTester::GetMaximalIndependentSelfTest( PosetItems const& A, 
     _poset->GetMaximalIndependent(A, indep);
 
     for (auto& a: indep)
-        Assert::IsTrue(_poset->IsMaximalIndependent(a, A));
+        CHECK(_poset->IsMaximalIndependent(a, A));
 
     PosetItems indep1;
     _poset->SelectIdealIndependent(A, indep1);
@@ -538,7 +538,7 @@ PosetItems PosetSelfTester::GetMaximalIndependentSelfTest( PosetItems const& A, 
     for (auto& c: indep1)
     {
         if (_poset->IsMaximalIndependent(c, A))
-            Assert::IsTrue(contains(indep, c));
+            CHECK(contains(indep, c));
     }
 
     return indep;
@@ -557,13 +557,13 @@ PosetItems PosetSelfTester::GetMinimalIndependentSelfTest( PosetItems const& A, 
     for (auto& a: indep)
     {
         auto r = _poset->IsMinimalIndependent(a, A);
-        Assert::IsTrue(r);
+        CHECK(r);
     }
 
     for (auto& c: indep1)
     {
         if (_poset->IsMinimalIndependent(c, A))
-            Assert::IsTrue(contains(indep, c));
+            CHECK(contains(indep, c));
     }
 
     return indep;
@@ -577,9 +577,9 @@ int PosetSelfTester::GetIndependentIntervalsSelfTest(
 
     for (auto& i :indep)
     {
-        Assert::IsTrue(_poset->Preceq(i.lower, i.upper));
-        Assert::IsTrue(_poset->IsMaximalIndependent(i.upper, A));
-        Assert::IsTrue(_poset->IsMinimalIndependent(i.lower, B));
+        CHECK(_poset->Preceq(i.lower, i.upper));
+        CHECK(_poset->IsMaximalIndependent(i.upper, A));
+        CHECK(_poset->IsMinimalIndependent(i.lower, B));
     }
 
     PosetItems lower = candidates;
@@ -598,7 +598,7 @@ int PosetSelfTester::GetIndependentIntervalsSelfTest(
                 _poset->IsMinimalIndependent(l, B) &&
                 _poset->IsMaximalIndependent(u, A))
             {
-                Assert::IsTrue(contains(indep, PosetInterval(l, u)));
+                CHECK(contains(indep, PosetInterval(l, u)));
             }
         }
     }

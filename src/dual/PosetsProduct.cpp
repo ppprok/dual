@@ -223,13 +223,13 @@ void PosetsProduct::GetSupportItems(PosetItemsMatrix const& dataset,
 int PosetsProduct::GetPosetIndex(std::string const& name) const {
     auto beg = _bindings.begin(), end = _bindings.end(), i = std::find(beg, end, name);
     if (i == end)
-        BOOST_THROW_EXCEPTION(error() << message("Poset isn't founded by name") << column_name(name));
+        throw std::runtime_error("Poset isn't founded by name");
     return i - beg;
 }
 
 std::string PosetsProduct::ToString(PosetItemsMatrix const& matrix,
                                     std::string const& separator /*= ","*/,
-                                    std::string rowSep /*= "\n"*/) const {
+                                    const std::string& rowSep /*= "\n"*/) const {
     std::ostringstream oss;
 
     for (int i = 0, m = matrix.GetHeight(), n = matrix.GetWidth(); i != m; ++i) {

@@ -2,27 +2,12 @@
 #include <fstream>
 #include <set>
 
-/*
-#include <boost/config/warning_disable.hpp>
-#include <boost/spirit/include/qi.hpp>
-#include <boost/spirit/include/phoenix_core.hpp>
-#include <boost/spirit/include/phoenix_operator.hpp>
-#include <boost/spirit/include/phoenix_stl.hpp>
-#include <boost/spirit/include/karma.hpp>
-
-namespace qi = boost::spirit::qi;
-namespace ascii = boost::spirit::ascii;
-namespace phoenix = boost::phoenix;
-namespace karma = boost::spirit::karma;
-
-#include <boost/random.hpp>*/
 
 #include "Dataset.h"
 #include "Interfaces.h"
 #include "Randomizer.h"
 #include "containers.h"
 #include "IntegersFileReader.h"
-#include "logging_utils.h"
 
 ObjectsClasses const& Dataset::CollectClasses()
 {

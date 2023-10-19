@@ -13,7 +13,7 @@ namespace DualizationLibTest
 	{
 	public:
 		
-        TEST_METHOD(CoverCollectorTest)
+        TEST_CASE("CoverCollectorTest)
         {
             CoverCollector c;
 
@@ -23,10 +23,10 @@ namespace DualizationLibTest
 
             A.Dualize();
 
-            Assert::AreEqual((int)c.GetCovers().size(), 7187);
+            CHECK_EQ((int)c.GetCovers().size(), 7187);
         }
 
-        TEST_METHOD(MostCoverCollectorTest)
+        TEST_CASE("MostCoverCollectorTest)
         {
             MostCoverCollector c;
             c.Options.MostCount = 100;
@@ -38,14 +38,14 @@ namespace DualizationLibTest
             A.Dualize();
             c.Trim();
 
-            Assert::IsTrue(c.GetCovers().size()==100);
+            CHECK(c.GetCovers().size()==100);
 
             IntegersFileWriter w("../ao.test/datasets/10_50_7187_min100.hg");
             w.WriteIntegerMatrix(c.GetCovers());
 
         }
 
-        TEST_METHOD(BitCoverCollectorTest)
+        TEST_CASE("BitCoverCollectorTest)
         {
             BitCoverCollectorCallback c;
 
@@ -55,9 +55,9 @@ namespace DualizationLibTest
 
             A.Dualize();
 
-            Assert::AreEqual(c.GetCovers().width(), 51);
+            CHECK_EQ(c.GetCovers().width(), 51);
 
-            Assert::AreEqual(c.GetCovers().height(),7187);
+            CHECK_EQ(c.GetCovers().height(),7187);
             
             
         }

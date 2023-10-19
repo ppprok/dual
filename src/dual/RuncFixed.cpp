@@ -1,5 +1,7 @@
 #include "RuncFixed.h"
 
+#include <cassert>
+
 template<typename Row>
 bool RuncFixed<Row>::Output(LocalState const& result) {
     ++resultsCount;

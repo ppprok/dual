@@ -1,19 +1,17 @@
 #pragma once
 
-#include <boost/random.hpp>
+#include <random>
 
 #include "blob.h"
 
 //////////////////////////////////////////////////////////////////////////
 // Генераторы случайных чисел
 //////////////////////////////////////////////////////////////////////////
-typedef boost::mt11213b rand_engine;
+typedef std::random_device rand_engine;
 
-typedef boost::uniform_01<> uni_dist;
-//typedef boost::variate_generator<rand_engine, uni_dist> uni_generator;
+typedef std::uniform_real_distribution<> uni_dist;
 
-typedef boost::normal_distribution<> norm_dist;
-//typedef boost::variate_generator<rand_engine, norm_dist> norm_generator;
+typedef std::normal_distribution<> norm_dist;
 
 //////////////////////////////////////////////////////////////////////////
 // Класс для удобства работы со случайными числами
@@ -55,7 +53,7 @@ struct RandomSampler {
 };
 
 struct RandomChoicer {
-    typedef RandomSampler<boost::uniform_01<float>> RandomSamplerType;
+    typedef RandomSampler<std::uniform_real_distribution<float>> RandomSamplerType;
 
     // Выбрать несколько случайных объектов из дискретного равномерного распределения
     template<typename C, typename C1>

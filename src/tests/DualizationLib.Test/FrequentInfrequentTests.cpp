@@ -23,7 +23,7 @@ namespace DualizationLibTest
             ReversedPoset::Register();
         }
 		
-		TEST_METHOD(FrequentInfrequentEnumeratorTest1)
+		TEST_CASE("FrequentInfrequentEnumeratorTest1)
 		{
 			FrequentInfrequentEnumerator enumerator;
             FrequentInfrequentTask task;
@@ -33,9 +33,9 @@ namespace DualizationLibTest
             task.SetOptions(opt);
             task.LoadDatabase("../dualizationlib.test/data/A1.csv", opt);
             
-            Assert::IsTrue(std::vector<int>(1, 5) == task.GetThresholds());
-            Assert::AreEqual(16, task.GetDatabase().GetHeight());
-            Assert::AreEqual(3, task.GetDatabase().GetWidth());
+            CHECK(std::vector<int>(1, 5) == task.GetThresholds());
+            CHECK_EQ(16, task.GetDatabase().GetHeight());
+            CHECK_EQ(3, task.GetDatabase().GetWidth());
 
             enumerator.Enumerate(task);
 		}

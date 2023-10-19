@@ -16,7 +16,7 @@ namespace LogicalAnalysisLibTest
     {
     public:
 
-        TEST_METHOD(FTVotingCorrect)
+        TEST_CASE("FTVotingCorrect)
         {
             Dataset ds;
             ds.Load("../datasets/dermatology.int");
@@ -36,7 +36,7 @@ namespace LogicalAnalysisLibTest
             for (auto& p:correct.positive)
             {
                 LOG_SEV(trace) << "p:correct.positive: " << cls->Apply(*p);
-                Assert::IsTrue(cls->Apply(*p) > 0);
+                CHECK(cls->Apply(*p) > 0);
             }
 
             for (auto& p:fitting.positive)
@@ -52,7 +52,7 @@ namespace LogicalAnalysisLibTest
             for (auto& no:correct.negative)
             {
                 LOG_SEV(trace) << "no:correct.negative: " << cls->Apply(*no);
-                Assert::AreEqual(0.0f, cls->Apply(*no));
+                CHECK_EQ(0.0f, cls->Apply(*no));
             }
 
             
@@ -63,7 +63,7 @@ namespace LogicalAnalysisLibTest
             for (auto& p:correct.positive)
             {
                 LOG_SEV(trace) << "p:correct.positive: " << cls->Apply(*p);
-                Assert::IsTrue(cls->Apply(*p) > 0);
+                CHECK(cls->Apply(*p) > 0);
             }
 
             for (auto& p:fitting.positive)
@@ -79,14 +79,14 @@ namespace LogicalAnalysisLibTest
             for (auto& no:correct.negative)
             {
                 LOG_SEV(trace) << "no:correct.negative: " << cls->Apply(*no);
-                Assert::AreEqual(0.0f, cls->Apply(*no));
+                CHECK_EQ(0.0f, cls->Apply(*no));
             }
 
 
         }
 
         
-        TEST_METHOD(FTVotingCorrect2)
+        TEST_CASE("FTVotingCorrect2)
         {
             Dataset ds;
             ds.Load("../datasets/iris.int");
@@ -104,13 +104,13 @@ namespace LogicalAnalysisLibTest
             for (auto& po:correct.positive)
             {
                 LOG_SEV(trace) << "p:correct.positive: " << cls->Apply(*po);
-                Assert::IsTrue(cls->Apply(*po) > 0);
+                CHECK(cls->Apply(*po) > 0);
             }
 
             for (auto& no:correct.negative)
             {
                 LOG_SEV(trace) << "no:correct.negative: " << cls->Apply(*no);
-                Assert::AreEqual(0.0f, cls->Apply(*no));
+                CHECK_EQ(0.0f, cls->Apply(*no));
             }
 
 
@@ -123,95 +123,95 @@ namespace LogicalAnalysisLibTest
             for (auto& po:correct.positive)
             {
                 LOG_SEV(trace) << "p:correct.positive: " << cls->Apply(*po);
-                Assert::IsTrue(cls->Apply(*po) > 0);
+                CHECK(cls->Apply(*po) > 0);
             }
 
             for (auto& no:correct.negative)
             {
                 LOG_SEV(trace) << "no:correct.negative: " << cls->Apply(*no);
-                Assert::AreEqual(0.0f, cls->Apply(*no));
+                CHECK_EQ(0.0f, cls->Apply(*no));
             }
         }
 
         
         
-        TEST_METHOD(MbyBforIris)
+        TEST_CASE("MbyBforIris)
         {
             auto e = CheckMultiByBinaryLearner("../datasets/iris.int");
-            Assert::IsTrue(e == 0);
+            CHECK(e == 0);
         }
 
-        TEST_METHOD(MbyBforSoybean)
+        TEST_CASE("MbyBforSoybean)
         {
             auto e = CheckMultiByBinaryLearner("../datasets/soybean-large.int");
-            Assert::IsTrue(e == 0);
+            CHECK(e == 0);
         }
 
-        TEST_METHOD(MbyBforBalanceScale)
+        TEST_CASE("MbyBforBalanceScale)
         {
             auto e = CheckMultiByBinaryLearner("../datasets/balance-scale.int");
-            Assert::IsTrue(e == 0);
+            CHECK(e == 0);
         }
 
-        TEST_METHOD(BoostingForIris)
+        TEST_CASE("BoostingForIris)
         {
             auto e = CheckBoostingLearner("../datasets/iris.int");
-            Assert::IsTrue(e == 0);
+            CHECK(e == 0);
         }
 
-        TEST_METHOD(BoostingForSoybean)
+        TEST_CASE("BoostingForSoybean)
         {
             auto e = CheckBoostingLearner("../datasets/soybean-large.int");
-            Assert::IsTrue(e == 0);
+            CHECK(e == 0);
         }
 
-        TEST_METHOD(BoostingForBalanceScale)
+        TEST_CASE("BoostingForBalanceScale)
         {
             auto e = CheckBoostingLearner("../datasets/balance-scale.int");
-            Assert::IsTrue(e == 0);
+            CHECK(e == 0);
         }
 
-        TEST_METHOD(CVMbyBforIris)
+        TEST_CASE("CVMbyBforIris)
         {
             auto e = CVMultiByBinaryLearner("../datasets/iris.int");
-            Assert::IsTrue(e < 0.2);
+            CHECK(e < 0.2);
         }
 
-        TEST_METHOD(CVMbyBforSoybean)
+        TEST_CASE("CVMbyBforSoybean)
         {
             auto e = CVMultiByBinaryLearner("../datasets/soybean-large.int");
-            Assert::IsTrue(e < 0.3);
+            CHECK(e < 0.3);
         }
 
-        TEST_METHOD(CVMbyBforBalanceScale)
+        TEST_CASE("CVMbyBforBalanceScale)
         {
             auto e = CVMultiByBinaryLearner("../datasets/balance-scale.int");
-            Assert::IsTrue(e < 0.95);
+            CHECK(e < 0.95);
         }
 
 
-        TEST_METHOD(CVBoostingForIris)
+        TEST_CASE("CVBoostingForIris)
         {
             auto e = CVBoostingLearner("../datasets/iris.int");
-            Assert::IsTrue(e < 0.05);
+            CHECK(e < 0.05);
         }
 
-        TEST_METHOD(CVBoostingForSoybean)
+        TEST_CASE("CVBoostingForSoybean)
         {
             auto e = CVBoostingLearner("../datasets/soybean-large.int");
-            Assert::IsTrue(e < 0.15);
+            CHECK(e < 0.15);
         }
 
-        TEST_METHOD(CVBoostingForBalanceScale)
+        TEST_CASE("CVBoostingForBalanceScale)
         {
             auto e = CVBoostingLearner("../datasets/balance-scale.int");
-            Assert::IsTrue(e < 0.25);
+            CHECK(e < 0.25);
         }
 
-        TEST_METHOD(LOOBoostingForSoybeanSmall)
+        TEST_CASE("LOOBoostingForSoybeanSmall)
         {
             auto e = LOOBoostingLearner("../datasets/soybean-small.int");
-            Assert::IsTrue(e < 0.03);
+            CHECK(e < 0.03);
         }
 
 

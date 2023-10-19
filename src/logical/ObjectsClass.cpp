@@ -1,7 +1,6 @@
 
 #include "ObjectsClass.h"
 #include "InformativityCondition.h"
-#include "logging_utils.h"
 #include "math_utils.h"
 
 #include "Interfaces.h"

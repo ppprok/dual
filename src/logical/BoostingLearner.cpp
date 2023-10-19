@@ -1,6 +1,4 @@
 
-#include <boost/log/common.hpp>
-#include "logging_utils.h"
 #include "BoostingLearner.h"
 #include "math_utils.h"
 #include "Interfaces.h"
@@ -420,11 +418,11 @@ void BoostingLearner::SetOptions( Options const& options )
 
     if (! pos.empty() && ! positiveLearner)
     {
-        BOOST_THROW_EXCEPTION(error() << message("Классификатор " + pos + " не найден в конфргурации"));
+        throw std::runtime_error("Classifier not found");
     }
     if (! neg.empty() && ! negativeLearner)
     {
-        BOOST_THROW_EXCEPTION(error() << message("Классификатор " + neg + " не найден в конфргурации"));
+        throw std::runtime_error("Classifier not found");
     }
         
 

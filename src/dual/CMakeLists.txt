@@ -70,5 +70,11 @@ set(SOURCE_FILES PosetsDualizationNode.h
 
 add_library(dual ${SOURCE_FILES})
 
+target_link_libraries(dual INTERFACE common)
+
 add_executable(dualizer main.cpp)
-target_link_libraries(dualizer dual common ${Boost_LIBRARIES} ${Boost_LIBRARIES} pthread)
+target_link_libraries(dualizer dual common pthread)
+
+add_library(runc SHARED RuncExecutor.cpp)
+target_link_libraries(runc dual common)
+set_property(TARGET runc PROPERTY POSITION_INDEPENDENT_CODE TRUE)

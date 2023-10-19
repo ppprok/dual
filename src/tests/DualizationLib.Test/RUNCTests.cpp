@@ -1,68 +1,46 @@
-#include "stdafx.h"
-#include "CppUnitTest.h"
-#include "RUNC.h"
+#include <doctest.h>
+
 #include "Counters.h"
+#include "RUNC.h"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+void DoTest(std::string const& filename, int count) {
+    Runc::AlgorithmType algs[] = {Runc::RUNC, Runc::OPT, Runc::RUNCM};
 
-namespace DualizationLibTest
-{
-	TEST_CLASS(RUNCTests)
-	{
-	public:
-		
-        
-        void DoTest(std::string const& filename, int count)
-        {
-            Runc::AlgorithmType algs[] = {Runc::RUNC, Runc::OPT, Runc::RUNCM};
+    for (auto a : algs) {
+        Runc::GlobalState A(a);
+        A.LoadMatrix(filename);
+        Counters c;
+        A.InnerCallback = &c;
+        A.CoverCallback = &c;
+        A.Dualize();
+        CHECK_EQ(count, c.cover);
+    }
+}
 
-            for(auto a:algs)
-            {
-                Runc::GlobalState A(a);
-                A.LoadMatrix(filename);
-                Counters c;
-                A.InnerCallback = &c;
-                A.CoverCallback = &c;
-                A.Dualize();
-                Assert::AreEqual(count, c.cover);
-            }
-        }
+TEST_CASE("DualizeRUNCTest1") {
+    DoTest("data/6_6_4.hg", 4);
+}
 
-        TEST_METHOD(DualizeRUNCTest1)
-        {
-            DoTest("../ao.test/datasets/6_6_4.hg", 4);    
-        }
+TEST_CASE("DualizeRUNCTest2") {
+    DoTest("data/13_7_10.hg", 10);
+}
 
-        TEST_METHOD(DualizeRUNCTest2)
-        {
-            DoTest("../ao.test/datasets/13_7_10.hg", 10);
-        }
+TEST_CASE("DualizeRUNCTest3") {
+    DoTest("data/15_10_14.hg", 14);
+}
 
-        TEST_METHOD(DualizeRUNCTest3)
-        {
-            DoTest("../ao.test/datasets/15_10_14.hg", 14);            
-        }
+TEST_CASE("DualizeRUNCTest4") {
+    DoTest("data/15_20_275.hg", 275);
+}
 
-        TEST_METHOD(DualizeRUNCTest4)
-        {
-            DoTest("../ao.test/datasets/15_20_275.hg", 275);            
-        }
+TEST_CASE("DualizeRUNCTest5") {
+    DoTest("data/10_25_480.hg", 480);
+}
 
-        TEST_METHOD(DualizeRUNCTest5)
-        {
-            DoTest("../ao.test/datasets/10_25_480.hg", 480);    
-        }
+TEST_CASE("DualizeRUNCTest6") {
+    DoTest("data/10_50_7187.hg", 7187);
+}
 
-        TEST_METHOD(DualizeRUNCTest6)
-        {
-            DoTest("../ao.test/datasets/10_50_7187.hg", 7187);        
-        }
-
-        TEST_METHOD(DualizeRUNCTest7)
-        {
-            DoTest("../ao.test/datasets/15_35_12226.hg", 12226);    
-        }
-
-
-	};
+TEST_CASE("DualizeRUNCTest7") {
+    DoTest("data/15_35_12226.hg", 12226);
 }

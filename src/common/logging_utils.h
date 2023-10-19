@@ -31,15 +31,4 @@ void add_cout_log();
 //! Log warnings and errors to std::clog
 void add_clog_log();
 
-#define LOG BOOST_LOG(utils_logger::get())
-
 #define LOG_SEV(sev) BOOST_LOG_SEV(utils_logger::get(), def_severity_level::sev)
-
-#define BOOST_THROW_EXCEPTION_LOG(e)                                                                                   \
-    try {                                                                                                              \
-        BOOST_THROW_EXCEPTION(e);                                                                                      \
-    }                                                                                                                  \
-    catch (...) {                                                                                                      \
-        log_catched();                                                                                                 \
-        throw;                                                                                                         \
-    }

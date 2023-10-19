@@ -1,6 +1,3 @@
-
-#include <boost/format.hpp>
-
 #include "Callbacks.h"
 
 namespace PosetDualization {

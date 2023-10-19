@@ -1,17 +1,8 @@
+#include "IntegersFileWriter.h"
 
 #include <cmath>
 #include <stdio.h>
 
-#include <boost/exception/errinfo_api_function.hpp>
-#include <boost/exception/errinfo_at_line.hpp>
-#include <boost/exception/errinfo_errno.hpp>
-#include <boost/exception/errinfo_file_handle.hpp>
-#include <boost/exception/errinfo_file_name.hpp>
-#include <boost/exception/errinfo_file_open_mode.hpp>
-
-//#include "Exceptions.h"
-#include "IntegersFileWriter.h"
-#include "errors.h"
 
 void IntegersFileWriter::CreateOutputFile(std::string const& outputFileName) {
     _output = create_file_for_write(outputFileName);

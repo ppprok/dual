@@ -2,7 +2,6 @@
 #include "Object.h"
 #include "ObjectsClass.h"
 #include "Predictions.h"
-#include "logging_utils.h"
 
 struct ILearnableClassifier;
 

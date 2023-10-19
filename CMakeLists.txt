@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 3.8)
 project(dual)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
+
+find_package(spdlog REQUIRED)
+
+set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 
 #set(Boost_USE_STATIC_LIBS ON) # only find static libs
 #set(Boost_USE_MULTITHREADED ON)

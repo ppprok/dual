@@ -4,7 +4,6 @@
 
 #include "PosetItem.h"
 #include "bit_chunk.h"
-#include "move_default.h"
 
 /*!
     Матрица элементов частичных порядков
@@ -79,7 +78,6 @@ private:
     Columns _transposed;
 
 public:
-    //    UTILITY_MOVE_DEFAULT_MEMBERS(PosetItemsMatrix, (_columns)(_transposed));
 
     PosetItemsMatrix() {}
 

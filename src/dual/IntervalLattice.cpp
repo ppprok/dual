@@ -103,7 +103,7 @@ std::string IntervalLattice::ToString(PosetItem::IntervalBound a) const {
     if (a == -inf)
         return "-\\infty";*/
 
-    return boost::lexical_cast<std::string>(a);
+    return std::to_string(a);
 }
 
 PosetItem IntervalLattice::FromString(char const* begin, char const* end) const {
@@ -122,7 +122,7 @@ PosetItem IntervalLattice::FromString(char const* begin, char const* end) const 
         }
     }
 
-    BOOST_THROW_EXCEPTION(error());
+    throw std::runtime_error("Parse error");
 }
 
 PosetItem::IntervalBound IntervalLattice::BoundFromString(char const* begin, char const* end) const {
@@ -133,7 +133,7 @@ PosetItem::IntervalBound IntervalLattice::BoundFromString(char const* begin, cha
     if (streq(begin, end, "-\\infty"))
         return -inf;*/
 
-    return boost::lexical_cast<PosetItem::IntervalBound>(begin, end - begin);
+    return static_cast<PosetItem::IntervalBound>(std::stol(std::string({begin, end})));
 }
 
 void IntervalLattice::BuildMaximalIndependent(PosetItem current,
@@ -296,8 +296,10 @@ void IntervalLattice::GetImmediatePrec(PosetItem const& item, PosetItems& items)
 
     auto min = item.value.interval.min;
     auto max = item.value.interval.max;
-    if (min == max - 1)
-        return items.emplace_back(0, 0);
+    if (min == max - 1) {
+        items.emplace_back(0, 0);
+        return;
+    }
     items.emplace_back(min + 1, max);
     items.emplace_back(min, max - 1);
 }

@@ -1,12 +1,10 @@
 #pragma once
 
-#include <assert.h>
+#include <cassert>
+#include <charconv>
 #include <list>
 #include <string>
 #include <vector>
-
-#include <boost/lexical_cast.hpp>
-#include <boost/throw_exception.hpp>
 
 #include "blob.h"
 #include "chunk.h"
@@ -46,13 +44,17 @@ struct CSVArray {
     // Get i-th value of type T
     template<typename T>
     T GetValue(int i) const {
-        return boost::lexical_cast<T>(GetValue(i));
+        auto s = GetValue(i);
+        T val;
+        std::from_chars(s.data(), s.data() + s.size(), val);
+        return val;
     }
 
     // Get i-th value of type T
     template<typename T>
     T GetValue(value_chunk const& v) const {
-        return boost::lexical_cast<T>(GetValue(v));
+        auto s = GetValue(v);
+        return std::from_chars<T>(s.data(), s.data() + s.size());
     }
 
     void AddValueChar(char* ref) {
@@ -201,7 +203,7 @@ public:
                 return column;
         }
 
-        BOOST_THROW_EXCEPTION(error() << message("Column '" + name + "' doesn't exist"));
+        throw std::runtime_error("Column '" + name + "' doesn't exist");
     }
 
     CSVArray const& GetColumn(std::string const& name) const {

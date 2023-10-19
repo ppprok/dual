@@ -48,7 +48,7 @@ namespace DualizationLibTest
         };
 		
         // Строки загружаются сразу
-        TEST_METHOD( GeneticDualizerMinCoverTest1 )  
+        TEST_CASE(" GeneticDualizerMinCoverTest1 )
         {
             GeneticDualizer ga;
             ga.CurrentOptions.mutationScaleScale = 0.01f;
@@ -66,15 +66,15 @@ namespace DualizationLibTest
             ga.SetRowsSource(&mrs);
             ga.Search();
 
-//            Assert::IsTrue(ga.GetPopulationSize() <= 15 && ga.GetPopulationSize() > 5);
-            Assert::IsTrue(ga.GetPopulation().front().cost == 1.0f);
-            Assert::IsTrue(ga.GetPopulation().front().cover.count() == 1);
+//            CHECK(ga.GetPopulationSize() <= 15 && ga.GetPopulationSize() > 5);
+            CHECK(ga.GetPopulation().front().cost == 1.0f);
+            CHECK(ga.GetPopulation().front().cover.count() == 1);
 
-            Assert::IsTrue(CheckCovers(ga, mat));
+            CHECK(CheckCovers(ga, mat));
         }
 
         // Строки загружаются постепенно
-        TEST_METHOD( GeneticDualizerMinCoverTest2 )  
+        TEST_CASE(" GeneticDualizerMinCoverTest2 )
         {
             GeneticDualizer ga;
             ga.CurrentOptions.mutationScaleScale = 0.01f;
@@ -91,15 +91,15 @@ namespace DualizationLibTest
             ga.SetRowsSource(&mrs);
             ga.Search();
 
-            //Assert::IsTrue(ga.GetPopulationSize() >= 10);
-            Assert::IsTrue(ga.GetPopulation().front().cost == 1.0f);
-            Assert::IsTrue(ga.GetPopulation().front().cover.count() == 1);
+            //CHECK(ga.GetPopulationSize() >= 10);
+            CHECK(ga.GetPopulation().front().cost == 1.0f);
+            CHECK(ga.GetPopulation().front().cover.count() == 1);
 
-            Assert::IsTrue(CheckCovers(ga, mat));
+            CHECK(CheckCovers(ga, mat));
         }
 
         // Линейная интерполяция генов столбцов, т.к. очень много столбцов
-        TEST_METHOD( GeneticDualizerMinCoverTest3 )  
+        TEST_CASE(" GeneticDualizerMinCoverTest3 )
         {
             GeneticDualizer ga;
             ga.CurrentOptions.mutationScaleScale = 0.01f;
@@ -117,16 +117,16 @@ namespace DualizationLibTest
             ga.SetRowsSource(&mrs);
             ga.Search();
 
-            //Assert::AreEqual(ga.GetPopulationSize(), 15);
-            Assert::IsTrue(ga.GetPopulation().front().cost == 1.0f);
-            Assert::IsTrue(ga.GetPopulation().front().cover.count() == 1);
+            //CHECK_EQ(ga.GetPopulationSize(), 15);
+            CHECK(ga.GetPopulation().front().cost == 1.0f);
+            CHECK(ga.GetPopulation().front().cover.count() == 1);
 
-            Assert::IsTrue(CheckCovers(ga, mat));
+            CHECK(CheckCovers(ga, mat));
         }
 
         // Линейная интерполяция генов столбцов, т.к. очень много столбцов,
         // + отложенная загрузка строк
-        TEST_METHOD( GeneticDualizerMinCoverTest4 )  
+        TEST_CASE(" GeneticDualizerMinCoverTest4 )
         {
             GeneticDualizer ga;
             ga.CurrentOptions.mutationScaleScale = 0.01f;
@@ -144,11 +144,11 @@ namespace DualizationLibTest
             ga.SetRowsSource(&mrs);
             ga.Search();
 
-            //Assert::AreEqual(ga.GetPopulationSize(), 15);
-            Assert::IsTrue(ga.GetPopulation().front().cost == ga.GetPopulation().front().cover.count());
-            Assert::IsTrue(ga.GetPopulation().front().cover.count() <= 4);
+            //CHECK_EQ(ga.GetPopulationSize(), 15);
+            CHECK(ga.GetPopulation().front().cost == ga.GetPopulation().front().cover.count());
+            CHECK(ga.GetPopulation().front().cover.count() <= 4);
 
-            Assert::IsTrue(CheckCovers(ga, mat));
+            CHECK(CheckCovers(ga, mat));
         }
 
         bool CheckCovers( GeneticDualizer &ga, bit_matrix &mat )

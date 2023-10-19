@@ -11,7 +11,6 @@
 #include "DualizationCounters.h"
 #include "Registrator.h"
 #include "bit_vector.h"
-#include "move_default.h"
 
 namespace PosetDualization {
 namespace MIGRAS {
@@ -38,8 +37,6 @@ struct LocalState {
 
     // Current dependent items
     DependentItems dependentItems;
-
-    UTILITY_MOVE_DEFAULT_MEMBERS(LocalState, (supportMap) (itemsForCover) (dependentItems));
 
     LocalState();
 

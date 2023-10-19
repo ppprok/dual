@@ -1,6 +1,5 @@
 #pragma once
 #include "DualizationBacktrackAlgorithmBase.h"
-#include "move_default.h"
 
 // Покрытие с весом
 struct WeightedCover {
@@ -13,8 +12,6 @@ struct WeightedCover {
         columns = std::move(c);
         weight = w;
     }
-
-    UTILITY_MOVE_DEFAULT_MEMBERS(WeightedCover, (columns) (weight));
 
     Columns::const_iterator begin() const {
         return columns.begin();

@@ -13,7 +13,7 @@ namespace DualizationLibTest
 	{
 	public:
 		
-        TEST_METHOD(AllWriterTest)
+        TEST_CASE("AllWriterTest)
         {
             AllColumnsFileWriterCallback w;
             w.CreateOutputFile("../ao.test/datasets/6_6_4_dual.hg");        
@@ -31,7 +31,7 @@ namespace DualizationLibTest
             std::vector<std::vector<int>> hg;
             r.ReadUnsignedIntegersMatrix(hg);
 
-            Assert::IsTrue(hg.size()==4);
+            CHECK(hg.size()==4);
 
             std::vector<std::vector<int>> etalon;
             etalon.push_back(list_of(1)(4));
@@ -39,10 +39,10 @@ namespace DualizationLibTest
             etalon.push_back(list_of(1)(5)(3));
             etalon.push_back(list_of(4)(3));
 
-            Assert::IsTrue(hg == etalon);
+            CHECK(hg == etalon);
         }
 
-        TEST_METHOD(OrderedWriterTest)
+        TEST_CASE("OrderedWriterTest)
         {
             OrderedColumnsFileWriterCallback w;
             w.CreateOutputFile("../ao.test/datasets/6_6_4_ordered.hg");        
@@ -61,7 +61,7 @@ namespace DualizationLibTest
             std::vector<std::vector<int>> hg;
             r.ReadUnsignedIntegersMatrix(hg);
 
-            Assert::IsTrue(hg.size()==4);
+            CHECK(hg.size()==4);
 
             std::vector<std::vector<int>> etalon;
             etalon.push_back(list_of(1)(4));
@@ -69,10 +69,10 @@ namespace DualizationLibTest
             etalon.push_back(list_of(1)(3)(5));
             etalon.push_back(list_of(3)(4));
 
-            Assert::IsTrue(hg == etalon);
+            CHECK(hg == etalon);
         }
 
-        TEST_METHOD(SizeWriterTest)
+        TEST_CASE("SizeWriterTest)
         {
             SizeFileWriterCallback w;
             w.CreateOutputFile("../ao.test/datasets/6_6_4_size.hg");        
@@ -91,7 +91,7 @@ namespace DualizationLibTest
             std::vector<std::vector<int>> hg;
             r.ReadUnsignedIntegersMatrix(hg);
 
-            Assert::IsTrue(hg.size()==4);
+            CHECK(hg.size()==4);
             
             sort(hg);
 
@@ -101,10 +101,10 @@ namespace DualizationLibTest
             etalon.push_back(list_of(3));
             etalon.push_back(list_of(3));
 
-            Assert::IsTrue(hg == etalon);
+            CHECK(hg == etalon);
         }
 
-        TEST_METHOD(WeightWriterTest)
+        TEST_CASE("WeightWriterTest)
         {
             ChainCallback<WeightBoundsPruningCallback, 
                 WeightFileWriterCallback> c;
@@ -125,7 +125,7 @@ namespace DualizationLibTest
         }
 
 
-        TEST_METHOD(DualDualWriterTest)
+        TEST_CASE("DualDualWriterTest)
         {
             OrderedColumnsFileWriterCallback w;
             w.CreateOutputFile("../ao.test/datasets/10_50_7187_dual.hg");        
@@ -141,7 +141,7 @@ namespace DualizationLibTest
 
             std::vector<std::vector<int>> hg;
             IntegersFileReader("../ao.test/datasets/10_50_7187_dual.hg").ReadUnsignedIntegersMatrix(hg);
-            Assert::IsTrue(hg.size()==7187);
+            CHECK(hg.size()==7187);
 
             w.CreateOutputFile("../ao.test/datasets/10_50_7187_dual_dual.hg");
             A.LoadMatrix("../ao.test/datasets/10_50_7187_dual.hg");
@@ -150,7 +150,7 @@ namespace DualizationLibTest
 
             hg.clear();
             IntegersFileReader("../ao.test/datasets/10_50_7187_dual_dual.hg").ReadUnsignedIntegersMatrix(hg);
-            Assert::IsTrue(hg.size()==10);
+            CHECK(hg.size()==10);
 
         }
 	};

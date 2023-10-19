@@ -17,7 +17,7 @@ namespace DualizationLibTest
 
     public:
 
-        TEST_METHOD(SetOptionsTests)
+        TEST_CASE("SetOptionsTests)
         {
             NumberChain::Register();
             GraphPoset::Register();
@@ -30,11 +30,11 @@ namespace DualizationLibTest
             task.SetOptions(opt);
             task.LoadIdealBase("../dualizationlib.test/data/A1.csv", opt);
 
-            Assert::AreEqual(3u, task.GetPosetsProduct().GetPosets().size());
+            CHECK_EQ(3u, task.GetPosetsProduct().GetPosets().size());
             auto const& ctask = task;
             for (int i = 0; i < 3; ++i)
             {
-                Assert::AreEqual(16u, ctask.GetIdealBase().GetColumn(i).size());
+                CHECK_EQ(16u, ctask.GetIdealBase().GetColumn(i).size());
             }
                         
         }

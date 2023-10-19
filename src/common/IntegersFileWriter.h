@@ -1,14 +1,12 @@
 #pragma once
 
-#include <boost/noncopyable.hpp>
-
 #include "bit_matrix.h"
 #include "io_utils.h"
 
 typedef std::vector<int> Positions;
 
 // Реализация вывода целых чисел файл
-class IntegersFileWriter : boost::noncopyable {
+class IntegersFileWriter {
 
     FILE_ptr _output;
 
