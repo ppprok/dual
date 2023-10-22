@@ -95,8 +95,27 @@ struct DualizationNode {
 struct IDualizationCallback {
     virtual void Call(DualizationNode& node) = 0;
 
-    virtual ~IDualizationCallback(){};
+    virtual ~IDualizationCallback()= default;
 };
+
+template <typename Func>
+class DualizationCallbackWrap : public  IDualizationCallback{
+public:
+    explicit DualizationCallbackWrap(Func func) : func_(std::move(func)) {
+    }
+
+    void Call(DualizationNode& node) override {
+        func_(node);
+    }
+
+private:
+    Func func_;
+};
+
+template <typename Func>
+auto dualization_callback(Func&& func){
+    return std::make_shared<DualizationCallbackWrap<std::decay_t<Func>>>(std::forward<Func>(func));
+}
 
 typedef std::shared_ptr<IDualizationCallback> IDualizationCallbackPtr;
 

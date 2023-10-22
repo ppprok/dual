@@ -78,3 +78,9 @@ target_link_libraries(dualizer dual common pthread)
 add_library(runc SHARED RuncExecutor.cpp)
 target_link_libraries(runc dual common)
 set_property(TARGET runc PROPERTY POSITION_INDEPENDENT_CODE TRUE)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/librunc.so DESTINATION ${CMAKE_SOURCE_DIR}/src/pyrunc COMPONENT pyrunc)
+
+add_custom_target(InstallRuncLib COMMAND "${CMAKE_COMMAND}" -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR} -DCOMPONENT=pyrunc -P ${CMAKE_BINARY_DIR}/cmake_install.cmake)
+
+add_dependencies(InstallRuncLib runc)
