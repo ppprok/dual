@@ -10,15 +10,6 @@
 
 class DualizerState {
 public:
-    Runc::GlobalState state;
-    bit_matrix input_matrix;
-
-    std::queue<std::vector<int>> covers_queue_;
-    std::unique_ptr<std::thread> thread_;
-    bool stop_ = false;
-
-    std::mutex mutex_;
-    std::condition_variable cv_;
 
     DualizerState() {}
 
@@ -31,11 +22,12 @@ public:
     }
 
     void set_input_one(int32_t i, int32_t j) {
-        input_matrix.set(i, j);
+        input_matrix_.set(i, j);
     }
 
     void start_dualization() {
-        state.SetMatrix(std::move(input_matrix));
+        width_ = input_matrix_.width();
+        state_.SetMatrix(std::move(input_matrix_));
 
         thread_ = std::make_unique<std::thread>([this] {
             std::unique_lock lock(mutex_);
@@ -46,8 +38,8 @@ public:
                     node.stoped = true;
                 }
             });
-            state.CoverCallback = cover_callback.get();
-            state.Dualize();
+            state_.CoverCallback = cover_callback.get();
+            state_.Dualize();
             covers_queue_.emplace();
             cv_.notify_one();
         });
@@ -65,10 +57,7 @@ public:
     }
 
     uint32_t enumerate_covers(uint32_t buffer_size, uint32_t* buffer) {
-        auto width = input_matrix.width();
-
         uint32_t count = 0;
-
         std::unique_lock lock(mutex_);
 
         if (!thread_) {
@@ -79,7 +68,7 @@ public:
             return 0;
         }
 
-        while (buffer_size >= width + 1) {
+        while (buffer_size >= width_ + 1) {
 
             if (covers_queue_.empty())
                 cv_.notify_one();
@@ -106,6 +95,20 @@ public:
 
         return count;
     }
+
+private:
+
+    Runc::GlobalState state_;
+    bit_matrix input_matrix_;
+    size_t width_ = 0;
+
+    std::queue<std::vector<int>> covers_queue_;
+    std::unique_ptr<std::thread> thread_;
+    bool stop_ = false;
+
+    std::mutex mutex_;
+    std::condition_variable cv_;
+
 };
 
 extern "C" {
@@ -121,7 +124,7 @@ void release_dualizer(DualizerHandler dualizer) {
 void set_input_row(DualizerHandler dualizer, int32_t row_num, int32_t ones_num, int32_t* ones) {
     auto& state = *reinterpret_cast<DualizerState*>(dualizer);
     for (int j = 0; j < ones_num; ++j) {
-        state.input_matrix.set(row_num, ones[j]);
+        state.set_input_one(row_num, ones[j]);
     }
 }
 }
