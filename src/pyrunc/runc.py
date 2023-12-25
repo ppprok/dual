@@ -53,33 +53,35 @@ class RuncDualizer:
         librunc.release_dualizer(self.dualizer)
 
 
-# Example of using RuncDualizer to small input matrix
-runc = RuncDualizer()
-runc.add_input_row([0, 7, 10, 16])
-runc.add_input_row([0, 1, 7])
-runc.add_input_row([1, 7, 6])
+def test_enumerate():
+    # Example of using RuncDualizer to small input matrix
+    runc = RuncDualizer()
+    runc.add_input_row([0, 7, 10, 16])
+    runc.add_input_row([0, 1, 7])
+    runc.add_input_row([1, 7, 6])
 
-while True:
-    covers = runc.enumerate_covers()
-    if len(covers) == 0:
-        print("End")
-        break
+    while True:
+        covers = runc.enumerate_covers()
+        if len(covers) == 0:
+            print("End")
+            break
 
-    for cover in covers:
-        print(cover)
+        for cover in covers:
+            print(cover)
 
 
-# Example of using RuncDualizer for matrix loaded from file.
-# In this example we are enumerating covers by parts with many calls of enumerate_covers
-runc = RuncDualizer()
-with open('/home/user/dual/src/tests/data/15_20_275.hg', 'r') as f:
-    for l in f.readlines():
-        runc.add_input_row([int(a) for a in l.split(' ')])
+def test_enumerate_from_file():
+    # Example of using RuncDualizer for matrix loaded from file.
+    # In this example we are enumerating covers by parts with many calls of enumerate_covers
+    runc = RuncDualizer()
+    with open('/home/user/dual/src/tests/data/6_6_4_0.hg', 'r') as f:
+        for l in f.readlines():
+            runc.add_input_row([int(a) for a in l.split(' ')])
 
-while True:
-    covers = runc.enumerate_covers(10)
-    print(len(covers))
+    while True:
+        covers = runc.enumerate_covers(10)
+        print(len(covers))
 
-    if len(covers) == 0:
-        print("End")
-        break
+        if len(covers) == 0:
+            print("End")
+            break
