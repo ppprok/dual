@@ -27,12 +27,15 @@ class RuncDualizer:
         self.n = 0
 
     def add_input_row(self, columns_with_ones: List[int]):
+        if len(columns_with_ones) == 0:
+            return False
         row = numpy.array(columns_with_ones, dtype=numpy.int32)
         n = numpy.max(row) + 1
         if self.n < n:
             self.n = n
         librunc.set_input_row(self.dualizer, self.m, len(row), row)
         self.m = self.m + 1
+        return True
 
     def enumerate_covers(self, buffer_count: int = 128) -> List[numpy.array]:
         covers_buffer = numpy.zeros(buffer_count * (self.n + 1), dtype=numpy.int32)
@@ -69,6 +72,25 @@ def test_enumerate():
         for cover in covers:
             print(cover)
 
+
+def test_enumerate_large():
+    # Example of using RuncDualizer to small input matrix
+    runc = RuncDualizer()
+
+    for i in range(180):
+        runc.add_input_row([i, i + 1])
+
+    for c in range(20):
+        covers = runc.enumerate_covers()
+        if len(covers) == 0:
+            print("End")
+            break
+
+        for cover in covers:
+            print(cover)
+
+
+# test_enumerate_large()
 
 def test_enumerate_from_file():
     # Example of using RuncDualizer for matrix loaded from file.
