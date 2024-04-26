@@ -1,18 +1,18 @@
 #include <doctest.h>
 
 #include "Counters.h"
-#include "RUNC.h"
+#include "Runc.h"
 
 void DoTest(std::string const& filename, int count) {
     Runc::AlgorithmType algs[] = {Runc::RUNC, Runc::OPT, Runc::RUNCM};
 
     for (auto a : algs) {
-        Runc::GlobalState A(a);
-        A.LoadMatrix(filename);
+        Runc::RuncGlobalState A(a);
+        A.loadMatrix(filename);
         Counters c;
         A.InnerCallback = &c;
         A.CoverCallback = &c;
-        A.Dualize();
+        A.dualize();
         CHECK_EQ(count, c.cover);
     }
 }
@@ -43,4 +43,35 @@ TEST_CASE("DualizeRUNCTest6") {
 
 TEST_CASE("DualizeRUNCTest7") {
     DoTest("data/15_35_12226.hg", 12226);
+}
+
+TEST_CASE("Dualize by steps RUNCM"){
+    Runc::RuncGlobalState A(Runc::RUNCM);
+    A.loadMatrix("data/15_35_12226.hg");
+    auto count = 0;
+    for (auto r = A.dualize(100); ! r.empty(); r = A.dualize(100)){
+        count += r.size();
+
+        for (auto& cover : r){
+            std::sort(cover.begin(), cover.end());
+            CHECK(std::unique(cover.begin(), cover.end()) == cover.end());
+        }
+
+    }
+    CHECK(count == 12226);
+}
+
+
+TEST_CASE("Dualize to buffer RUNCM"){
+    Runc::RuncGlobalState A(Runc::RUNCM);
+    A.loadMatrix("data/15_35_12226.hg");
+
+    std::vector<uint32_t> buffer;
+    buffer.resize(1000);
+
+    auto count = 0;
+    for (auto r = A.dualize(buffer.size(), buffer.data()); r > 0; r = A.dualize(buffer.size(), buffer.data())){
+        count += r;
+    }
+    CHECK(count == 12226);
 }

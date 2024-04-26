@@ -5,7 +5,7 @@
 #include "BoolMatrixPreparation.h"
 #include "bit_mask.h"
 
-// Инициализировать по глобальному состоянию
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 void AOT1::LocalState::Init(GlobalState& g) {
     int m = g._matrix.height();
     int n = g._matrix.width();
@@ -16,7 +16,7 @@ void AOT1::LocalState::Init(GlobalState& g) {
     _restCols = g._tempMatrix.get_rows().back();
 }
 
-// Добавить столбец
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 AOT1::LocalState::AddResult AOT1::LocalState::AddItem(GlobalState& g, LocalState const& l, int i, int col) {
     _competing.clear();
     _uncovered.clear();
@@ -50,12 +50,12 @@ AOT1::LocalState::AddResult AOT1::LocalState::AddItem(GlobalState& g, LocalState
     return IsCover() ? Cover : Inner;
 }
 
-// Удалить столбец
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 void AOT1::LocalState::RemCol(int j) {
     _restCols.set(j, 0);
 }
 
-// Найти минимальную непокрытую строку
+// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 bit_chunk AOT1::LocalState::GetMinUncovered(int mc /*= 0*/) const {
     bit_chunk row;
     int count = INT_MAX;
@@ -88,7 +88,7 @@ bit_chunk AOT1::LocalState::GetMinUncovered(int mc /*= 0*/) const {
     return row;
 }
 
-// Удалить нулевые столбцы
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 bit_chunk AOT1::LocalState::CollectRestCols() {
     _restCols.clear();
 
@@ -98,7 +98,7 @@ bit_chunk AOT1::LocalState::CollectRestCols() {
     return _restCols;
 }
 
-// Удалить нижние охватывающие строки
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 void AOT1::LocalState::RemoveDependentRows() {
     BoolMatrixPreparation::RemoveDependentRows(_uncovered, _restCols);
 }
@@ -187,7 +187,7 @@ bool AOT1::GlobalState::DoDualize(int stateNum) {
 
         current->RemCol(j);
 
-        if (AddColumn(j)) {
+        if (addColumn(j)) {
             bit_chunk::get_bit_iterator jt(j);
 
             for (int i = 0; i < s; ++i) {
@@ -200,13 +200,13 @@ bool AOT1::GlobalState::DoDualize(int stateNum) {
                     if (!DoDualize(stateNum + 1))
                         return false;
                 } else if (r == LocalState::Cover) {
-                    if (!DoCoverCallback())
+                    if (!doCoverCallback())
                         return false;
                 }
             }
         }
 
-        Backtrack();
+        backtrack();
     }
 
     return !_currentNode.stoped;
@@ -254,6 +254,6 @@ void AOT1::GlobalState::Dualize() {
     root->_uncovered.assign(_matrix.get_rows().begin(), _matrix.get_rows().end());
     root->CollectRestCols();
 
-    ResetCurrentNode(q);
+    resetCurrentNode(q);
     DoDualize(0);
 }

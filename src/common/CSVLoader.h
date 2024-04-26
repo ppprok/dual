@@ -3,13 +3,13 @@
 #include <cassert>
 #include <charconv>
 #include <list>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
 #include "blob.h"
 #include "chunk.h"
 #include "containers.h"
-#include "errors.h"
 #include "io_utils.h"
 
 typedef chunk<char> value_chunk;

@@ -1,9 +1,7 @@
 
 #include "CmpFitMatrixBuilder.h"
-#include "RUNC.h"
 #include "Interfaces.h"
-
-
+#include "Runc.h"
 
 void CmpFitMatrixBuilder::MergeCmpMatrixRows(int thres, int limit)
 {
@@ -103,10 +101,10 @@ void CmpFitMatrixBuilder::FindCovers()
 {
     DualCallback callback(this, _cmpMatrix.GetCmpMatrix().width());
 
-    Runc::GlobalState dualizer;
+    Runc::RuncGlobalState dualizer;
     dualizer.CoverCallback = &callback;
-    dualizer.SetMatrix(std::move(_cmpMatrix.GetCmpMatrix()));
-    dualizer.Dualize();
+    dualizer.setMatrix(std::move(_cmpMatrix.GetCmpMatrix()));
+    dualizer.dualize();
 
     RestMostCovers(Options.coverLimit, Options.coverLimit);
 }

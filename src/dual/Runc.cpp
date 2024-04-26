@@ -1,30 +1,12 @@
-#include "RUNC.h"
+#include "Runc.h"
 #include "BoolMatrixPreparation.h"
 #include "DualizationBacktrackAlgorithmBase.h"
+#include <iostream>
 
-// Инициализировать по глобальному состоянию
-void Runc::LocalState::Init(GlobalState& g) {
-    int m = g._matrix.height();
-    int n = g._matrix.width();
-
-    _uncovered.clear();
-    _support.clear();
-    _supportGroups.clear();
-
-    _uncovered.reserve(m);
-    _support.reserve(m);
-    _supportGroups.reserve(std::min(m, n));
-    _restCols = bit_vector(n);
-}
-
-// Установить опорные строки
-bool Runc::LocalState::SetUncoveredSupportRows(GlobalState& global,
-                                               int col,
-                                               marked_ranges const& groups,
-                                               rows const& support) {
+bool Runc::RuncLocalState::SetUncoveredSupportRows(int col, const marked_ranges& groups, const rows& support) {
 
     for (auto g : groups) {
-        bool b = AddUncoveredSupportRows(global, col, g.get_value(), g.begin_in(support), g.end_in(support));
+        bool b = AddUncoveredSupportRows(col, g.get_value(), g.begin_in(support), g.end_in(support));
         if (!b)
             return false;
     }
@@ -32,19 +14,13 @@ bool Runc::LocalState::SetUncoveredSupportRows(GlobalState& global,
     return true;
 }
 
-bool Runc::LocalState::SetUncoveredSupportRows(GlobalState& g, LocalState const& parent, int col) {
-    return SetUncoveredSupportRows(g, col, parent._supportGroups, parent._support);
+bool Runc::RuncLocalState::SetUncoveredSupportRows(const RuncLocalState& parent, int col) {
+    return SetUncoveredSupportRows(col, parent.supportGroups_, parent.support_);
 }
 
-// Добавить группу опорных строк
-bool Runc::LocalState::AddUncoveredSupportRows(GlobalState& global,
-                                               int col,
-                                               int l,
-                                               rows_citerator begin,
-                                               rows_citerator end) {
-    int s = _support.size();
-    auto& tempRow = global._tempRow;
-    tempRow.assign(GetRestCols());
+bool Runc::RuncLocalState::AddUncoveredSupportRows(int col, int l, rows_citerator begin, rows_citerator end) {
+    int s = support_.size();
+    temp_row_.assign(getRestCols());
 
     for (; begin != end; ++begin) {
         if (col >= 0 && begin->get(col))
@@ -52,36 +28,35 @@ bool Runc::LocalState::AddUncoveredSupportRows(GlobalState& global,
 
         auto r = *begin;
 
-        if (!tempRow.empty())
-            tempRow.assign_and(r, tempRow);
+        if (!temp_row_.empty())
+            temp_row_.assign_and(r, temp_row_);
 
-        if (tempRow.empty()) {
-            GetRestCols().trim(r);
+        if (temp_row_.empty()) {
+            getRestCols().trim(r);
             if (r.empty()) {
-                _support.resize(s);
+                support_.resize(s);
                 return true;
             }
         }
 
-        _support.push_back(r);
+        support_.push_back(r);
     }
 
-    if (s == _support.size())
+    if (s == support_.size())
         return false;
 
-    if (!tempRow.empty())
-        _restCols.assign_sub(_restCols, tempRow);
+    if (!temp_row_.empty())
+        restCols_.assign_sub(restCols_, temp_row_);
 
-    _supportGroups.push_back(marked<range>(range(s, _support.size()), l));
+    supportGroups_.push_back(marked<range>(range(s, support_.size()), l));
 
     return true;
 }
 
-// Установить множество непокрытых строк
-bool Runc::LocalState::SetUncovered(GlobalState& g, int col, rows_citerator begin, rows_citerator end) {
-    _uncovered.resize(end - begin);
-    auto uend = _uncovered.end();
-    auto ubeg = _uncovered.begin();
+bool Runc::RuncLocalState::SetUncovered(int col, rows_citerator begin, rows_citerator end) {
+    uncovered_.resize(end - begin);
+    auto uend = uncovered_.end();
+    auto ubeg = uncovered_.begin();
 
     for (; begin != end; ++begin) {
         if (begin->get(col)) {
@@ -91,7 +66,7 @@ bool Runc::LocalState::SetUncovered(GlobalState& g, int col, rows_citerator begi
 
         auto r = *begin;
 
-        GetRestCols().trim(r);
+        getRestCols().trim(r);
 
         if (r.empty())
             return false;
@@ -99,46 +74,43 @@ bool Runc::LocalState::SetUncovered(GlobalState& g, int col, rows_citerator begi
         *ubeg++ = r;
     }
 
-    if (!AddUncoveredSupportRows(g, -1, col, uend, _uncovered.end()))
+    if (!AddUncoveredSupportRows(-1, col, uend, uncovered_.end()))
         return false;
 
-    _uncovered.resize(ubeg - _uncovered.begin());
+    uncovered_.resize(ubeg - uncovered_.begin());
     return true;
 }
 
-bool Runc::LocalState::SetUncovered(GlobalState& g, LocalState const& parent, int col) {
-    return SetUncovered(g, col, parent._uncovered.begin(), parent._uncovered.end());
+bool Runc::RuncLocalState::SetUncovered(RuncLocalState const& parent, int col) {
+    return SetUncovered(col, parent.uncovered_.begin(), parent.uncovered_.end());
 }
 
-// Добавить столбец
-Runc::LocalState::AddResult Runc::LocalState::AddColumn(GlobalState& g, LocalState const& l, int col) {
-    _support.clear();
-    _supportGroups.clear();
-    _uncovered.clear();
+Runc::RuncLocalState::AddResult Runc::RuncLocalState::AddColumn(RuncLocalState const& l, int col) {
+    support_.clear();
+    supportGroups_.clear();
+    uncovered_.clear();
 
-    _restCols.assign(l._restCols);
+    restCols_.assign(l.restCols_);
 
-    if (!SetUncovered(g, l, col))
+    if (!SetUncovered(l, col))
         return Uncoverable;
 
-    if (!SetUncoveredSupportRows(g, l, col))
+    if (!SetUncoveredSupportRows(l, col))
         return Uncompatable;
 
     return IsCover() ? Cover : Inner;
 }
 
-// Удалить столбец
-void Runc::LocalState::RemoveColumn(int j) {
-    _restCols.set(j, 0);
+void Runc::RuncLocalState::RemoveColumn(int j) {
+    restCols_.set(j, 0);
 }
 
-// Найти минимальную непокрытую строку
-bit_chunk Runc::LocalState::GetMinUncovered(int mc /*= 0*/) const {
+bit_chunk Runc::RuncLocalState::GetMinUncovered(int mc /*= 0*/) const {
     bit_chunk row;
     int count = INT_MAX;
 
-    for (auto r : _uncovered) {
-        int c = GetRestCols().count(r, count);
+    for (auto r : uncovered_) {
+        int c = getRestCols().count(r, count);
 
         if (c < count) {
             if (c <= mc)
@@ -152,38 +124,34 @@ bit_chunk Runc::LocalState::GetMinUncovered(int mc /*= 0*/) const {
     return row;
 }
 
-// Удалить нулевые столбцы
-bit_chunk Runc::LocalState::CollectRestCols() {
-    _restCols.clear();
+bit_chunk Runc::RuncLocalState::CollectRestCols() {
+    restCols_.clear();
 
-    for (auto r : _uncovered)
-        _restCols.assign_or(_restCols, r);
+    for (auto r : uncovered_)
+        restCols_.assign_or(restCols_, r);
 
-    return _restCols;
+    return restCols_;
 }
 
-// Удалить охватывающие строки
-void Runc::LocalState::RemoveDependentRows() {
-    BoolMatrixPreparation::RemoveDependentRows(_uncovered, GetRestCols());
+void Runc::RuncLocalState::RemoveDependentRows() {
+    BoolMatrixPreparation::RemoveDependentRows(uncovered_, getRestCols());
 }
 
-bit_chunk Runc::LocalState::GetUndepCols(GlobalState& g) {
+bit_chunk Runc::RuncLocalState::GetUndepCols() {
     RemoveDependentRows();
 
-    auto& tempRow = g._tempRow;
-    tempRow.clear();
-    for (auto r : _uncovered) {
-        tempRow.assign_or(r, tempRow);
+    temp_row_.clear();
+    for (auto const& uncovered : uncovered_) {
+        temp_row_.assign_or(uncovered, temp_row_);
     }
-    _restCols.assign_and(_restCols, tempRow);
-
-    return _restCols;
+    restCols_.assign_and(restCols_, temp_row_);
+    return restCols_;
 }
 
-bit_chunk Runc::LocalState::GetCols(GlobalState& g, Runc::AlgorithmType alg) {
+bit_chunk Runc::RuncLocalState::collectCols(AlgorithmType alg) {
     switch (alg) {
         case Runc::OPT:
-            return GetUndepCols(g);
+            return GetUndepCols();
         case Runc::RUNC:
             return GetFrontUncovered();
         case Runc::RUNCM:
@@ -192,85 +160,153 @@ bit_chunk Runc::LocalState::GetCols(GlobalState& g, Runc::AlgorithmType alg) {
     return bit_chunk();
 }
 
-bit_chunk Runc::LocalState::GetFrontUncovered() const {
-    return _uncovered.front();
+bit_chunk Runc::RuncLocalState::GetFrontUncovered() const {
+    return uncovered_.front();
 }
 
-bit_mask Runc::LocalState::GetRestCols() const {
-    return _restCols;
+bit_mask Runc::RuncLocalState::getRestCols() const {
+    return restCols_;
 }
 
-bool Runc::LocalState::IsCover() const {
-    return _uncovered.empty();
+bool Runc::RuncLocalState::IsCover() const {
+    return uncovered_.empty();
 }
 
-Runc::LocalState::LocalState() {}
-
-bool Runc::GlobalState::DoDualize(int stateNum) {
-    auto current = GetLocalState(stateNum);
-
-    if (!current)
-        return true;
-
-    auto cols = current->GetCols(*this, _type);
-
-    while (!_currentNode.stoped) {
-        int j = current->GetRestCols().find_last(cols);
-
-        if (j < 0)
-            break;
-
-        current->RemoveColumn(j);
-
-        if (AddColumn(j)) {
-
-            auto child = GetLocalState(stateNum + 1);
-            auto r = child->AddColumn(*this, *current, j);
-
-            switch (r) {
-                case Runc::LocalState::Inner:
-                    if (!DoDualize(stateNum + 1))
-                        return false;
-                    break;
-                case Runc::LocalState::Cover:
-                    DoCoverCallback();
-                    break;
-            }
-        }
-        Backtrack();
+Runc::RuncLocalState::RuncLocalState(size_t m, size_t n) {
+    if (m > 0 && n > 0) {
+        uncovered_.reserve(m);
+        support_.reserve(m);
+        supportGroups_.reserve(std::min(m, n));
+        restCols_ = bit_vector(n);
+        temp_row_ = bit_vector(n);
     }
-
-    return !_currentNode.stoped;
+}
+const bit_chunk& Runc::RuncLocalState::getCollectedCols() const {
+    return collectedCols_;
+}
+void Runc::RuncLocalState::setCollectedCols(bit_chunk collectedCols) {
+    collectedCols_ = collectedCols;
 }
 
-Runc::LocalState* Runc::GlobalState::GetLocalState(int stateNum) {
-    while (stateNum >= (int) _states.size())
-        _states.emplace_back(*this);
+void Runc::RuncGlobalState::doDualize() {
 
-    return &_states[stateNum];
+    do {
+    } while (doStep());
 }
 
-void Runc::GlobalState::Dualize() {
+Runc::RuncLocalState& Runc::RuncGlobalState::getLocalState(std::size_t state_num) {
+    if (state_num >= _states.size()) {
+        auto m = _matrix.height();
+        auto n = _matrix.width();
+        while (state_num >= _states.size())
+            _states.emplace_back(m ,n);
+    }
+    return _states[state_num];
+}
+
+void Runc::RuncGlobalState::dualize() {
+    startDualize();
+    doDualize();
+}
+
+Runc::RuncGlobalState::RuncGlobalState(AlgorithmType type /*= AlgorithmType::RUNCM*/) : _type(type) {}
+
+void Runc::RuncGlobalState::startDualize() {
     int n = _matrix.width();
     int m = _matrix.height();
-
     int q = std::min(m, n);
-
     if (q <= 0)
         return;
 
     _states.clear();
     _states.reserve(q + 1);
-
-    _tempRow = bit_vector(n);
-
-    auto root = GetLocalState(0);
-    root->_uncovered.assign(_matrix.get_rows().begin(), _matrix.get_rows().end());
-    root->CollectRestCols();
-
-    ResetCurrentNode(q);
-
-    DoDualize(0);
+    auto& root = getLocalState(0);
+    root.uncovered_.assign(_matrix.get_rows().begin(), _matrix.get_rows().end());
+    root.CollectRestCols();
+    root.setCollectedCols(root.collectCols(_type));
+    current_local_state_ = &root;
+    state_depth_ = 0;
+    resetCurrentNode(q);
 }
 
-Runc::GlobalState::GlobalState(AlgorithmType type /*= AlgorithmType::RUNCM*/) : _type(type) {}
+bool Runc::RuncGlobalState::doStep() {
+
+    if (! current_local_state_)
+        current_local_state_ = &getLocalState(state_depth_);
+
+    int j = current_local_state_->getRestCols().find_last(current_local_state_->getCollectedCols());
+    if (j >= 0) {
+        current_local_state_->RemoveColumn(j);
+        if (addColumn(j)) {
+            auto& child = getLocalState(state_depth_ + 1);
+            auto add_result = child.AddColumn(*current_local_state_, j);
+            switch (add_result) {
+                case Runc::RuncLocalState::Inner:
+                    ++state_depth_;
+                    current_local_state_ = &getLocalState(state_depth_);
+                    current_local_state_->setCollectedCols(current_local_state_->collectCols(_type));
+                    return true;
+                case Runc::RuncLocalState::Cover:
+                    doCoverCallback();
+                    break;
+                default:
+                    break;
+            }
+        }
+    } else if (state_depth_ > 0) {
+        --state_depth_;
+        current_local_state_ = &getLocalState(state_depth_);
+    }
+    else{
+        return false;
+    }
+    backtrack();
+    return ! _currentNode.stoped;
+}
+std::vector<Columns> Runc::RuncGlobalState::dualize(size_t max_count) {
+    if (! current_local_state_){
+        startDualize();
+    }
+
+    std::vector<Columns> result;
+    result.reserve(max_count);
+    auto callback = dualization_callback([&result](DualizationNode& node){
+        if (node.IsCover()){
+            result.push_back(node.columns);
+        }
+    });
+    CoverCallback = callback.get();
+    while(result.size() < max_count){
+        if (! doStep())
+            break;
+    }
+    return result;
+}
+size_t Runc::RuncGlobalState::dualize(uint32_t buffer_size, uint32_t* buffer) {
+    if (! current_local_state_){
+        startDualize();
+    }
+
+    size_t count = 0;
+    auto callback = dualization_callback([&buffer_size, &buffer, &count](DualizationNode& node){
+        if (!node.IsCover())
+            return;
+
+        Columns& cover = node.columns;
+        buffer[0] = cover.size();
+        ++buffer;
+        --buffer_size;
+
+        std::copy(cover.begin(), cover.end(), buffer);
+        buffer += cover.size();
+        buffer_size -= cover.size();
+        ++count;
+    });
+    CoverCallback = callback.get();
+    auto n = _matrix.width();
+    while(buffer_size >= n+1){
+        if (! doStep())
+            break;
+    }
+    return count;
+}

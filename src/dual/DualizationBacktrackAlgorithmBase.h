@@ -7,11 +7,11 @@ typedef std::vector<int> Columns;
 
 struct NodeType {
     enum Enum {
-        CoverNode,      // Узел покрытия
-        NewNode,        // Новый узел
-        BacktrackNode,  // Предыдущий узел
-        ExtraNode,      // Лишний узел
-        RootNode        // Корень
+        CoverNode,      // РЈР·РµР» РїРѕРєСЂС‹С‚РёСЏ
+        NewNode,        // РќРѕРІС‹Р№ СѓР·РµР»
+        BacktrackNode,  // РџСЂРµРґС‹РґСѓС‰РёР№ СѓР·РµР»
+        ExtraNode,      // Р›РёС€РЅРёР№ СѓР·РµР»
+        RootNode        // РљРѕСЂРµРЅСЊ
     };
 };
 
@@ -19,26 +19,26 @@ typedef float Weight;
 
 typedef std::vector<Weight> Weights;
 
-// Узел дерева решений
+// РЈР·РµР» РґРµСЂРµРІР° СЂРµС€РµРЅРёР№
 struct DualizationNode {
 
-    // Столбцы
+    // РЎС‚РѕР»Р±С†С‹
     Columns columns;
-    // Вес набора столбцов
+    // Р’РµСЃ РЅР°Р±РѕСЂР° СЃС‚РѕР»Р±С†РѕРІ
     int lastColumn;
-    // Идентификатор узла ДР
+    // РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ СѓР·Р»Р° Р”Р 
     int nodeID;
-    // Идентификатор ветви ДР
+    // РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РІРµС‚РІРё Р”Р 
     int branchID;
-    // Тип узла
+    // РўРёРї СѓР·Р»Р°
     NodeType::Enum type;
-    // Текущий вес покрытия
+    // РўРµРєСѓС‰РёР№ РІРµСЃ РїРѕРєСЂС‹С‚РёСЏ
     Weight weight;
-    // Остановить построение ДР
+    // РћСЃС‚Р°РЅРѕРІРёС‚СЊ РїРѕСЃС‚СЂРѕРµРЅРёРµ Р”Р 
     bool stoped;
-    // Отсечь текущую ветку
+    // РћС‚СЃРµС‡СЊ С‚РµРєСѓС‰СѓСЋ РІРµС‚РєСѓ
     bool pruned;
-    // Ограничение на допустимые столбцы
+    // РћРіСЂР°РЅРёС‡РµРЅРёРµ РЅР° РґРѕРїСѓСЃС‚РёРјС‹Рµ СЃС‚РѕР»Р±С†С‹
     //bit_chunk restriction;
 
     DualizationNode() {
@@ -91,18 +91,16 @@ struct DualizationNode {
     }
 };
 
-// Интерфейс обратного вызова
+// РРЅС‚РµСЂС„РµР№СЃ РѕР±СЂР°С‚РЅРѕРіРѕ РІС‹Р·РѕРІР°
 struct IDualizationCallback {
     virtual void Call(DualizationNode& node) = 0;
-
-    virtual ~IDualizationCallback()= default;
+    virtual ~IDualizationCallback() = default;
 };
 
-template <typename Func>
-class DualizationCallbackWrap : public  IDualizationCallback{
+template<typename Func>
+class DualizationCallbackWrap : public IDualizationCallback {
 public:
-    explicit DualizationCallbackWrap(Func func) : func_(std::move(func)) {
-    }
+    explicit DualizationCallbackWrap(Func func) : func_(std::move(func)) {}
 
     void Call(DualizationNode& node) override {
         func_(node);
@@ -112,16 +110,15 @@ private:
     Func func_;
 };
 
-template <typename Func>
-auto dualization_callback(Func&& func){
+template<typename Func>
+auto dualization_callback(Func&& func) {
     return std::make_shared<DualizationCallbackWrap<std::decay_t<Func>>>(std::forward<Func>(func));
 }
 
 typedef std::shared_ptr<IDualizationCallback> IDualizationCallbackPtr;
-
 typedef std::vector<IDualizationCallbackPtr> DualizationCallbacks;
 
-// Склеивание двух обратных вызовов в цепочку
+// РЎРєР»РµРёРІР°РЅРёРµ РґРІСѓС… РѕР±СЂР°С‚РЅС‹С… РІС‹Р·РѕРІРѕРІ РІ С†РµРїРѕС‡РєСѓ
 template<typename C1, typename C2>
 struct ChainCallback : IDualizationCallback {
     C1 callback1;
@@ -136,42 +133,30 @@ struct ChainCallback : IDualizationCallback {
     }
 };
 
-// Базовый класс для backtrack-алгоритма дуализации
+// Р‘Р°Р·РѕРІС‹Р№ РєР»Р°СЃСЃ РґР»СЏ backtrack-Р°Р»РіРѕСЂРёС‚РјР° РґСѓР°Р»РёР·Р°С†РёРё
 class DualizationBacktrackAlgorithmBase {
 protected:
     DualizationNode _currentNode;
-
     bit_matrix _matrix;
-
     bit_matrix _restrictions;
 
 public:
-    DualizationBacktrackAlgorithmBase();
-
     IDualizationCallback* InnerCallback;
-
     IDualizationCallback* CoverCallback;
 
-    void SetMatrix(bit_matrix matrix);
-
-    void LoadMatrix(std::string const& filename);
-
-    void SetRestrictions(bit_matrix const& restrictions);
-
-    void LoadRestrictions(std::string const& filename);
-
-    virtual void Dualize() = 0;
-
-    virtual ~DualizationBacktrackAlgorithmBase(){};
+    DualizationBacktrackAlgorithmBase();
+    void setMatrix(bit_matrix matrix);
+    bit_matrix& get_matrix();
+    void loadMatrix(std::string const& filename);
+    void setRestrictions(bit_matrix const& restrictions);
+    void loadRestrictions(std::string const& filename);
+    virtual void dualize() = 0;
+    virtual ~DualizationBacktrackAlgorithmBase();
 
 protected:
-    void DoInnerCallback();
-
-    bool DoCoverCallback();
-
-    bool AddColumn(int j);
-
-    void Backtrack();
-
-    void ResetCurrentNode(int n = 0);
+    void doInnerCallback();
+    bool doCoverCallback();
+    bool addColumn(int j);
+    void backtrack();
+    void resetCurrentNode(int n = 0);
 };

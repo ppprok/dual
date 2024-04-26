@@ -27,9 +27,10 @@ class RuncDualizer:
         self.n = 0
 
     def add_input_row(self, columns_with_ones: List[int]):
-        if len(columns_with_ones) == 0:
+        cols = [c for c in columns_with_ones if c >= 0]
+        if len(cols) == 0:
             return False
-        row = numpy.array(columns_with_ones, dtype=numpy.int32)
+        row = numpy.array(cols, dtype=numpy.int32)
         n = numpy.max(row) + 1
         if self.n < n:
             self.n = n
@@ -38,8 +39,9 @@ class RuncDualizer:
         return True
 
     def enumerate_covers(self, buffer_count: int = 128) -> List[numpy.array]:
-        covers_buffer = numpy.zeros(buffer_count * (self.n + 1), dtype=numpy.int32)
-        c = librunc.enumerate_covers(self.dualizer, len(covers_buffer), covers_buffer)
+        size = buffer_count * (self.n + 1)
+        covers_buffer = numpy.zeros(size, dtype=numpy.int32)
+        c = librunc.enumerate_covers(self.dualizer, size, covers_buffer)
 
         offset = 0
         result = []
@@ -78,9 +80,9 @@ def test_enumerate_large():
     runc = RuncDualizer()
 
     for i in range(180):
-        runc.add_input_row([i, i + 1])
+        runc.add_input_row([i, i + 1, i+10])
 
-    for c in range(20):
+    for c in range(2000):
         covers = runc.enumerate_covers()
         if len(covers) == 0:
             print("End")
@@ -96,7 +98,7 @@ def test_enumerate_from_file():
     # Example of using RuncDualizer for matrix loaded from file.
     # In this example we are enumerating covers by parts with many calls of enumerate_covers
     runc = RuncDualizer()
-    with open('/home/user/dual/src/tests/data/6_6_4_0.hg', 'r') as f:
+    with open('/home/user/logical/dual/src/tests/data/6_6_4.hg', 'r') as f:
         for l in f.readlines():
             runc.add_input_row([int(a) for a in l.split(' ')])
 

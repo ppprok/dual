@@ -7,7 +7,7 @@ set(SOURCE_FILES PosetsDualizationNode.h
         WeightBoundsPruning.cpp
         Antichain.h
         FrequentInfrequentTask.cpp
-        RUNC.h
+        Runc.h
         FrequentInfrequentEnumerator.cpp
         Callbacks.h
         IPoset.h

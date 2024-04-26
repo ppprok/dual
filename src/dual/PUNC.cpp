@@ -12,7 +12,7 @@ bool GlobalState::DoDualize(int level) {
 
     int r = FindTopUncoveredRow(current);
     if (r == _matrix.height())
-        return DoCoverCallback();
+        return doCoverCallback();
 
     if (!CollectRestCols(current))
         return true;
@@ -22,13 +22,13 @@ bool GlobalState::DoDualize(int level) {
 
     for (auto& cc : current.columnsOrder) {
         int j = cc.order;
-        if (AddColumn(j)) {
+        if (addColumn(j)) {
             InitChildState(child, current, j);
             if (!DoDualize(level + 1))
                 return false;
         }
 
-        Backtrack();
+        backtrack();
         child.usedColumns.set(j, false);
 
         if (_currentNode.stoped)
@@ -51,7 +51,7 @@ void GlobalState::Dualize() {
     //_states.clear();
     int n = _matrix.width();
     int m = _matrix.height();
-    ResetCurrentNode(n);
+    resetCurrentNode(n);
     _tempRow = bit_vector(n);
 
     int q = std::min(n, m) + 1;
