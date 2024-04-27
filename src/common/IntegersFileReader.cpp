@@ -1,5 +1,5 @@
 #include "IntegersFileReader.h"
-#include "errors.h"
+#include <stdexcept>
 
 bit_matrix IntegersFileReader::ReadBitMatrix() {
     assert(_input);

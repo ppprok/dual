@@ -1,7 +1,7 @@
 #pragma once
 
 #include "bit_matrix.h"
-#include "errors.h"
+#include <stdexcept>
 
 int edges_number(bit_matrix& adj_mat);
 

@@ -1,5 +1,4 @@
 #pragma once
-#include "Configurable.h"
 
 /**
     Interface of solvable task
