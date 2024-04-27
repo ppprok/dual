@@ -72,8 +72,8 @@ add_library(dual ${SOURCE_FILES})
 
 target_link_libraries(dual INTERFACE common)
 
-add_executable(dualizer main.cpp)
-target_link_libraries(dualizer dual common pthread)
+#add_executable(dualizer main.cpp)
+#target_link_libraries(dualizer dual common pthread)
 
 add_library(runc SHARED RuncExecutor.cpp)
 target_link_libraries(runc dual common)

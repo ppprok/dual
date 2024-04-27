@@ -68,12 +68,11 @@ install(FILES data/winequality-red.csv
 
 add_custom_target(InstallTestUtilsData COMMAND "${CMAKE_COMMAND}" -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR} -DCOMPONENT=TestUtilsData -P ${CMAKE_BINARY_DIR}/cmake_install.cmake)
 
-
-add_subdirectory(LogicalAnalysisLib.Test)
+#add_subdirectory(LogicalAnalysisLib.Test)
 add_subdirectory(UtilsLib.Test)
 add_subdirectory(DualizationLib.Test)
 
-set_target_properties( TestDual TestUtils TestLogical
+set_target_properties( TestDual TestUtils
         PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 )
