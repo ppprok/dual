@@ -2,7 +2,7 @@
 
 #include "bit_chunk.h"
 
-// ћаска, накладываема€ на битовые массивы при выполнении операций с ними
+// Mask applied to bit arrays when performing operations on them
 struct bit_mask : bit_chunk {
     inline bit_mask(bit_chunk b) : bit_chunk(b) {}
 
@@ -69,7 +69,7 @@ struct bit_mask : bit_chunk {
         return -1;
     }
 
-    // —равнение числа битов после наложени€ маски
+    // Compare the number of set bits after applying the mask
     inline bool less_count(bit_chunk const& r1, bit_chunk const& r2) const {
         assert(valid());
         assert(r1.valid());
@@ -269,7 +269,7 @@ struct bit_mask : bit_chunk {
         return -1;
     }
 
-    // Ќайти первое отличие
+    // Find the first difference
     inline int find_first_diff(bit_chunk const& bits) const {
         assert(valid());
         assert(bits.valid());

@@ -2,7 +2,7 @@
 
 #include <limits.h>
 
-// Метка к объекту базового типа
+// Mark attached to an object of the base type
 template<typename base>
 struct marked : public base {
     static const int no_value = INT_MIN;
