@@ -36,7 +36,8 @@ public:
     // Check for end of file
     bool IsEOF() const;
 
-    // Read a bit matrix from the file
+    // Read a bit matrix from the file: every line is a row of column indices, an empty line is a zero row,
+    // trailing empty lines are not rows. Throws std::out_of_range on a number that does not fit into int
     bit_matrix ReadBitMatrix();
 
     // Read a bit matrix from the file
