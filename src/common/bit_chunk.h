@@ -264,17 +264,17 @@ protected:
     static inline int get_last(Block b) {
         auto b1 = b & 0xff000000;
         if (b1)
-            return BitOpTables::low_bit_number[b1 >> 24] + 24;
+            return BitOpTables::high_bit_number[b1 >> 24] + 24;
 
         auto b2 = b & 0xff0000;
         if (b2)
-            return BitOpTables::low_bit_number[b2 >> 16] + 16;
+            return BitOpTables::high_bit_number[b2 >> 16] + 16;
 
         auto b3 = b & 0xff00;
         if (b3)
-            return BitOpTables::low_bit_number[b3 >> 8] + 8;
+            return BitOpTables::high_bit_number[b3 >> 8] + 8;
 
-        return BitOpTables::low_bit_number[b];
+        return BitOpTables::high_bit_number[b];
     }
 
 public:
