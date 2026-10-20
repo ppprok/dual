@@ -60,6 +60,8 @@ cmake_install.cmake
 install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
+# Build trees (`cmake -B build`, presets use build/<preset>)
+/build/
 ### C++ template
 # Prerequisites
 *.d
