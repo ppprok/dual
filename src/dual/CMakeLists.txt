@@ -1,48 +1,63 @@
-set(SOURCE_FILES
+set(DUAL_DUAL_HEADERS
+        AOT1.h
+        BoolMatrixPreparation.h
+        Counters.h
+        CoverCollector.h
+        DualizationBacktrackAlgorithmBase.h
+        DualizationCounters.h
+        FileWriters.h
+        FrequentInfrequentEnumerator.h
+        GeneticDualizer.h
+        MostCoverCollector.h
+        Pruning.h
+        PUNC.h
         Runc.h
         RuncFixed.h
-        RuncFixed.cpp
-        PUNC.cpp
-        DualizationBacktrackAlgorithmBase.h
-        Runc.cpp
-        FileWriters.cpp
-        FrequentInfrequentEnumerator.h
-        Pruning.cpp
-        BoolMatrixPreparation.h
-        AOT1.cpp
-        MostCoverCollector.cpp
-        MostCoverCollector.h
-        FileWriters.h
         WeightBoundsPruning.h
         WeightedCover.h
-        Pruning.h
-        AOT1.h
-        DualizationCounters.h
-        DualizationCounters.cpp
+        Weighters.h)
+list(TRANSFORM DUAL_DUAL_HEADERS PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/")
+set(DUAL_DUAL_HEADERS ${DUAL_DUAL_HEADERS} PARENT_SCOPE)
+set(DUAL_RUNC_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/RuncExecutor.h" PARENT_SCOPE)
+
+# Static library with the dualization algorithms.
+add_library(dual
+        AOT1.cpp
         BoolMatrixPreparation.cpp
         CoverCollector.cpp
-        GeneticDualizer.h
-        PUNC.h
-        Weighters.h
-        CoverCollector.h
-        Weighters.cpp
         DualizationBacktrackAlgorithmBase.cpp
-        Counters.h)
+        DualizationCounters.cpp
+        FileWriters.cpp
+        MostCoverCollector.cpp
+        Pruning.cpp
+        PUNC.cpp
+        Runc.cpp
+        RuncFixed.cpp
+        Weighters.cpp
+        ${DUAL_DUAL_HEADERS})
+add_library(dual::dual ALIAS dual)
 
+target_include_directories(dual PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/dual>)
+target_link_libraries(dual PUBLIC dual::common)
+set_target_properties(dual PROPERTIES POSITION_INDEPENDENT_CODE ON EXPORT_NAME dual)
+dual_target_options(dual)
 
-add_library(dual ${SOURCE_FILES})
+# Shared library with the C ABI used by src/pyrunc/runc.py via ctypes.
+find_package(Threads REQUIRED)
+add_library(runc SHARED RuncExecutor.cpp RuncExecutor.h)
+add_library(dual::runc ALIAS runc)
+target_include_directories(runc PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/dual>)
+target_link_libraries(runc PRIVATE dual::dual Threads::Threads)
+set_target_properties(runc PROPERTIES EXPORT_NAME runc)
+dual_target_options(runc)
 
-target_link_libraries(dual INTERFACE common)
-
-#add_executable(dualizer main.cpp)
-#target_link_libraries(dualizer dual common pthread)
-
-add_library(runc SHARED RuncExecutor.cpp)
-target_link_libraries(runc dual common)
-set_property(TARGET runc PROPERTY POSITION_INDEPENDENT_CODE TRUE)
-
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/librunc.so DESTINATION ${CMAKE_SOURCE_DIR}/src/pyrunc COMPONENT pyrunc)
-
-add_custom_target(InstallRuncLib COMMAND "${CMAKE_COMMAND}" -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR} -DCOMPONENT=pyrunc -P ${CMAKE_BINARY_DIR}/cmake_install.cmake)
-
+# Copies librunc.so next to src/pyrunc/runc.py (to be replaced by DUAL_BUILD_PYTHON in #13).
+add_custom_target(InstallRuncLib
+        COMMAND "${CMAKE_COMMAND}" -E copy "$<TARGET_FILE:runc>" "${PROJECT_SOURCE_DIR}/src/pyrunc/"
+        COMMENT "Copying librunc to src/pyrunc"
+        VERBATIM)
 add_dependencies(InstallRuncLib runc)

@@ -1,25 +1,50 @@
-cmake_minimum_required(VERSION 3.8)
-project(dual)
+cmake_minimum_required(VERSION 3.16...3.31)
 
-set(CMAKE_CXX_STANDARD 17)
+# compile_commands.json for clangd (see .clangd); must be cached before project() to take effect.
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE BOOL "Write compile_commands.json (used by clangd)")
+endif()
 
-find_package(spdlog REQUIRED)
+project(dual
+        VERSION 0.1.0
+        DESCRIPTION "Dualization algorithms: enumeration of minimal covers of Boolean matrices (RUNC family)"
+        LANGUAGES CXX)
 
-set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
+# PROJECT_IS_TOP_LEVEL needs CMake 3.21; compute it by hand for 3.16.
+if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
+    set(DUAL_IS_TOP_LEVEL ON)
+else()
+    set(DUAL_IS_TOP_LEVEL OFF)
+endif()
 
-#set(Boost_USE_STATIC_LIBS ON) # only find static libs
-#set(Boost_USE_MULTITHREADED ON)
-#set(Boost_USE_STATIC_RUNTIME OFF)
-#
-#find_package(Boost 1.67.0 REQUIRED COMPONENTS filesystem log log_setup program_options)
-#message(STATUS ${Boost_LIBRARIES})
+option(DUAL_BUILD_TESTS "Build the doctest-based unit tests" ${DUAL_IS_TOP_LEVEL})
+option(DUAL_BUILD_PYTHON "Build Python bindings (placeholder, see #13; librunc.so is always built)" OFF)
+option(DUAL_ENABLE_SANITIZERS "Build own targets with AddressSanitizer and UndefinedBehaviorSanitizer" OFF)
+option(DUAL_WARNINGS_AS_ERRORS "Treat compiler warnings as errors for own targets" OFF)
+option(DUAL_INSTALL "Generate install rules and the dualConfig.cmake package" ${DUAL_IS_TOP_LEVEL})
 
-#add_subdirectory(3rd-party/BEGK)
-#add_subdirectory(3rd-party/BMR)
-#add_subdirectory(3rd-party/DL)
-#add_subdirectory(3rd-party/KS)
-#add_subdirectory(3rd-party/shd31)
-#add_subdirectory(3rd-party/mtminer-dist)
-#add_subdirectory(3rd-party/boost)
+if(DUAL_IS_TOP_LEVEL)
+    if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+        set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+        set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS Debug Release RelWithDebInfo MinSizeRel)
+    endif()
+endif()
+
+if(DUAL_BUILD_PYTHON)
+    message(WARNING "DUAL_BUILD_PYTHON is a placeholder until #13; use the InstallRuncLib target for src/pyrunc.")
+endif()
+
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+include(GNUInstallDirs)
+include(DualTargetOptions)
+
 add_subdirectory(src)
 
+if(DUAL_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(src/tests)
+endif()
+
+if(DUAL_INSTALL)
+    include(DualInstall)
+endif()
