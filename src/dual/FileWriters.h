@@ -2,12 +2,12 @@
 #include "DualizationBacktrackAlgorithmBase.h"
 #include "IntegersFileWriter.h"
 
-// Вывод всех столбцов
+// Р’С‹РІРѕРґ РІСЃРµС… СЃС‚РѕР»Р±С†РѕРІ
 struct AllColumnsFileWriterCallback : public IDualizationCallback, public IntegersFileWriter {
     virtual void Call(DualizationNode& node);
 };
 
-// Вывод упорядоченных столбцов
+// Р’С‹РІРѕРґ СѓРїРѕСЂСЏРґРѕС‡РµРЅРЅС‹С… СЃС‚РѕР»Р±С†РѕРІ
 class OrderedColumnsFileWriterCallback : public IDualizationCallback, public IntegersFileWriter {
 
     raw_vector<int> _buffer;
@@ -16,37 +16,37 @@ public:
     virtual void Call(DualizationNode& node);
 };
 
-// Вывод первого столбца
+// Р’С‹РІРѕРґ РїРµСЂРІРѕРіРѕ СЃС‚РѕР»Р±С†Р°
 class FirstColumnFileWriterCallback : public IDualizationCallback, public IntegersFileWriter {
 public:
     virtual void Call(DualizationNode& node);
 };
 
-// Вывод последнего столбца
+// Р’С‹РІРѕРґ РїРѕСЃР»РµРґРЅРµРіРѕ СЃС‚РѕР»Р±С†Р°
 class LastColumnFileWriterCallback : public IDualizationCallback, public IntegersFileWriter {
 public:
     virtual void Call(DualizationNode& node);
 };
 
-// Вывод числа столбцов
+// Р’С‹РІРѕРґ С‡РёСЃР»Р° СЃС‚РѕР»Р±С†РѕРІ
 class SizeFileWriterCallback : public IDualizationCallback, public IntegersFileWriter {
 public:
     virtual void Call(DualizationNode& node);
 };
 
-// Вывод веса покрытия
+// Р’С‹РІРѕРґ РІРµСЃР° РїРѕРєСЂС‹С‚РёСЏ
 class WeightFileWriterCallback : public IDualizationCallback, public IntegersFileWriter {
 public:
     virtual void Call(DualizationNode& node);
 };
 
-// Вывод наименьшего столбца
+// Р’С‹РІРѕРґ РЅР°РёРјРµРЅСЊС€РµРіРѕ СЃС‚РѕР»Р±С†Р°
 class MinColumnFileWriterCallback : public IDualizationCallback, public IntegersFileWriter {
 public:
     virtual void Call(DualizationNode& node);
 };
 
-// Вывод наибольшего столбца
+// Р’С‹РІРѕРґ РЅР°РёР±РѕР»СЊС€РµРіРѕ СЃС‚РѕР»Р±С†Р°
 class MaxColumnFileWriterCallback : public IDualizationCallback, public IntegersFileWriter {
 public:
     virtual void Call(DualizationNode& node);

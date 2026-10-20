@@ -5,7 +5,7 @@
 #include "blob.h"
 
 //////////////////////////////////////////////////////////////////////////
-// Генераторы случайных чисел
+// Р“РµРЅРµСЂР°С‚РѕСЂС‹ СЃР»СѓС‡Р°Р№РЅС‹С… С‡РёСЃРµР»
 //////////////////////////////////////////////////////////////////////////
 typedef std::random_device rand_engine;
 
@@ -14,12 +14,12 @@ typedef std::uniform_real_distribution<> uni_dist;
 typedef std::normal_distribution<> norm_dist;
 
 //////////////////////////////////////////////////////////////////////////
-// Класс для удобства работы со случайными числами
+// РљР»Р°СЃСЃ РґР»СЏ СѓРґРѕР±СЃС‚РІР° СЂР°Р±РѕС‚С‹ СЃРѕ СЃР»СѓС‡Р°Р№РЅС‹РјРё С‡РёСЃР»Р°РјРё
 //////////////////////////////////////////////////////////////////////////
 template<typename Dist = uni_dist, typename Eng = rand_engine>
 struct RandomSampler {
 
-    // Получить экземпляр распределения
+    // РџРѕР»СѓС‡РёС‚СЊ СЌРєР·РµРјРїР»СЏСЂ СЂР°СЃРїСЂРµРґРµР»РµРЅРёСЏ
     static Dist& GetDistribution() {
         static Dist dist;
         return dist;
@@ -30,7 +30,7 @@ struct RandomSampler {
         return eng;
     }
 
-    // Выбрать несколько случайных чисел
+    // Р’С‹Р±СЂР°С‚СЊ РЅРµСЃРєРѕР»СЊРєРѕ СЃР»СѓС‡Р°Р№РЅС‹С… С‡РёСЃРµР»
     template<typename C, typename T>
     static void RandomValues(int count, C& values, T shrink = 0, T scale = 1) {
         if (count > 1)
@@ -39,7 +39,7 @@ struct RandomSampler {
             values.push_back(RandomValue(shrink, scale));
     }
 
-    // Выбрать несколько случайных чисел
+    // Р’С‹Р±СЂР°С‚СЊ РЅРµСЃРєРѕР»СЊРєРѕ СЃР»СѓС‡Р°Р№РЅС‹С… С‡РёСЃРµР»
     template<typename I, typename T>
     static void RandomValues(I begin, I end, T shrink = 0, T scale = 1) {
         for (auto i = begin; i != end; ++i)
@@ -55,7 +55,7 @@ struct RandomSampler {
 struct RandomChoicer {
     typedef RandomSampler<std::uniform_real_distribution<float>> RandomSamplerType;
 
-    // Выбрать несколько случайных объектов из дискретного равномерного распределения
+    // Р’С‹Р±СЂР°С‚СЊ РЅРµСЃРєРѕР»СЊРєРѕ СЃР»СѓС‡Р°Р№РЅС‹С… РѕР±СЉРµРєС‚РѕРІ РёР· РґРёСЃРєСЂРµС‚РЅРѕРіРѕ СЂР°РІРЅРѕРјРµСЂРЅРѕРіРѕ СЂР°СЃРїСЂРµРґРµР»РµРЅРёСЏ
     template<typename C, typename C1>
     static void RandomChoice(C const& samples, C1& output, int count = 1) {
         int n = samples.size();
@@ -70,7 +70,7 @@ struct RandomChoicer {
             output.push_back(samples[rand() % n]);
     }
 
-    // Посчитать веса объектов
+    // РџРѕСЃС‡РёС‚Р°С‚СЊ РІРµСЃР° РѕР±СЉРµРєС‚РѕРІ
     template<typename GetWeight>
     static auto GetTotalWeight(int n, GetWeight getWeight) -> decltype(getWeight(0)) {
 
@@ -91,7 +91,7 @@ struct RandomChoicer {
         return totalWeight;
     }
 
-    // Выбрать нескольку случайных элементов из взвешенной совокупности
+    // Р’С‹Р±СЂР°С‚СЊ РЅРµСЃРєРѕР»СЊРєСѓ СЃР»СѓС‡Р°Р№РЅС‹С… СЌР»РµРјРµРЅС‚РѕРІ РёР· РІР·РІРµС€РµРЅРЅРѕР№ СЃРѕРІРѕРєСѓРїРЅРѕСЃС‚Рё
     template<typename C, typename GetWeight, typename C1>
     static void RandomChoiceWeighted(C const& samples, GetWeight getWeight, C1& output, int count = 1) {
         if (count <= 0 || samples.empty())
@@ -100,8 +100,8 @@ struct RandomChoicer {
         RandomChoiceWeighted(samples, getWeight, output, GetTotalWeight(samples.size(), getWeight), count);
     }
 
-    // Выбрать нескольку случайных элементов из взвешенной совокупности
-    // Необходимо указать суммарный вес объектов
+    // Р’С‹Р±СЂР°С‚СЊ РЅРµСЃРєРѕР»СЊРєСѓ СЃР»СѓС‡Р°Р№РЅС‹С… СЌР»РµРјРµРЅС‚РѕРІ РёР· РІР·РІРµС€РµРЅРЅРѕР№ СЃРѕРІРѕРєСѓРїРЅРѕСЃС‚Рё
+    // РќРµРѕР±С…РѕРґРёРјРѕ СѓРєР°Р·Р°С‚СЊ СЃСѓРјРјР°СЂРЅС‹Р№ РІРµСЃ РѕР±СЉРµРєС‚РѕРІ
     template<typename C, typename GetWeight, typename C1, typename T>
     static void RandomChoiceWeighted(C const& samples, GetWeight getWeight, C1& output, T totalWeight, int count = 1) {
         int n = samples.size();

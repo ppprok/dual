@@ -4,7 +4,7 @@
 #include "blob.h"
 #include "containers.h"
 
-// Битовая матрица
+// Р‘РёС‚РѕРІР°СЏ РјР°С‚СЂРёС†Р°
 template<typename bit_rows_type>
 class bit_matrix_ {
 public:
@@ -29,7 +29,7 @@ public:
         zero(m, n);
     }
 
-    // Число используемых блоков
+    // Р§РёСЃР»Рѕ РёСЃРїРѕР»СЊР·СѓРµРјС‹С… Р±Р»РѕРєРѕРІ
     int size() const {
         if (_rows.empty())
             return 0;
@@ -41,29 +41,29 @@ public:
         return p - _data.begin();
     }
 
-    // Число выделенных блоков
+    // Р§РёСЃР»Рѕ РІС‹РґРµР»РµРЅРЅС‹С… Р±Р»РѕРєРѕРІ
     int capacity() const {
         return _data.size();
     }
 
-    // Число строк
+    // Р§РёСЃР»Рѕ СЃС‚СЂРѕРє
     int height() const {
         return _rows.size();
     }
 
-    // Число столбцов
+    // Р§РёСЃР»Рѕ СЃС‚РѕР»Р±С†РѕРІ
     int width() const {
         return _n;
     }
 
-    // Создать нулевую матрицу
+    // РЎРѕР·РґР°С‚СЊ РЅСѓР»РµРІСѓСЋ РјР°С‚СЂРёС†Сѓ
     void zero(int m, int n) {
         _rows.clear();
         _n = n;
         add_rows(m, n);
     }
 
-    // Зарезервировать требуемое количество блоков
+    // Р—Р°СЂРµР·РµСЂРІРёСЂРѕРІР°С‚СЊ С‚СЂРµР±СѓРµРјРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ Р±Р»РѕРєРѕРІ
     void reserve(int blocks) {
         if (_data.size() >= blocks)
             return;
@@ -79,13 +79,13 @@ public:
         }
     }
 
-    // Зарезервировать достаточное количество блоков для указанного размера
+    // Р—Р°СЂРµР·РµСЂРІРёСЂРѕРІР°С‚СЊ РґРѕСЃС‚Р°С‚РѕС‡РЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ Р±Р»РѕРєРѕРІ РґР»СЏ СѓРєР°Р·Р°РЅРЅРѕРіРѕ СЂР°Р·РјРµСЂР°
     void reserve(int m, int n) {
         _rows.reserve(m);
         reserve(m * bit_chunk::block_for_bits(n));
     }
 
-    // Установить или сбросить бит в строке i и столбце j
+    // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РёР»Рё СЃР±СЂРѕСЃРёС‚СЊ Р±РёС‚ РІ СЃС‚СЂРѕРєРµ i Рё СЃС‚РѕР»Р±С†Рµ j
     bool set(int i, int j, bool v) {
         if (v)
             return set(i, j);
@@ -94,7 +94,7 @@ public:
         return true;
     }
 
-    // Установить бит в строке i и столбце j
+    // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р±РёС‚ РІ СЃС‚СЂРѕРєРµ i Рё СЃС‚РѕР»Р±С†Рµ j
     bool set(int i, int j) {
         if (i < 0 || j < 0)
             return false;
@@ -110,7 +110,7 @@ public:
                 _n = j + 1;
             add_rows(i + 1 - m, _n);
         } else {
-            // Проверяем, можно ли вставить бит в промежуточной строке
+            // РџСЂРѕРІРµСЂСЏРµРј, РјРѕР¶РЅРѕ Р»Рё РІСЃС‚Р°РІРёС‚СЊ Р±РёС‚ РІ РїСЂРѕРјРµР¶СѓС‚РѕС‡РЅРѕР№ СЃС‚СЂРѕРєРµ
             int b = bit_chunk::block_for_bits(j + 1);
             if (_rows[i].begin + b > _rows[i + 1].begin)
                 return false;
@@ -122,41 +122,41 @@ public:
         return true;
     }
 
-    // Обнулить бит
+    // РћР±РЅСѓР»РёС‚СЊ Р±РёС‚
     void reset(int i, int j) {
         if (j >= 0 && inside(_rows, i))
             _rows[i].set(j, false);
     }
 
-    // Получить бит в строке i столбце j
+    // РџРѕР»СѓС‡РёС‚СЊ Р±РёС‚ РІ СЃС‚СЂРѕРєРµ i СЃС‚РѕР»Р±С†Рµ j
     bool get(int i, int j) const {
         assert(inside(_rows, i));
         return _rows[i].get(j);
     }
 
-    // Получить набор строк
+    // РџРѕР»СѓС‡РёС‚СЊ РЅР°Р±РѕСЂ СЃС‚СЂРѕРє
     bit_rows const& get_rows() const {
         return _rows;
     }
 
-    // Получить набор строк
+    // РџРѕР»СѓС‡РёС‚СЊ РЅР°Р±РѕСЂ СЃС‚СЂРѕРє
     bit_rows& get_rows() {
         return _rows;
     }
 
-    // Получить строку с указанным номером
+    // РџРѕР»СѓС‡РёС‚СЊ СЃС‚СЂРѕРєСѓ СЃ СѓРєР°Р·Р°РЅРЅС‹Рј РЅРѕРјРµСЂРѕРј
     bit_row const& get_row(int i) const {
         assert(inside(_rows, i));
         return _rows[i];
     }
 
-    // Получить строку с указанным номером
+    // РџРѕР»СѓС‡РёС‚СЊ СЃС‚СЂРѕРєСѓ СЃ СѓРєР°Р·Р°РЅРЅС‹Рј РЅРѕРјРµСЂРѕРј
     bit_row& get_row(int i) {
         assert(inside(_rows, i));
         return _rows[i];
     }
 
-    // Добавить m нулевых строк c n столбцами
+    // Р”РѕР±Р°РІРёС‚СЊ m РЅСѓР»РµРІС‹С… СЃС‚СЂРѕРє c n СЃС‚РѕР»Р±С†Р°РјРё
     void add_rows(int m, int n) {
         if (m <= 0)
             return;
@@ -178,7 +178,7 @@ public:
         }
     }
 
-    // Добавить бит в последнюю строку
+    // Р”РѕР±Р°РІРёС‚СЊ Р±РёС‚ РІ РїРѕСЃР»РµРґРЅСЋСЋ СЃС‚СЂРѕРєСѓ
     void add_bit(int j) {
         if (_rows.empty()) {
             add_rows(1, j + 1);
@@ -186,7 +186,7 @@ public:
             if (_n <= j)
                 _n = j + 1;
 
-            // убеждаемся, что в буфере выделено достаточно памяти
+            // СѓР±РµР¶РґР°РµРјСЃСЏ, С‡С‚Рѕ РІ Р±СѓС„РµСЂРµ РІС‹РґРµР»РµРЅРѕ РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РїР°РјСЏС‚Рё
             int b = bit_chunk::block_for_bits(j + 1);
             if (_rows.back().begin + b > _data.end())
                 reserve(_data.size() * 5 / 4 + b);
@@ -195,7 +195,7 @@ public:
         _rows.back().set(j);
     }
 
-    // Оставить в матрице первые m строк
+    // РћСЃС‚Р°РІРёС‚СЊ РІ РјР°С‚СЂРёС†Рµ РїРµСЂРІС‹Рµ m СЃС‚СЂРѕРє
     void trim_rows(int m) {
         if (m <= 0)
             _rows.clear();
@@ -208,29 +208,29 @@ public:
         _rows[i].clear();
     }
 
-    // Списвоить i-ой строке указанные биты
+    // РЎРїРёСЃРІРѕРёС‚СЊ i-РѕР№ СЃС‚СЂРѕРєРµ СѓРєР°Р·Р°РЅРЅС‹Рµ Р±РёС‚С‹
     void assign_row(int i, bit_chunk row) {
         assert(inside(_rows, i));
         _rows[i].assign(row);
     }
 
-    // Найти строку, удовлетворяющую условию
+    // РќР°Р№С‚Рё СЃС‚СЂРѕРєСѓ, СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‰СѓСЋ СѓСЃР»РѕРІРёСЋ
     template<typename Pred>
     int find_row(Pred pred) const {
         return find_if(_rows, pred);
     }
 
-    // Найти строку, охватываемую указанной строкой
+    // РќР°Р№С‚Рё СЃС‚СЂРѕРєСѓ, РѕС…РІР°С‚С‹РІР°РµРјСѓСЋ СѓРєР°Р·Р°РЅРЅРѕР№ СЃС‚СЂРѕРєРѕР№
     int find_sub_row(bit_chunk suprow) const {
         return find_row([suprow](bit_chunk const& row) { return row.is_subset_of(suprow); });
     }
 
-    // Найти строку, равную указанной строке
+    // РќР°Р№С‚Рё СЃС‚СЂРѕРєСѓ, СЂР°РІРЅСѓСЋ СѓРєР°Р·Р°РЅРЅРѕР№ СЃС‚СЂРѕРєРµ
     int find_equal_row(bit_chunk row) const {
         return find_row([row](bit_chunk const& r) { return row == r; });
     }
 
-    // Удалить строки, удовлетворяющие условию
+    // РЈРґР°Р»РёС‚СЊ СЃС‚СЂРѕРєРё, СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‰РёРµ СѓСЃР»РѕРІРёСЋ
     template<typename Pred>
     int remove_rows(Pred pred) {
         int m = height();
@@ -249,46 +249,46 @@ public:
         return m - i;
     }
 
-    // Удалить нулевые строки
+    // РЈРґР°Р»РёС‚СЊ РЅСѓР»РµРІС‹Рµ СЃС‚СЂРѕРєРё
     int remove_zero_rows() {
         return remove_rows([](bit_chunk const& r) { return r.none(); });
     }
 
-    // Удалить строки, покрытые столбцами
+    // РЈРґР°Р»РёС‚СЊ СЃС‚СЂРѕРєРё, РїРѕРєСЂС‹С‚С‹Рµ СЃС‚РѕР»Р±С†Р°РјРё
     int remove_covered_rows(bit_chunk columns) {
         return remove_rows([columns](bit_chunk const& r) { return r.intersects(columns); });
     }
 
-    // Удалить строки, совпадающие с указанной строкой
+    // РЈРґР°Р»РёС‚СЊ СЃС‚СЂРѕРєРё, СЃРѕРІРїР°РґР°СЋС‰РёРµ СЃ СѓРєР°Р·Р°РЅРЅРѕР№ СЃС‚СЂРѕРєРѕР№
     int remove_equal_rows(bit_chunk row) {
         return remove_rows([row](bit_chunk const& r) { return r == row; });
     }
 
-    // Удалить строки, охватывающие указанную
+    // РЈРґР°Р»РёС‚СЊ СЃС‚СЂРѕРєРё, РѕС…РІР°С‚С‹РІР°СЋС‰РёРµ СѓРєР°Р·Р°РЅРЅСѓСЋ
     int remove_sup_rows(bit_chunk subrow) {
         return remove_rows([subrow](bit_chunk const& r) { return subrow.is_subset_of(r); });
     }
 
-    // Добавить строку с явным указанием длины
+    // Р”РѕР±Р°РІРёС‚СЊ СЃС‚СЂРѕРєСѓ СЃ СЏРІРЅС‹Рј СѓРєР°Р·Р°РЅРёРµРј РґР»РёРЅС‹
     bit_row& add_row(bit_row const& row, int n) {
         add_rows(1, n);
         _rows.back().assign(row);
         return _rows.back();
     }
 
-    // Добавить строку
+    // Р”РѕР±Р°РІРёС‚СЊ СЃС‚СЂРѕРєСѓ
     void add_row(bit_chunk row) {
         add_row(row, row.find_last() + 1);
     }
 
-    // Добавить нулевую строку
+    // Р”РѕР±Р°РІРёС‚СЊ РЅСѓР»РµРІСѓСЋ СЃС‚СЂРѕРєСѓ
     void add_row(int n) {
         if (_n < n)
             _n = n;
         add_row();
     }
 
-    // Добавить нулевую строку
+    // Р”РѕР±Р°РІРёС‚СЊ РЅСѓР»РµРІСѓСЋ СЃС‚СЂРѕРєСѓ
     void add_row() {
         if (_n <= 1)
             add_rows(1, 1);

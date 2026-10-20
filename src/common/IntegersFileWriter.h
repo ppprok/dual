@@ -5,7 +5,7 @@
 
 typedef std::vector<int> Positions;
 
-// Реализация вывода целых чисел файл
+// Р РµР°Р»РёР·Р°С†РёСЏ РІС‹РІРѕРґР° С†РµР»С‹С… С‡РёСЃРµР» С„Р°Р№Р»
 class IntegersFileWriter {
 
     FILE_ptr _output;
@@ -15,28 +15,28 @@ public:
 
     IntegersFileWriter();
 
-    // Закрыть файл
+    // Р—Р°РєСЂС‹С‚СЊ С„Р°Р№Р»
     void CloseOutputFile();
 
-    // Создать файл для записи
+    // РЎРѕР·РґР°С‚СЊ С„Р°Р№Р» РґР»СЏ Р·Р°РїРёСЃРё
     void CreateOutputFile(std::string const& outputFileName);
 
-    // Символ
+    // РЎРёРјРІРѕР»
     void WriteChar(char c) {
         putc(c, _output.get());
     }
 
-    // Цифра
+    // Р¦РёС„СЂР°
     void WriteDigit(int digit) {
         WriteChar(digit + '0');
     }
 
-    // Конец строки
+    // РљРѕРЅРµС† СЃС‚СЂРѕРєРё
     void WriteEOL() {
         WriteChar('\n');
     }
 
-    // Вывести число в файл
+    // Р’С‹РІРµСЃС‚Рё С‡РёСЃР»Рѕ РІ С„Р°Р№Р»
     void WriteInteger(int i, int pad = 0);
 
     void WriteNumber(double v, int precision = 3, int pad = 0);
@@ -46,7 +46,7 @@ public:
         WriteIntegers(c.begin(), c.end());
     }
 
-    // Вывести список чисел в файл
+    // Р’С‹РІРµСЃС‚Рё СЃРїРёСЃРѕРє С‡РёСЃРµР» РІ С„Р°Р№Р»
     template<typename Iter>
     void WriteIntegers(Iter beg, Iter end) {
         if (beg == end)
@@ -65,8 +65,8 @@ public:
         WriteIntegerMatrix(c.begin(), c.end());
     }
 
-    // Записать вершины набор массивов в файл --- каждый массив в отдельной строке
-    // [beg, end) --- список, каждый элемент которого является массивом целых
+    // Р—Р°РїРёСЃР°С‚СЊ РІРµСЂС€РёРЅС‹ РЅР°Р±РѕСЂ РјР°СЃСЃРёРІРѕРІ РІ С„Р°Р№Р» --- РєР°Р¶РґС‹Р№ РјР°СЃСЃРёРІ РІ РѕС‚РґРµР»СЊРЅРѕР№ СЃС‚СЂРѕРєРµ
+    // [beg, end) --- СЃРїРёСЃРѕРє, РєР°Р¶РґС‹Р№ СЌР»РµРјРµРЅС‚ РєРѕС‚РѕСЂРѕРіРѕ СЏРІР»СЏРµС‚СЃСЏ РјР°СЃСЃРёРІРѕРј С†РµР»С‹С…
     template<typename Iter>
     void WriteIntegerMatrix(Iter beg, Iter end) {
         if (beg == end)
@@ -80,12 +80,12 @@ public:
         }
     }
 
-    // Записать позиции ненулевых битов
+    // Р—Р°РїРёСЃР°С‚СЊ РїРѕР·РёС†РёРё РЅРµРЅСѓР»РµРІС‹С… Р±РёС‚РѕРІ
     void WriteBitNumbers(bit_chunk bits);
 
-    // Записать булеву матрицу в виде гиперграфа
+    // Р—Р°РїРёСЃР°С‚СЊ Р±СѓР»РµРІСѓ РјР°С‚СЂРёС†Сѓ РІ РІРёРґРµ РіРёРїРµСЂРіСЂР°С„Р°
     void WriteBitMatrix(bit_matrix const& bm);
 
-    // Записать булеву матрицу в виде гиперграфа
+    // Р—Р°РїРёСЃР°С‚СЊ Р±СѓР»РµРІСѓ РјР°С‚СЂРёС†Сѓ РІ РІРёРґРµ РіРёРїРµСЂРіСЂР°С„Р°
     void WriteBitMatrix(bit_chunks const& rows);
 };

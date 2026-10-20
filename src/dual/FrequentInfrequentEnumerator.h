@@ -9,16 +9,16 @@
 namespace PosetDualization {
 
 /*!
-    Разделение всех элементов на t-частые и t-редкие
+    Р Р°Р·РґРµР»РµРЅРёРµ РІСЃРµС… СЌР»РµРјРµРЅС‚РѕРІ РЅР° t-С‡Р°СЃС‚С‹Рµ Рё t-СЂРµРґРєРёРµ
 */
 struct FrequentInfrequentDivision {
-    int threshold;  ///< порог частоты встречаемости
+    int threshold;  ///< РїРѕСЂРѕРі С‡Р°СЃС‚РѕС‚С‹ РІСЃС‚СЂРµС‡Р°РµРјРѕСЃС‚Рё
 
-    PosetItemsMatrix maximalFrequent;  ///< максимальные t-частые элементы
+    PosetItemsMatrix maximalFrequent;  ///< РјР°РєСЃРёРјР°Р»СЊРЅС‹Рµ t-С‡Р°СЃС‚С‹Рµ СЌР»РµРјРµРЅС‚С‹
 
-    PosetItemsMatrix minimalInfrequent;  ///< минимальные t-редкие элементы
+    PosetItemsMatrix minimalInfrequent;  ///< РјРёРЅРёРјР°Р»СЊРЅС‹Рµ t-СЂРµРґРєРёРµ СЌР»РµРјРµРЅС‚С‹
 
-    bool complete;  ///< полное описание разделения
+    bool complete;  ///< РїРѕР»РЅРѕРµ РѕРїРёСЃР°РЅРёРµ СЂР°Р·РґРµР»РµРЅРёСЏ
 
     FrequentInfrequentDivision(int t = 1) : threshold(t), complete(false) {}
 
@@ -66,7 +66,7 @@ class FrequentInfrequentEnumerator : public ISolver {
 
     std::vector<int> _support;
 
-    //! Булевая матрица, с отметками несравнимых координат
+    //! Р‘СѓР»РµРІР°СЏ РјР°С‚СЂРёС†Р°, СЃ РѕС‚РјРµС‚РєР°РјРё РЅРµСЃСЂР°РІРЅРёРјС‹С… РєРѕРѕСЂРґРёРЅР°С‚
     bit_matrix _supportBitMap;
 
 public:
@@ -94,12 +94,12 @@ private:
     void SetUnsupportedToMinimal(PosetItems& current);
 
     /*!
-        Увеличить частоту встречаемоти в пределах допустимого порога
+        РЈРІРµР»РёС‡РёС‚СЊ С‡Р°СЃС‚РѕС‚Сѓ РІСЃС‚СЂРµС‡Р°РµРјРѕС‚Рё РІ РїСЂРµРґРµР»Р°С… РґРѕРїСѓСЃС‚РёРјРѕРіРѕ РїРѕСЂРѕРіР°
     */
     void IncreaseFrequency(int threshold, PosetItems& current);
 
     /*!
-        Уменьшить число удовлетворяющих строк, увеличив одну из координат
+        РЈРјРµРЅСЊС€РёС‚СЊ С‡РёСЃР»Рѕ СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‰РёС… СЃС‚СЂРѕРє, СѓРІРµР»РёС‡РёРІ РѕРґРЅСѓ РёР· РєРѕРѕСЂРґРёРЅР°С‚
     */
     void DecreaseFrequency(int threshold, PosetItems& current, std::vector<int>& support);
 

@@ -2,7 +2,7 @@
 
 #include "bit_chunk.h"
 
-// Маска, накладываемая на битовые массивы при выполнении операций с ними
+// РњР°СЃРєР°, РЅР°РєР»Р°РґС‹РІР°РµРјР°СЏ РЅР° Р±РёС‚РѕРІС‹Рµ РјР°СЃСЃРёРІС‹ РїСЂРё РІС‹РїРѕР»РЅРµРЅРёРё РѕРїРµСЂР°С†РёР№ СЃ РЅРёРјРё
 struct bit_mask : bit_chunk {
     inline bit_mask(bit_chunk b) : bit_chunk(b) {}
 
@@ -69,7 +69,7 @@ struct bit_mask : bit_chunk {
         return -1;
     }
 
-    // Сравнение числа битов после наложения маски
+    // РЎСЂР°РІРЅРµРЅРёРµ С‡РёСЃР»Р° Р±РёС‚РѕРІ РїРѕСЃР»Рµ РЅР°Р»РѕР¶РµРЅРёСЏ РјР°СЃРєРё
     inline bool less_count(bit_chunk const& r1, bit_chunk const& r2) const {
         assert(valid());
         assert(r1.valid());
@@ -269,7 +269,7 @@ struct bit_mask : bit_chunk {
         return -1;
     }
 
-    // Найти первое отличие
+    // РќР°Р№С‚Рё РїРµСЂРІРѕРµ РѕС‚Р»РёС‡РёРµ
     inline int find_first_diff(bit_chunk const& bits) const {
         assert(valid());
         assert(bits.valid());

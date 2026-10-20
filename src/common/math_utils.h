@@ -1,6 +1,6 @@
 #pragma once
 
-// Возведение в квадрат
+// Р’РѕР·РІРµРґРµРЅРёРµ РІ РєРІР°РґСЂР°С‚
 template<typename T>
 T sqr(T const& v) {
     return v * v;
