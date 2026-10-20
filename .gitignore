@@ -94,3 +94,6 @@ CTestTestfile.cmake
 *.out
 *.app
 .idea/
+
+# GitHub API token for Claude skills (never commit)
+.github.token
