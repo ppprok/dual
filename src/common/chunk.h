@@ -23,7 +23,8 @@ struct chunk {
     void resize(int s, T const& value) {
         assert(s >= 0);
         assert(valid());
-        auto c = end, end = begin + s;
+        auto c = end;
+        end = begin + s;
         if (c >= end)
             return;
 
