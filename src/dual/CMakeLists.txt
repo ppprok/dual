@@ -6,8 +6,6 @@ set(DUAL_DUAL_HEADERS
         DualizationBacktrackAlgorithmBase.h
         DualizationCounters.h
         FileWriters.h
-        FrequentInfrequentEnumerator.h
-        GeneticDualizer.h
         MostCoverCollector.h
         Pruning.h
         PUNC.h
