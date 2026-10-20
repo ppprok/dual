@@ -5,7 +5,7 @@
 #include "WeightedCover.h"
 #include "Weighters.h"
 
-// Сбор перечисляемых покрытий
+// Collects the enumerated covers
 class BitCoverCollectorCallback : public IDualizationCallback {
 protected:
     bit_matrix _covers;
@@ -27,20 +27,20 @@ public:
 };
 
 struct MostCoverCollectorOptions {
-    // Размер, начиная с которого необходимо делать усечение
+    // Size starting from which the collection is truncated
     int TrimSize;
 
-    // Число оставляемых покрытий
+    // Number of covers to keep
     int MostCount;
 
-    // Случайный порядок
+    // Random order
     bool RandomShuffle;
 
-    // Порядок усечения (меньше нуля --- остаются наибольшие по весу,
-    // больше нуля --- остаются наименьшие по весу, 0 --- остаются случайные)
+    // Truncation order (less than zero --- keep the heaviest covers,
+    // greater than zero --- keep the lightest covers, 0 --- keep random ones)
     int TrimOrder;
 
-    // Остановиться после указнного числа покрытий
+    // Stop after the given number of covers
     //int StopAfter;
 
     MostCoverCollectorOptions(int mostCount = 100, int trimSize = 0, int trimOrder = -1, bool randomShuffle = true) {
@@ -56,27 +56,27 @@ struct MostCoverCollectorOptions {
     }
 };
 
-// Коллектор, собирающий N лучших покрытий
+// Collector that keeps the N best covers
 class MostCoverCollector : public CoverCollector {
 
     int _counter;
 
 public:
-    // Опции усечения
+    // Truncation options
     MostCoverCollectorOptions Options;
 
-    // Взвешиватель вершин ДР
+    // Weighter of search tree nodes
     WeighterBase* Weighter;
 
-    // Инициализировать объектом, осуществляющим взвешивание узлов ДР (опционально)
+    // Initialize with an object that weighs search tree nodes (optional)
     MostCoverCollector(WeighterBase* weighter = 0);
 
-    // Обработать узел ДР
+    // Process a search tree node
     virtual void Call(DualizationNode& node);
 
-    // Выполнить усечение коллекции покрытий до размера из опций
+    // Truncate the collection of covers to the size from the options
     void Trim();
 
-    // Выполнить усечение коллекции покрытий
+    // Truncate the collection of covers
     void Trim(int trimSize);
 };

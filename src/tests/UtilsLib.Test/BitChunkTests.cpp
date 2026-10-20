@@ -78,7 +78,7 @@ TEST_CASE("assing_and_bits_test") {
     CHECK(equal(actual, expected));
 }
 
-// Проверка перечисления различающихся битов двух
+// Test enumeration of the differing bits of two bit vectors
 TEST_CASE("find_diff_bits_test") {
     bit_vector b1(1000);
     bit_vector b2(1000);

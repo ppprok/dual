@@ -4,7 +4,7 @@
 #include <cstdlib>
 #include <cstring>
 
-// Контейнер, не вызывающий конструкторов своих элементов
+// Container that does not call constructors of its elements
 template<typename T>
 class blob {
 
@@ -164,19 +164,19 @@ public:
         }
     }
 
-    // Удалить один элемент с указанным номером
+    // Remove a single element at the given index
     /*inline void erase(int i)
     {
         erase(_begin + i);
     }
     
-    // Удалить один элемент
+    // Remove a single element
     void erase(T* b)
     {
         erase(b, b+1);
     }
 
-    // Удалить несколько элементов
+    // Remove several elements
     void erase(T* b, T*e)
     {
         int s = b - e;

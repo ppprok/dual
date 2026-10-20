@@ -3,7 +3,7 @@
 #include "DualizationBacktrackAlgorithmBase.h"
 #include "WeightedCover.h"
 
-// Сбор перечисляемых покрытий
+// Collects the enumerated covers
 class CoverCollector : public IDualizationCallback {
 protected:
     WeightedCovers _covers;

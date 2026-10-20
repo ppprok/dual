@@ -4,7 +4,7 @@
 #include "bit_matrix.h"
 #include "io_utils.h"
 
-// Чтение из файла целочисленных данных
+// Reading integer data from a file
 class IntegersFileReader {
     FILE_ptr _input;
 
@@ -24,31 +24,31 @@ private:
 public:
     IntegersFileReader();
 
-    // Конструктор с открытием файла
+    // Constructor that opens the file
     IntegersFileReader(std::string const& filename);
 
-    // Открыть файл для чтения
+    // Open the file for reading
     void OpenInputFile(std::string const& filename);
 
-    // Закрыть файл
+    // Close the file
     void CloseInputFile();
 
-    // Проверка конца файла
+    // Check for end of file
     bool IsEOF() const;
 
-    // Прочитать битовую матрицу из файла
+    // Read a bit matrix from the file
     bit_matrix ReadBitMatrix();
 
-    // Прочитать битовую матрицу из файла
+    // Read a bit matrix from the file
     std::vector<bits32> ReadBitMatrix32(int first = 0);
 
-    // Прочитать битовую матрицу из файла
+    // Read a bit matrix from the file
     std::vector<bits64> ReadBitMatrix64(int first = 0);
 
-    // Прочитать целое число из файла
+    // Read an integer from the file
     int ReadUnsignedInteger();
 
-    // Прочитать из файла набор целых чисел до перехода на следующую строку
+    // Read a sequence of integers from the file up to the end of the line
     template<typename Container>
     void ReadUnsignedIntegers(Container& integers, char delim = '\n') {
         assert(_input);
@@ -62,7 +62,7 @@ public:
         }
     }
 
-    // Прочитать из файла матрицу (список списков) целых чисел, разделенных символом '\n'
+    // Read a matrix (list of lists) of integers from the file, rows separated by '\n'
     template<typename Container>
     void ReadUnsignedIntegersMatrix(Container& integersList) {
         assert(_input);

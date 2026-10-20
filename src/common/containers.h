@@ -3,7 +3,7 @@
 #include "bit_chunk.h"
 #include <algorithm>
 
-// Склеить два контейнера
+// Concatenate two containers
 template<typename C>
 inline C join(C const& c1, C const& c2) {
     C c3;
@@ -13,7 +13,7 @@ inline C join(C const& c1, C const& c2) {
     return std::move(c3);
 }
 
-// Склеить три контейнера
+// Concatenate three containers
 template<typename C>
 inline C join(C const& c1, C const& c2, C const& c0) {
     C c3;
@@ -37,13 +37,13 @@ C1& append_with_move(C1& c1, C2& c2)
     return c1;
 };*/
 
-// Проверить, что индекс указывает на элемент контейнера
+// Check that the index points to an element of the container
 template<typename C>
 inline bool inside(C const& c, int pos) {
     return pos >= 0 && pos < (int) c.size();
 }
 
-// Убрать из коллекции элементы, удовлетворяющие условию
+// Remove the elements that satisfy the predicate from the collection
 template<typename C, typename F>
 inline void pop_if(C& c, F cond) {
     int n = c.size();
@@ -58,7 +58,7 @@ inline void pop_if(C& c, F cond) {
     }
 }
 
-// Убрать из коллекции элементы, удовлетворяющие условию
+// Remove the elements that satisfy the predicate from the collection
 template<typename C, typename F>
 inline void remove_if(C& c, F cond) {
     auto end = std::end(c);
@@ -74,7 +74,7 @@ inline int find_if(C& c, F cond) {
     return pos - beg;
 }
 
-// Убрать из коллекции элементы, возвращающие false
+// Remove the elements for which the predicate returns false from the collection
 template<typename C>
 inline void pop_false(C& c) {
     int n = (int) c.size();
@@ -89,7 +89,7 @@ inline void pop_false(C& c) {
     }
 }
 
-// Проверить, содержит ли коллекция элемент
+// Check whether the collection contains the element
 template<typename C, typename V>
 inline bool contains(C const& c, V const& v) {
     auto e = c.end();
@@ -119,7 +119,7 @@ inline void unique(C& c, bool ordered = false) {
     c.resize(std::unique(c.begin(), c.end()) - c.begin());
 }
 
-// Перемешать элементы коллекции
+// Shuffle the elements of the collection
 template<typename C>
 inline void random_shuffle(C& c) {
     std::random_shuffle(std::begin(c), std::end(c));
@@ -137,19 +137,19 @@ inline void random_sort(C& c, Cmp cmp) {
     sort(c, cmp);
 }
 
-// Сравнение элементов коллекций
+// Element-wise comparison of collections
 template<typename C1, typename C2>
 inline bool equal(C1 const& c1, C2 const& c2) {
     return c1.size() == c2.size() && std::equal(std::begin(c1), std::end(c1), std::begin(c2));
 }
 
-// Сравнение в лексикографическом порядке
+// Comparison in lexicographic order
 template<typename C1, typename C2>
 inline bool less(C1 const& c1, C2 const& c2) {
     return std::lexicographical_compare(std::begin(c1), std::end(c1), std::begin(c2), std::end(c2));
 }
 
-// Разместить элементы двух коллекций в первой коллекции
+// Put the elements of both collections into the first collection
 template<typename C>
 inline void merge(C& c1, C& c2) {
     if (c1.size() < c2.size())
@@ -160,7 +160,7 @@ inline void merge(C& c1, C& c2) {
     }
 }
 
-// Отобрать необходимое число <<лучших>> элементов
+// Select the required number of "best" elements
 template<typename Objects, typename Cmp>
 inline void most(Objects const& objects, int count, Cmp cmp, Objects& most, bool order = true, bool random = true) {
     most.clear();
@@ -183,7 +183,7 @@ inline void most(Objects const& objects, int count, Cmp cmp, Objects& most, bool
     }
 }
 
-// Оставить необходимое число <<лучших>> элементов
+// Keep the required number of "best" elements
 template<typename Objects, typename Cmp>
 inline void most(Objects& objects, int count, Cmp cmp, bool order = true, bool random = true) {
     if (count <= 0) {

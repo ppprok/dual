@@ -6,41 +6,41 @@
 #include "bit_matrix.h"
 
 //////////////////////////////////////////////////////////////////////////
-// Базовый класс для взвешивания узлов ДР
+// Base class for weighing search tree nodes
 //////////////////////////////////////////////////////////////////////////
 class WeighterBase : virtual public IDualizationCallback {
 protected:
-    // Сумма оставшихся положительных весов
+    // Sum of the remaining positive weights
     Weight _restPositive;
 
-    // Сумма оставшихся отрицательных весов
+    // Sum of the remaining negative weights
     Weight _restNegative;
 
-    // Минимальный допустимый вес
+    // Minimum allowed weight
     Weight _minWeight;
 
-    // Максимальный допустимый вес
+    // Maximum allowed weight
     Weight _maxWeight;
 
-    // Веса
+    // Weights
     Weights _weights;
 
-    // Максимальное число элементов в сумме
+    // Maximum number of terms in the sum
     int _weightSumCount;
 
-    // Сделать недействительными оценки сумм оставшихся положительных и отрицательных слагаемых
+    // Invalidate the estimates of the sums of the remaining positive and negative terms
     void InvalidateRestWeights();
 
-    // Проверить, действительны ли оценки сумм оставшихся положительных и отрицательных слагаемых
+    // Check whether the estimates of the sums of the remaining positive and negative terms are valid
     bool IsRestWeightsValid() const;
 
-    // Вычислить оценки сумм оставшихся положительных и отрицательных слагаемых
+    // Compute the estimates of the sums of the remaining positive and negative terms
     void CalculateRestWeights();
 
-    // Увеличить запас суммарного веса
+    // Increase the total weight margin
     void IncRestWeight(Weight w);
 
-    // Уменьшить запас суммарного веса
+    // Decrease the total weight margin
     void DecRestWeight(Weight w);
 
 public:
@@ -64,13 +64,13 @@ public:
 
     Weight GetRestNegative() const;
 
-    // Отсечь ветку ДР по допустимым значениям текущего веса
+    // Prune the search tree branch by the allowed values of the current weight
     bool Prun(Weight current, Weight minWeight, Weight maxWeight) const;
 
-    // Отсечь ветку ДР по допустимым значениям веса узла
+    // Prune the search tree branch by the allowed values of the node weight
     bool Prun(DualizationNode& node, Weight minWeight, Weight maxWeight) const;
 
-    // Отсечь ветку ДР по текущим допустимым значениям веса узла
+    // Prune the search tree branch by the current allowed values of the node weight
     bool Prun(DualizationNode& node);
 
     virtual void WeightNewNode(DualizationNode& node) = 0;
@@ -80,47 +80,47 @@ public:
     void Call(DualizationNode& node);
 };
 
-// Взвешивание узлов ДР по суммарному весу столбцов
+// Weighs search tree nodes by the total weight of columns
 class ColumnsWeighterCallback : public WeighterBase {
 
-    // Вычислить вес нового узла ДР
+    // Compute the weight of a new search tree node
     void WeightNewNode(DualizationNode& node);
 
-    // Пересчитать вес при возвращении на уровень вверх
+    // Recompute the weight when backtracking one level up
     void WeightBacktrackNode(DualizationNode& node);
 };
 
-// Взвешивание узлов ДР по суммарному весу покрытых и непокрытых строк
+// Weighs search tree nodes by the total weight of covered and uncovered rows
 class CoveredRowWeighterCallback : public WeighterBase {
-    // Строки, которые надо покрыть
+    // Rows that have to be covered
     bit_chunks _targetRows;
 
     typedef std::vector<int> IntVector;
 
     struct CoveredRow {
-        int i;     // Номер строки
-        int j;     // Номер столбца
-        Weight w;  // Вес строки
+        int i;     // Row index
+        int j;     // Column index
+        Weight w;  // Row weight
     };
 
-    // Независимые строки
+    // Independent rows
     std::vector<CoveredRow> _coveredRows;
 
-    // Зависимые строки
+    // Dependent rows
     IntVector _uncoveredRows;
 
 public:
     CoveredRowWeighterCallback();
 
-    // Сбросить параметры по умолчанию
+    // Reset the parameters to defaults
     void Reset();
 
-    // Установить строки для покрытия
+    // Set the rows to be covered
     void SetTargetRows(bit_chunks targetRows);
 
-    // Вычислить вес нового узла ДР
+    // Compute the weight of a new search tree node
     void WeightNewNode(DualizationNode& node);
 
-    // Пересчитать вес при возвращении на уровень вверх
+    // Recompute the weight when backtracking one level up
     void WeightBacktrackNode(DualizationNode& node);
 };

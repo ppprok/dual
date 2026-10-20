@@ -7,11 +7,11 @@ typedef std::vector<int> Columns;
 
 struct NodeType {
     enum Enum {
-        CoverNode,      // Узел покрытия
-        NewNode,        // Новый узел
-        BacktrackNode,  // Предыдущий узел
-        ExtraNode,      // Лишний узел
-        RootNode        // Корень
+        CoverNode,      // Cover node
+        NewNode,        // New node
+        BacktrackNode,  // Previous node (backtrack)
+        ExtraNode,      // Extra node
+        RootNode        // Root
     };
 };
 
@@ -19,26 +19,26 @@ typedef float Weight;
 
 typedef std::vector<Weight> Weights;
 
-// Узел дерева решений
+// Search tree node
 struct DualizationNode {
 
-    // Столбцы
+    // Columns
     Columns columns;
-    // Вес набора столбцов
+    // Weight of the column set
     int lastColumn;
-    // Идентификатор узла ДР
+    // Search tree node identifier
     int nodeID;
-    // Идентификатор ветви ДР
+    // Search tree branch identifier
     int branchID;
-    // Тип узла
+    // Node type
     NodeType::Enum type;
-    // Текущий вес покрытия
+    // Current cover weight
     Weight weight;
-    // Остановить построение ДР
+    // Stop building the search tree
     bool stoped;
-    // Отсечь текущую ветку
+    // Prune the current branch
     bool pruned;
-    // Ограничение на допустимые столбцы
+    // Restriction on the allowed columns
     //bit_chunk restriction;
 
     DualizationNode() {
@@ -91,7 +91,7 @@ struct DualizationNode {
     }
 };
 
-// Интерфейс обратного вызова
+// Callback interface
 struct IDualizationCallback {
     virtual void Call(DualizationNode& node) = 0;
     virtual ~IDualizationCallback() = default;
@@ -118,7 +118,7 @@ auto dualization_callback(Func&& func) {
 typedef std::shared_ptr<IDualizationCallback> IDualizationCallbackPtr;
 typedef std::vector<IDualizationCallbackPtr> DualizationCallbacks;
 
-// Склеивание двух обратных вызовов в цепочку
+// Chains two callbacks together
 template<typename C1, typename C2>
 struct ChainCallback : IDualizationCallback {
     C1 callback1;
@@ -133,7 +133,7 @@ struct ChainCallback : IDualizationCallback {
     }
 };
 
-// Базовый класс для backtrack-алгоритма дуализации
+// Base class for a backtracking dualization algorithm
 class DualizationBacktrackAlgorithmBase {
 protected:
     DualizationNode _currentNode;

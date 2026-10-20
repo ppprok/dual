@@ -61,8 +61,8 @@ IteratorRange<typename C::iterator> make_iterator_range(C& c)
     return IteratorRange<typename C::iterator>(c);
 }*/
 
-// Объединить диапазоны объектов
-// Собрать в случае необходимости в одну коллекцию buffer
+// Join two ranges of objects
+// If necessary, gather them into a single collection buffer
 template<typename IteratorRange, typename Buffer>
 IteratorRange join_ranges(IteratorRange const& r1, IteratorRange const& r2, Buffer& buffer) {
     if (r1.end() == r2.begin())

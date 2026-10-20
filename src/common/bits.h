@@ -9,19 +9,19 @@ typedef uint64_t bits64;
 typedef unsigned char byte;
 
 struct BitOpTables {
-    // Таблица с числом битов в каждом байте
+    // Table with the number of set bits in each byte
     static const int bit_count[256];
 
-    // Таблица с номером наименьшего бита в каждом байте
+    // Table with the index of the lowest set bit in each byte
     static const int low_bit_number[256];
 
-    // Таблица с результатами удаления наименьшего бита из байта
+    // Table with each byte after clearing its lowest set bit
     static const byte reset_low_bit[256];
 
-    // Таблица с номером наибольшего бита в каждом байте
+    // Table with the index of the highest set bit in each byte
     static const int high_bit_number[256];
 
-    // Таблица с результатами удаления набольшего бита из байта
+    // Table with each byte after clearing its highest set bit
     static const byte reset_high_bit[256];
 };
 

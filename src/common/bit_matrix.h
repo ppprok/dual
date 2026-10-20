@@ -4,7 +4,7 @@
 #include "blob.h"
 #include "containers.h"
 
-// Битовая матрица
+// Bit matrix
 template<typename bit_rows_type>
 class bit_matrix_ {
 public:
@@ -29,7 +29,7 @@ public:
         zero(m, n);
     }
 
-    // Число используемых блоков
+    // Number of blocks in use
     int size() const {
         if (_rows.empty())
             return 0;
@@ -41,29 +41,29 @@ public:
         return p - _data.begin();
     }
 
-    // Число выделенных блоков
+    // Number of allocated blocks
     int capacity() const {
         return _data.size();
     }
 
-    // Число строк
+    // Number of rows
     int height() const {
         return _rows.size();
     }
 
-    // Число столбцов
+    // Number of columns
     int width() const {
         return _n;
     }
 
-    // Создать нулевую матрицу
+    // Create a zero matrix
     void zero(int m, int n) {
         _rows.clear();
         _n = n;
         add_rows(m, n);
     }
 
-    // Зарезервировать требуемое количество блоков
+    // Reserve the required number of blocks
     void reserve(int blocks) {
         if (_data.size() >= blocks)
             return;
@@ -79,13 +79,13 @@ public:
         }
     }
 
-    // Зарезервировать достаточное количество блоков для указанного размера
+    // Reserve enough blocks for the given size
     void reserve(int m, int n) {
         _rows.reserve(m);
         reserve(m * bit_chunk::block_for_bits(n));
     }
 
-    // Установить или сбросить бит в строке i и столбце j
+    // Set or clear the bit in row i and column j
     bool set(int i, int j, bool v) {
         if (v)
             return set(i, j);
@@ -94,7 +94,7 @@ public:
         return true;
     }
 
-    // Установить бит в строке i и столбце j
+    // Set the bit in row i and column j
     bool set(int i, int j) {
         if (i < 0 || j < 0)
             return false;
@@ -110,7 +110,7 @@ public:
                 _n = j + 1;
             add_rows(i + 1 - m, _n);
         } else {
-            // Проверяем, можно ли вставить бит в промежуточной строке
+            // Check whether the bit can be inserted in an intermediate row
             int b = bit_chunk::block_for_bits(j + 1);
             if (_rows[i].begin + b > _rows[i + 1].begin)
                 return false;
@@ -122,41 +122,41 @@ public:
         return true;
     }
 
-    // Обнулить бит
+    // Clear a bit
     void reset(int i, int j) {
         if (j >= 0 && inside(_rows, i))
             _rows[i].set(j, false);
     }
 
-    // Получить бит в строке i столбце j
+    // Get the bit in row i and column j
     bool get(int i, int j) const {
         assert(inside(_rows, i));
         return _rows[i].get(j);
     }
 
-    // Получить набор строк
+    // Get the rows
     bit_rows const& get_rows() const {
         return _rows;
     }
 
-    // Получить набор строк
+    // Get the rows
     bit_rows& get_rows() {
         return _rows;
     }
 
-    // Получить строку с указанным номером
+    // Get the row with the given index
     bit_row const& get_row(int i) const {
         assert(inside(_rows, i));
         return _rows[i];
     }
 
-    // Получить строку с указанным номером
+    // Get the row with the given index
     bit_row& get_row(int i) {
         assert(inside(_rows, i));
         return _rows[i];
     }
 
-    // Добавить m нулевых строк c n столбцами
+    // Append m zero rows with n columns
     void add_rows(int m, int n) {
         if (m <= 0)
             return;
@@ -178,7 +178,7 @@ public:
         }
     }
 
-    // Добавить бит в последнюю строку
+    // Add a bit to the last row
     void add_bit(int j) {
         if (_rows.empty()) {
             add_rows(1, j + 1);
@@ -186,7 +186,7 @@ public:
             if (_n <= j)
                 _n = j + 1;
 
-            // убеждаемся, что в буфере выделено достаточно памяти
+            // make sure the buffer has enough memory allocated
             int b = bit_chunk::block_for_bits(j + 1);
             if (_rows.back().begin + b > _data.end())
                 reserve(_data.size() * 5 / 4 + b);
@@ -195,7 +195,7 @@ public:
         _rows.back().set(j);
     }
 
-    // Оставить в матрице первые m строк
+    // Keep only the first m rows of the matrix
     void trim_rows(int m) {
         if (m <= 0)
             _rows.clear();
@@ -208,29 +208,29 @@ public:
         _rows[i].clear();
     }
 
-    // Списвоить i-ой строке указанные биты
+    // Assign the given bits to the i-th row
     void assign_row(int i, bit_chunk row) {
         assert(inside(_rows, i));
         _rows[i].assign(row);
     }
 
-    // Найти строку, удовлетворяющую условию
+    // Find a row that satisfies the predicate
     template<typename Pred>
     int find_row(Pred pred) const {
         return find_if(_rows, pred);
     }
 
-    // Найти строку, охватываемую указанной строкой
+    // Find a row that is a subset of the given row
     int find_sub_row(bit_chunk suprow) const {
         return find_row([suprow](bit_chunk const& row) { return row.is_subset_of(suprow); });
     }
 
-    // Найти строку, равную указанной строке
+    // Find a row equal to the given row
     int find_equal_row(bit_chunk row) const {
         return find_row([row](bit_chunk const& r) { return row == r; });
     }
 
-    // Удалить строки, удовлетворяющие условию
+    // Remove the rows that satisfy the predicate
     template<typename Pred>
     int remove_rows(Pred pred) {
         int m = height();
@@ -249,46 +249,46 @@ public:
         return m - i;
     }
 
-    // Удалить нулевые строки
+    // Remove zero rows
     int remove_zero_rows() {
         return remove_rows([](bit_chunk const& r) { return r.none(); });
     }
 
-    // Удалить строки, покрытые столбцами
+    // Remove the rows covered by the columns
     int remove_covered_rows(bit_chunk columns) {
         return remove_rows([columns](bit_chunk const& r) { return r.intersects(columns); });
     }
 
-    // Удалить строки, совпадающие с указанной строкой
+    // Remove the rows equal to the given row
     int remove_equal_rows(bit_chunk row) {
         return remove_rows([row](bit_chunk const& r) { return r == row; });
     }
 
-    // Удалить строки, охватывающие указанную
+    // Remove the rows that are supersets of the given row
     int remove_sup_rows(bit_chunk subrow) {
         return remove_rows([subrow](bit_chunk const& r) { return subrow.is_subset_of(r); });
     }
 
-    // Добавить строку с явным указанием длины
+    // Append a row with an explicitly specified length
     bit_row& add_row(bit_row const& row, int n) {
         add_rows(1, n);
         _rows.back().assign(row);
         return _rows.back();
     }
 
-    // Добавить строку
+    // Append a row
     void add_row(bit_chunk row) {
         add_row(row, row.find_last() + 1);
     }
 
-    // Добавить нулевую строку
+    // Append a zero row
     void add_row(int n) {
         if (_n < n)
             _n = n;
         add_row();
     }
 
-    // Добавить нулевую строку
+    // Append a zero row
     void add_row() {
         if (_n <= 1)
             add_rows(1, 1);

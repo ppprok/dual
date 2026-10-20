@@ -5,7 +5,7 @@
 
 typedef std::vector<int> Positions;
 
-// Реализация вывода целых чисел файл
+// Writing integers to a file
 class IntegersFileWriter {
 
     FILE_ptr _output;
@@ -15,28 +15,28 @@ public:
 
     IntegersFileWriter();
 
-    // Закрыть файл
+    // Close the file
     void CloseOutputFile();
 
-    // Создать файл для записи
+    // Create the file for writing
     void CreateOutputFile(std::string const& outputFileName);
 
-    // Символ
+    // Character
     void WriteChar(char c) {
         putc(c, _output.get());
     }
 
-    // Цифра
+    // Digit
     void WriteDigit(int digit) {
         WriteChar(digit + '0');
     }
 
-    // Конец строки
+    // End of line
     void WriteEOL() {
         WriteChar('\n');
     }
 
-    // Вывести число в файл
+    // Write a number to the file
     void WriteInteger(int i, int pad = 0);
 
     void WriteNumber(double v, int precision = 3, int pad = 0);
@@ -46,7 +46,7 @@ public:
         WriteIntegers(c.begin(), c.end());
     }
 
-    // Вывести список чисел в файл
+    // Write a list of numbers to the file
     template<typename Iter>
     void WriteIntegers(Iter beg, Iter end) {
         if (beg == end)
@@ -65,8 +65,8 @@ public:
         WriteIntegerMatrix(c.begin(), c.end());
     }
 
-    // Записать вершины набор массивов в файл --- каждый массив в отдельной строке
-    // [beg, end) --- список, каждый элемент которого является массивом целых
+    // Write a set of arrays to the file --- each array on a separate line
+    // [beg, end) --- a list whose elements are arrays of integers
     template<typename Iter>
     void WriteIntegerMatrix(Iter beg, Iter end) {
         if (beg == end)
@@ -80,12 +80,12 @@ public:
         }
     }
 
-    // Записать позиции ненулевых битов
+    // Write the positions of the set bits
     void WriteBitNumbers(bit_chunk bits);
 
-    // Записать булеву матрицу в виде гиперграфа
+    // Write a Boolean matrix in hypergraph format
     void WriteBitMatrix(bit_matrix const& bm);
 
-    // Записать булеву матрицу в виде гиперграфа
+    // Write a Boolean matrix in hypergraph format
     void WriteBitMatrix(bit_chunks const& rows);
 };
