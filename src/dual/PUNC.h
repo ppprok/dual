@@ -1,5 +1,6 @@
 #pragma once
 
+#include <random>
 #include <vector>
 
 #include "DualizationBacktrackAlgorithmBase.h"
@@ -51,6 +52,9 @@ class GlobalState : public DualizationBacktrackAlgorithmBase {
     // ������� ��������
     Weights _colsWeights;
 
+    // Source of the random order of columns with equal weights
+    std::mt19937 _random;
+
 public:
     // ���������� ������� ������ �����
     void SetRowsOrder(Weights const& weights);
@@ -59,7 +63,7 @@ public:
     void SetColsOrder(Weights weights);
 
     // ��������� ������ ����������
-    void Dualize();
+    void dualize() override;
 
 private:
     // ��������� ���������� ������� � ���������� ������

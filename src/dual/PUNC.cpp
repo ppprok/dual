@@ -47,14 +47,17 @@ LocalState& GlobalState::GetLocalState(int level) {
     return _states[level];
 }
 
-void GlobalState::Dualize() {
-    //_states.clear();
+void GlobalState::dualize() {
+    // States of a previous run are stale (root topRow, supportRows, matrix width)
+    _states.clear();
     int n = _matrix.width();
     int m = _matrix.height();
     resetCurrentNode(n);
     _tempRow = bit_vector(n);
 
-    int q = std::min(n, m) + 1;
+    // DoDualize(level) runs for level <= min(n, m) and requests state level + 1. States are held
+    // by reference across recursion, so _states must not reallocate.
+    int q = std::min(n, m) + 2;
     _states.reserve(q);
     DoDualize(0);
 }
@@ -169,7 +172,7 @@ void GlobalState::CollectColsOrder(bit_chunk bits, OrderByWeights& order) {
 }
 
 void GlobalState::Sort(OrderByWeights& order) {
-    std::random_shuffle(order.begin(), order.end());
+    std::shuffle(order.begin(), order.end(), _random);
     std::sort(order.begin(), order.end(), [](OrderByWeight const& o1, OrderByWeight const& o2) {
         return o1.weight < o2.weight;
     });
