@@ -38,7 +38,7 @@ void DualizationBacktrackAlgorithmBase::setRestrictions(bit_matrix const& restri
     _restrictions.zero(n, n);
     for (auto r : restrictions.get_rows()) {
         for (int j = r.find_first(); j >= 0; j = r.find_next(j)) {
-            bit_chunk row = _restrictions.get_row(j);
+            bit_chunk& row = _restrictions.get_row(j);
             row.assign_or(row, r);
         }
     }
@@ -51,10 +51,15 @@ void DualizationBacktrackAlgorithmBase::loadRestrictions(std::string const& file
 void DualizationBacktrackAlgorithmBase::setMatrix(bit_matrix matrix) {
     resetCurrentNode(matrix.width());
     _matrix = std::move(matrix);
+    onMatrixChanged();
 }
 
 DualizationBacktrackAlgorithmBase::DualizationBacktrackAlgorithmBase() : InnerCallback(0), CoverCallback(0) {}
 DualizationBacktrackAlgorithmBase::~DualizationBacktrackAlgorithmBase() {}
 bit_matrix& DualizationBacktrackAlgorithmBase::get_matrix() {
+    onMatrixChanged();
+    return _matrix;
+}
+bit_matrix const& DualizationBacktrackAlgorithmBase::get_matrix() const {
     return _matrix;
 }
