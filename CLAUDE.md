@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-C++17 research code for **dualization** algorithms: enumerating all minimal covers of a Boolean matrix (equivalently, minimal transversals of a hypergraph), plus generalizations over products of partially ordered sets. The actively maintained piece is the **RUNC** family of algorithms, exposed to Python through a C ABI shared library. Papers behind the algorithms are in `docs/references/`.
+C++17 research code for **dualization** algorithms: enumerating all minimal covers of a Boolean matrix (equivalently, minimal transversals of a hypergraph), plus generalizations over products of partially ordered sets. The actively maintained piece is the **RUNC** family of algorithms, exposed to Python through a C ABI shared library. Literature behind the algorithms is listed in `docs/references.md` (the owner's own paper and dissertation are in `docs/references/`). License: MIT (`LICENSE`).
 
 ## Build and test
 
@@ -28,11 +28,10 @@ Formatting: `.clang-format` (LLVM-based, 4-space indent, 120 columns).
 
 Most of the tree is **not compiled**. Only sources listed (uncommented) in each `CMakeLists.txt` are built; recent commits deliberately pruned targets. Before assuming a file is live, check its CMakeLists:
 
-- `src/common` → static lib `common` (bit containers, IO, graph utils). `Configurable`, `CSVLoader`, `Registrator`, `logging_utils` are excluded.
-- `src/dual` → static lib `dual` (RUNC, RuncFixed, PUNC, AOT1, pruning, cover collectors, weighters) and shared lib `runc` (`RuncExecutor.cpp`). Poset-based code (`PosetsDualizationTask`, `MIGRAS`, `GraphPoset`, `IntervalLattice`, `NumberChain`, `FrequentInfrequent*`, `GeneticDualizer`, …) and `main.cpp`/`dualizer` executable are excluded.
-- `src/logical` (logical-analysis classifiers, `logcls`) is disabled in `src/CMakeLists.txt`; it depended on Boost, whose `find_package` is commented out.
-- `src/tests`: `TestDual` builds only `RUNCTests.cpp`; `TestUtils` builds all of its files (note `CSVTests.cpp` includes `CSVLoader.h`, whose `.cpp` is excluded from `common`, so it may fail to link); `LogicalAnalysisLib.Test` is disabled.
-- `3rd-party/` (reference implementations of other dualization algorithms: BEGK, BMR, DL, KS, shd31, mtminer) and the boost submodules are all commented out in the root `CMakeLists.txt`.
+- `src/common` → static lib `common` (bit containers, IO, graph utils). `CSVLoader`, `Registrator` are excluded (headers used by `TestUtils`).
+- `src/dual` → static lib `dual` (RUNC, RuncFixed, PUNC, AOT1, pruning, cover collectors, weighters) and shared lib `runc` (`RuncExecutor.cpp`). `GeneticDualizer.h` and `FrequentInfrequentEnumerator.h` are listed in `SOURCE_FILES` but are dead leftovers of the poset code.
+- `src/tests`: `TestDual` builds only `RUNCTests.cpp`; `TestUtils` builds all of its files (note `CSVTests.cpp` includes `CSVLoader.h`, whose `.cpp` is excluded from `common`, so it may fail to link).
+- `legacy/` holds unmaintained, unbuilt code and data moved out of the tree (logical-analysis classifiers `src/logical`, poset dualization, `dualizer` executable, Boost-based `Configurable`/`logging_utils`, `3rd-party/` reference implementations, experiments, configs, mathematica notebooks, `.int` datasets); see `legacy/README.md`.
 
 Re-enabling an excluded file usually means re-adding it (and its dependencies) to the relevant `SOURCE_FILES` list.
 
@@ -50,4 +49,4 @@ Changes go through GitHub issues and pull requests (issue first, branch `type/N_
 ## Conventions
 
 - Many source comments are in Russian.
-- `configs/` and `experiments/` hold `.info` configs and datasets for the (currently unbuilt) logical-analysis experiments; `datasets/` and `test-datasets/` are input data.
+- `datasets/` holds `.hg` input matrices; logical-analysis configs, experiments and `.int` datasets are in `legacy/`.
