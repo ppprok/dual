@@ -20,6 +20,9 @@ H=(-H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.github+json")
 curl -s "${H[@]}" "$API/issues?state=open"
 ```
 
+**Из git-worktree** (`.claude/worktrees/…`, субагенты) файла токена в рабочей копии нет — он лежит в основном
+чекауте: `TOKEN=$(tr -d '[:space:]' < "$(git rev-parse --path-format=absolute --git-common-dir)/../.github.token")`.
+
 Если `gh` появится — можно им (`GH_TOKEN=$(cat .github.token) gh …`), правила те же.
 Push по SSH (`git@github.com:ppprok/dual.git`) — токен не нужен.
 
@@ -35,9 +38,8 @@ Push по SSH (`git@github.com:ppprok/dual.git`) — токен не нужен.
 3. **Коммит:** `[#taskID] type: Description` — type conventional (`feat|fix|docs|refactor|test|chore|…`),
    description англ., императив, 1 предложение. **Тело — не более 3 предложений.**
    **Трейлеры НЕ писать** (`Co-Authored-By: …`, `Claude-Session: …` — решение владельца, 2026-10-20).
-4. **Перед PR:** собирается и проходят тесты (см. `CLAUDE.md`: `cmake --build build`, затем
-   `./TestDual` и `./TestUtils` из `build/src/tests`); изменённый C++ прогнан через `clang-format`.
-   Не удалось проверить (нет cmake, нет spdlog) — так и написать в PR, не отмечать пункт чек-листа.
+4. **Перед PR:** чек-лист из скилла `build-and-test` (сборка, ctest, при правке алгоритмов — `asan`,
+   `clang-format`). Что не удалось проверить — так и написать в PR, не отмечать пункт чек-листа.
 5. **PR по шаблону** `.github/pull_request_template.md` (через API шаблон не подставляется — тело
    собирать из него):
    - имя `[#taskID] - type - Title`; пока готовится — **draft PR** (`"draft": true`), префикс `Draft:` не нужен;

@@ -51,7 +51,7 @@ Re-enabling an excluded file usually means adding it (and its dependencies) to t
 
 ## Workflow
 
-Changes go through GitHub issues and pull requests (issue first, branch `type/N_description`, commits `[#N] type: Description` without trailers, draft PR with `Closes #N`, the owner merges). Details are in the `github` and `issue-template` skills under `.claude/skills/`; the PR body follows `.github/pull_request_template.md`.
+Changes go through GitHub issues and pull requests (issue first, branch `type/N_description`, commits `[#N] type: Description` without trailers, draft PR with `Closes #N`, the owner merges). Details are in the `github`, `issue-template` and `build-and-test` skills under `.claude/skills/`; the PR body follows `.github/pull_request_template.md`.
 
 ## Conventions
 
