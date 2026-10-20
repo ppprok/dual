@@ -101,7 +101,7 @@ private:
 public:
     GlobalState(AlgorithmType type = AlgorithmType::AO1M) : _type(type) {}
 
-    void Dualize();
+    void dualize() override;
 
 private:
     bool DoDualize(int stateNum);

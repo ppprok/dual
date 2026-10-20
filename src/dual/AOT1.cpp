@@ -12,8 +12,12 @@ void AOT1::LocalState::Init(GlobalState& g) {
     _uncovered.reserve(m);
     _competing.reserve(m);
 
-    g._tempMatrix.add_rows(1, n);
-    _restCols = g._tempMatrix.get_rows().back();
+    // Called right after emplace_back. Row 0 of the preallocated _tempMatrix is _tempRow and
+    // row k + 1 belongs to state k. Adding rows here would reallocate the matrix and leave the
+    // other states' _restCols dangling.
+    int row = (int) g._states.size();
+    assert(row < g._tempMatrix.height());
+    _restCols = g._tempMatrix.get_row(row);
 }
 
 // �������� �������
@@ -235,7 +239,7 @@ AOT1::LocalState* AOT1::GlobalState::GetLocalState(int stateNum) {
     return &_states[stateNum];
 }
 
-void AOT1::GlobalState::Dualize() {
+void AOT1::GlobalState::dualize() {
     int n = _matrix.width();
     int m = _matrix.height();
     int q = std::min(m, n);
@@ -243,12 +247,15 @@ void AOT1::GlobalState::Dualize() {
     if (q <= 0)
         return;
 
-    _tempMatrix.reserve(q + 2, n);
-    _tempMatrix.add_rows(1, n);
-    _tempRow = _tempMatrix.get_row(0);
-
+    // DoDualize(s) runs for s <= q and requests state s + 1, so up to q + 2 states are needed.
+    // States are reached through pointers kept across recursion, so _states must not reallocate,
+    // and their _restCols point into _tempMatrix, so all its rows are allocated here at once
+    // (zero() also drops the rows left by a previous run).
     _states.clear();
-    _states.reserve(q + 1);
+    _states.reserve(q + 2);
+
+    _tempMatrix.zero(q + 3, n);
+    _tempRow = _tempMatrix.get_row(0);
 
     auto root = GetLocalState(0);
     root->_uncovered.assign(_matrix.get_rows().begin(), _matrix.get_rows().end());
