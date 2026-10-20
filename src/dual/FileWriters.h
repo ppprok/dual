@@ -2,12 +2,12 @@
 #include "DualizationBacktrackAlgorithmBase.h"
 #include "IntegersFileWriter.h"
 
-// Âûגמה גסוץ סעמכבצמג
+// Writes all columns
 struct AllColumnsFileWriterCallback : public IDualizationCallback, public IntegersFileWriter {
     virtual void Call(DualizationNode& node);
 };
 
-// Âûגמה ףןמנÿהמקוםםûץ סעמכבצמג
+// Writes the columns in sorted order
 class OrderedColumnsFileWriterCallback : public IDualizationCallback, public IntegersFileWriter {
 
     raw_vector<int> _buffer;
@@ -16,37 +16,37 @@ public:
     virtual void Call(DualizationNode& node);
 };
 
-// Âûגמה ןונגמדמ סעמכבצא
+// Writes the first column
 class FirstColumnFileWriterCallback : public IDualizationCallback, public IntegersFileWriter {
 public:
     virtual void Call(DualizationNode& node);
 };
 
-// Âûגמה ןמסכוהםודמ סעמכבצא
+// Writes the last column
 class LastColumnFileWriterCallback : public IDualizationCallback, public IntegersFileWriter {
 public:
     virtual void Call(DualizationNode& node);
 };
 
-// Âûגמה קטסכא סעמכבצמג
+// Writes the number of columns
 class SizeFileWriterCallback : public IDualizationCallback, public IntegersFileWriter {
 public:
     virtual void Call(DualizationNode& node);
 };
 
-// Âûגמה גוסא ןמךנûעטÿ
+// Writes the cover weight
 class WeightFileWriterCallback : public IDualizationCallback, public IntegersFileWriter {
 public:
     virtual void Call(DualizationNode& node);
 };
 
-// Âûגמה םאטלוםüרודמ סעמכבצא
+// Writes the smallest column
 class MinColumnFileWriterCallback : public IDualizationCallback, public IntegersFileWriter {
 public:
     virtual void Call(DualizationNode& node);
 };
 
-// Âûגמה םאטבמכüרודמ סעמכבצא
+// Writes the largest column
 class MaxColumnFileWriterCallback : public IDualizationCallback, public IntegersFileWriter {
 public:
     virtual void Call(DualizationNode& node);

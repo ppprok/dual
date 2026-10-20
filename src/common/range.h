@@ -1,6 +1,6 @@
 #pragma once
 
-// Интервал элементов в контейнере
+// Range of elements in a container
 struct range {
     int begin;
     int end;

@@ -2,72 +2,72 @@
 
 #include "DualizationBacktrackAlgorithmBase.h"
 
-// Усечение ветвей ДР по границам на суммарный вес столбцов
+// Pruning of search tree branches by bounds on the total weight of columns
 class WeightBoundsPruningCallback : public IDualizationCallback {
 protected:
-    // Веса столбцов
+    // Column weights
     Weights _weights;
 
-    // Минимальный допустимый вес
+    // Minimum allowed weight
     Weight _minWeight;
 
-    // Максимальный допустимый вес
+    // Maximum allowed weight
     Weight _maxWeight;
 
-    // Число положительных весов
+    // Number of positive weights
     Weight _restPositive;
 
-    // Число отрицательных весов
+    // Number of negative weights
     Weight _restNegative;
 
-    // Динамически изменять нижнюю границу на (максимальный вес - _epsilon)
+    // Dynamically move the lower bound to (maximum weight - _epsilon)
     bool _dynamicMinBound;
 
-    // Динамически изменять верхнюю границу на (минимальный вес + _epsilon)
+    // Dynamically move the upper bound to (minimum weight + _epsilon)
     bool _dynamicMaxBound;
 
-    // Отступ динамической границы от минимального (максимального) найденного веса
+    // Offset of the dynamic bound from the minimum (maximum) weight found
     Weight _epsilon;
 
-    // Вес столбцов, для которых он не задан в массиве _weights;
+    // Weight of the columns that have no weight in the _weights array;
     Weight _defaultWeight;
 
 public:
-    // Обработать покрытие
+    // Process a cover
     void PrunCoverNode(DualizationNode& node);
 
     WeightBoundsPruningCallback();
 
-    // Сбросить параметры по умолчанию
+    // Reset the parameters to defaults
     void Reset();
 
-    // Установить строгую верхную границу
+    // Set a strict upper bound
     void FixMaxBound(Weight bound);
 
-    // Установить строгую нижнюю границу
+    // Set a strict lower bound
     void FixMinBound(Weight bound);
 
-    // Искать наименьшее значение
+    // Search for the minimum value
     void TargetToMin();
 
-    // Искать наибольшее значение
+    // Search for the maximum value
     void TargetToMax();
 
-    // Установить допустимый выход за пределы интервала
+    // Set the allowed deviation outside the interval
     void SetEpsilon(Weight eps);
 
-    // Установить вес по умолчанию
+    // Set the default weight
     void SetDefaultWeight(Weight w);
 
-    // Установить веса
+    // Set the weights
     void SetWeights(Weights weights);
 
-    // Получить вес столбца j
+    // Get the weight of column j
     Weight GetWeight(int j) const;
 
     bool IsDefaultWeight(int j) const;
 
-    // Пересчитать веса и обрубить ветвь в случае необходимости
+    // Recompute the weights and cut the branch if necessary
     virtual void Call(DualizationNode& node);
 
     void DecRestWeight(Weight w);

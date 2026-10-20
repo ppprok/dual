@@ -33,13 +33,13 @@ struct chunk {
         end = begin;
     }
 
-    // ѕроверить, пуст ли блок
+    // Check whether the chunk is empty
     bool empty() const {
         assert(valid());
         return begin == end;
     }
 
-    // найти размер блока
+    // Get the size of the chunk
     int size() const {
         return end - begin;
     }
@@ -60,7 +60,7 @@ struct chunk {
         return *this;
     }
 
-    // ѕроверка, что блок задает правильный диапазон в пам€ти
+    // Check that the chunk specifies a valid memory range
     bool valid() const {
         return begin && begin <= end;
     }

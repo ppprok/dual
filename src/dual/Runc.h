@@ -23,7 +23,7 @@ enum AlgorithmType {
     RUNCM
 };
 
-// Локальное состояние алгоритма типа Runc
+// Local state of a RUNC-type algorithm
 class RuncLocalState {
     enum AddResult {
         Inner,
@@ -35,16 +35,16 @@ class RuncLocalState {
     friend class RuncGlobalState;
 
 private:
-    // Непокрытые строки
+    // Uncovered rows
     rows uncovered_;
 
-    // Опорные строки
+    // Support rows
     rows support_;
 
-    // Группы опорных векторов
+    // Groups of support rows
     marked_ranges supportGroups_;
 
-    // Оставшиеся столбцы
+    // Remaining columns
     bit_vector restCols_;
     bit_chunk collectedCols_;
     bit_vector temp_row_;
@@ -55,10 +55,10 @@ public:
 
     Runc::RuncLocalState::AddResult AddColumn(RuncLocalState const& l, int j);
 
-    // Удалить столбец
+    // Remove a column
     void RemoveColumn(int j);
 
-    // Установить непокрытые столбцом j строки
+    // Set the rows not covered by column j
     bool SetUncovered(int col, rows_citerator begin, rows_citerator end);
 
     bool SetUncovered(RuncLocalState const& parent, int col);
@@ -71,22 +71,22 @@ public:
 
     bool IsCover() const;
 
-    // Получить набор оставшихся столбцов
+    // Get the set of remaining columns
     bit_mask getRestCols() const;
 
-    // Вернуть ненулевые столбцы
+    // Return the non-zero columns
     bit_chunk CollectRestCols();
 
-    // Получить первую непокрытую
+    // Get the first uncovered row
     bit_chunk GetFrontUncovered() const;
 
-    // Найти минимальную непокрытую строку
+    // Find the minimal uncovered row
     bit_chunk GetMinUncovered(int mc = 0) const;
 
-    // Удалить охватывающие строки
+    // Remove dependent rows (rows that are supersets of another row)
     void RemoveDependentRows();
 
-    // Удалить охватывающие строки и нулевые столбцы и получить отавшиеся столбцы
+    // Remove dependent rows and zero columns and get the remaining columns
     bit_chunk GetUndepCols();
 
     bit_chunk collectCols(AlgorithmType alg);
@@ -95,7 +95,7 @@ public:
     void setCollectedCols(bit_chunk collectedCols);
 };
 
-// Глобальное состояние алгоритма типа Runc
+// Global state of a RUNC-type algorithm
 class RuncGlobalState : public DualizationBacktrackAlgorithmBase {
 private:
 

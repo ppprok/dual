@@ -3,37 +3,37 @@
 #include "DualizationBacktrackAlgorithmBase.h"
 #include "WeightBoundsPruning.h"
 
-// Усечение ветвей ДР по границам на суммарный вес покрытых строк
+// Pruning of search tree branches by bounds on the total weight of covered rows
 class CoveredRowsWeighter : public IDualizationCallback {
-    // Строки, которые надо покрыть
+    // Rows that have to be covered
     bit_chunks _targetRows;
 
     typedef std::vector<int> IntVector;
 
     struct CoveredRow {
-        int i;     // Номер строки
-        int j;     // Номер столбца
-        Weight w;  // Вес строки
+        int i;     // Row index
+        int j;     // Column index
+        Weight w;  // Row weight
     };
 
-    // Покрытые строки
+    // Covered rows
     std::vector<CoveredRow> _coveredRows;
 
-    // Зависимые строки
+    // Dependent rows
     IntVector _uncoveredRows;
 
-    // Выполнение подсчёта весов покрытых строк
+    // Computes the weights of covered rows
     WeightBoundsPruningCallback _pruner;
 
 public:
     struct Options {
-        // Строки, которые будут покрываться
+        // Rows to be covered
         bit_chunks TargetRows;
 
-        // Веса строк
+        // Row weights
         Weights RowsWeights;
 
-        // Вес по умолчанию
+        // Default weight
         Weight DefaultWeight;
 
         Options() : DefaultWeight(0) {}
@@ -42,34 +42,34 @@ public:
 public:
     CoveredRowsWeighter();
 
-    // Сбросить параметры по умолчанию
+    // Reset the parameters to defaults
     void Reset();
 
-    // Установить вес по умолчанию
+    // Set the default weight
     void SetOptions(Options options);
 
-    // Пересчитать веса и обрубить ветвь в случае необходимости
+    // Recompute the weights and cut the branch if necessary
     virtual void Call(DualizationNode& node);
 
-    // Установить строгую верхную границу
+    // Set a strict upper bound
     void FixMaxBound(Weight bound);
 
-    // Установить строгую нижнюю границу
+    // Set a strict lower bound
     void FixMinBound(Weight bound);
 
-    // Искать наименьшее значение
+    // Search for the minimum value
     void TargetToMin();
 
-    // Искать наибольшее значение
+    // Search for the maximum value
     void TargetToMax();
 
-    // Установить допустимый выход за пределы интервала
+    // Set the allowed deviation outside the interval
     void SetEpsilon(Weight eps);
 
 private:
-    // Вычислить вес нового узла ДР
+    // Compute the weight of a new search tree node
     void WeightNewNode(DualizationNode& node);
 
-    // Пересчитать вес при возвращении на уровень вверх
+    // Recompute the weight when backtracking one level up
     void WeightBacktrackNode(DualizationNode& node);
 };
