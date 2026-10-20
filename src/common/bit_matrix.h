@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+
 #include "bit_chunk.h"
 #include "blob.h"
 #include "containers.h"
@@ -94,13 +96,14 @@ public:
         return true;
     }
 
-    // Set the bit in row i and column j
+    // Set the bit in row i and column j. Rows and columns may come in any order: missing rows are added
+    // as zero rows and rows are re-laid out when a column does not fit. Returns false only for negative i or j
     bool set(int i, int j) {
         if (i < 0 || j < 0)
             return false;
 
         int m = height();
-        if (m == 0 || i == m - 1) {
+        if (i == m - 1) {
             add_bit(j);
             return true;
         }
@@ -110,10 +113,10 @@ public:
                 _n = j + 1;
             add_rows(i + 1 - m, _n);
         } else {
-            // Check whether the bit can be inserted in an intermediate row
+            // An intermediate row has no room past its stride: re-lay out the rows with a larger one
             int b = bit_chunk::block_for_bits(j + 1);
             if (_rows[i].begin + b > _rows[i + 1].begin)
-                return false;
+                restride(b);
             if (_n <= j)
                 _n = j + 1;
         }
@@ -122,6 +125,32 @@ public:
         return true;
     }
 
+private:
+    // Copy the rows into a new buffer where every row but the last one has a stride of at least b blocks.
+    // The stride at least doubles, so setting bits in any order costs amortized linear time.
+    void restride(int b) {
+        int m = height();
+        assert(m > 0);
+        int stride = bit_chunk::block_for_bits(_n);
+        for (int t = 0; t + 1 < m; ++t)
+            stride = std::max(stride, 2 * (int) (_rows[t + 1].begin - _rows[t].begin));
+        stride = std::max(stride, b);
+
+        int last = std::max(stride, _rows.back().size());
+        blob<typename bit_chunk::Block> data((m - 1) * stride + last);
+        std::fill(data.begin(), data.end(), 0);
+
+        auto p = data.begin();
+        for (auto& r : _rows) {
+            std::copy(r.begin, r.end, p);
+            r.end = p + r.size();
+            r.begin = p;
+            p += stride;
+        }
+        _data = std::move(data);
+    }
+
+public:
     // Clear a bit
     void reset(int i, int j) {
         if (j >= 0 && inside(_rows, i))
@@ -189,7 +218,7 @@ public:
             // make sure the buffer has enough memory allocated
             int b = bit_chunk::block_for_bits(j + 1);
             if (_rows.back().begin + b > _data.end())
-                reserve(_data.size() * 5 / 4 + b);
+                reserve(std::max((int) (_rows.back().begin - _data.begin()) + b, _data.size() * 5 / 4 + b));
         }
 
         _rows.back().set(j);
