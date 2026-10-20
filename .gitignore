@@ -99,3 +99,6 @@ CTestTestfile.cmake
 
 # GitHub API token for Claude skills (never commit)
 .github.token
+
+# Git worktrees created by Claude Code subagents
+.claude/worktrees/
