@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+
 // Chunk defined by bounds
 template<typename T>
 struct chunk {
@@ -45,7 +47,7 @@ struct chunk {
     }
 
     chunk& operator+=(T* base) {
-        int offset = (base - (T*) 0);
+        std::ptrdiff_t offset = (base - (T*) 0);
         begin += offset;
         end += offset;
         assert(valid());
@@ -54,7 +56,7 @@ struct chunk {
 
     chunk& operator-=(T* base) {
         assert(valid());
-        int offset = (base - (T*) 0);
+        std::ptrdiff_t offset = (base - (T*) 0);
         begin -= offset;
         end -= offset;
         return *this;
