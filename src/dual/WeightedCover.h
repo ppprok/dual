@@ -1,7 +1,7 @@
 #pragma once
 #include "DualizationBacktrackAlgorithmBase.h"
 
-// Покрытие с весом
+// Cover with a weight
 struct WeightedCover {
     Columns columns;
     Weight weight;

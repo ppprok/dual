@@ -9,16 +9,16 @@
 namespace PosetDualization {
 
 /*!
-    Разделение всех элементов на t-частые и t-редкие
+    Division of all elements into t-frequent and t-infrequent ones
 */
 struct FrequentInfrequentDivision {
-    int threshold;  ///< порог частоты встречаемости
+    int threshold;  ///< occurrence frequency threshold
 
-    PosetItemsMatrix maximalFrequent;  ///< максимальные t-частые элементы
+    PosetItemsMatrix maximalFrequent;  ///< maximal t-frequent elements
 
-    PosetItemsMatrix minimalInfrequent;  ///< минимальные t-редкие элементы
+    PosetItemsMatrix minimalInfrequent;  ///< minimal t-infrequent elements
 
-    bool complete;  ///< полное описание разделения
+    bool complete;  ///< the division is described completely
 
     FrequentInfrequentDivision(int t = 1) : threshold(t), complete(false) {}
 
@@ -66,7 +66,7 @@ class FrequentInfrequentEnumerator : public ISolver {
 
     std::vector<int> _support;
 
-    //! Булевая матрица, с отметками несравнимых координат
+    //! Boolean matrix marking incomparable coordinates
     bit_matrix _supportBitMap;
 
 public:
@@ -94,12 +94,12 @@ private:
     void SetUnsupportedToMinimal(PosetItems& current);
 
     /*!
-        Увеличить частоту встречаемоти в пределах допустимого порога
+        Increase the occurrence frequency within the allowed threshold
     */
     void IncreaseFrequency(int threshold, PosetItems& current);
 
     /*!
-        Уменьшить число удовлетворяющих строк, увеличив одну из координат
+        Decrease the number of satisfying rows by increasing one of the coordinates
     */
     void DecreaseFrequency(int threshold, PosetItems& current, std::vector<int>& support);
 

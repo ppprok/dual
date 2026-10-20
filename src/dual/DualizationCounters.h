@@ -1,23 +1,23 @@
 #pragma once
 #include <string>
 
-// Счётчики результатов выполнения дуализации
+// Counters of dualization results
 struct DualizationCounters {
     typedef long long int Int;
 
-    Int results;       ///< Число найденных решений
-    Int inners;        ///< Число внутренних состояний
-    Int extras;        ///< Число лишних шагов
-    Int currentDelay;  ///< Текущая задержка
-    Int maxDelay;      ///< Максимальная задержка
+    Int results;       ///< Number of solutions found
+    Int inners;        ///< Number of inner states
+    Int extras;        ///< Number of extra steps
+    Int currentDelay;  ///< Current delay
+    Int maxDelay;      ///< Maximum delay
 
-    // Сбросить счётчики
+    // Reset the counters
     void Reset();
 
-    // Конструктор, обнуляющий счётчики
+    // Constructor that zeroes the counters
     DualizationCounters();
 
-    // Преобразовать счётчики в текстовый вид
+    // Convert the counters to text
     std::string ToString() const;
 
     void IncResult() {
