@@ -8,17 +8,24 @@ C++17 research code for **dualization** algorithms: enumerating all minimal cove
 
 ## Build and test
 
-```bash
-cmake -S . -B build            # needs spdlog installed (find_package REQUIRED); fetches doctest from GitHub (network)
-cmake --build build -j
+CMake >= 3.16 (presets need >= 3.21), C++17. No external dependencies; doctest v2.5.3 is fetched with `FetchContent` (network on first configure).
 
-# Tests open data files by relative path ("data/6_6_4.hg"), so run them from build/src/tests,
-# where the InstallTestUtilsData target copies src/tests/data/.
-cd build/src/tests
-./TestDual                     # RUNC tests
-./TestUtils                    # common/ utilities tests
-./TestDual -tc="DualizeRUNCTest1"   # single doctest case (wildcards allowed: -tc="DualizeRUNC*")
+```bash
+cmake --preset dev                 # Debug + tests, Ninja, build dir build/dev (also: release, asan)
+cmake --build --preset dev
+ctest --preset dev                 # every doctest case is a separate CTest test: TestDual.<case>, TestUtils.<case>
+ctest --preset dev -R DualizeRUNC  # subset by regex
+
+# Without presets
+cmake -S . -B build && cmake --build build -j && ctest --test-dir build
 ```
+
+- Test executables live in `<build>/src/tests` and run from there: they open `data/...` by relative path, and the `dual_test_data` target copies `src/tests/data/` next to them. Running by hand: `cd build/dev/src/tests && ./TestDual -tc="DualizeRUNC*"`.
+- Options: `DUAL_BUILD_TESTS` (ON when top-level), `DUAL_ENABLE_SANITIZERS` (ASan+UBSan, used by the `asan` preset), `DUAL_WARNINGS_AS_ERRORS` (OFF; the code still has many `-Wall -Wextra` warnings), `DUAL_INSTALL` (ON when top-level), `DUAL_BUILD_PYTHON` (placeholder until #13).
+- Targets: `dual::common` (static, file `libdual_common.a`), `dual::dual` (static, RUNC and friends), `dual::runc` (shared `librunc.so`, C ABI). Own targets get flags via `dual_target_options()` in `cmake/DualTargetOptions.cmake`; no global `include_directories`.
+- Install / package: `cmake --install build --prefix <dir>` installs libs, flat headers under `include/dual/` and `lib/cmake/dual/dualConfig.cmake`; consumers use `find_package(dual)` + `target_link_libraries(app PRIVATE dual::dual)` and `#include "Runc.h"`.
+- clangd: `compile_commands.json` is generated in every build dir; `.clangd` points at `build/dev`, so configure the `dev` preset once.
+- Known: `TestUtils.load_CSV_and_create_columns` fails (pre-existing); under the `asan` preset RUNC and several IO tests report heap-buffer-overflow / use-after-free (pre-existing bugs, e.g. `bit_chunk::assign_or` from `Runc::RuncLocalState::CollectRestCols`).
 
 Python wrapper: `cmake --build build --target InstallRuncLib` builds `librunc.so` and copies it into `src/pyrunc/`, where `src/pyrunc/runc.py` loads it via `ctypes` (requires numpy). `runc.py` contains example `test_*` functions; `test_enumerate_from_file` has a hardcoded absolute path.
 
@@ -26,14 +33,14 @@ Formatting: `.clang-format` (LLVM-based, 4-space indent, 120 columns).
 
 ## What is actually built
 
-Most of the tree is **not compiled**. Only sources listed (uncommented) in each `CMakeLists.txt` are built; recent commits deliberately pruned targets. Before assuming a file is live, check its CMakeLists:
+Only sources listed in each `CMakeLists.txt` are built. Before assuming a file is live, check its CMakeLists:
 
-- `src/common` → static lib `common` (bit containers, IO, graph utils). `CSVLoader`, `Registrator` are excluded (headers used by `TestUtils`).
-- `src/dual` → static lib `dual` (RUNC, RuncFixed, PUNC, AOT1, pruning, cover collectors, weighters) and shared lib `runc` (`RuncExecutor.cpp`). `GeneticDualizer.h` and `FrequentInfrequentEnumerator.h` are listed in `SOURCE_FILES` but are dead leftovers of the poset code.
-- `src/tests`: `TestDual` builds only `RUNCTests.cpp`; `TestUtils` builds all of its files (note `CSVTests.cpp` includes `CSVLoader.h`, whose `.cpp` is excluded from `common`, so it may fail to link).
+- `src/common` → `dual::common` (bit containers, IO, graph utils). `CSVLoader.cpp` is not compiled (its header is used by `TestUtils`).
+- `src/dual` → `dual::dual` (RUNC, RuncFixed, PUNC, AOT1, pruning, cover collectors, weighters) and `dual::runc` (`RuncExecutor.cpp`). `GeneticDualizer.h` and `FrequentInfrequentEnumerator.h` are dead leftovers of the poset code, not referenced by CMake.
+- `src/tests`: `TestDual` builds only `RUNCTests.cpp`; `TestUtils` builds all of its files.
 - `legacy/` holds unmaintained, unbuilt code and data moved out of the tree (logical-analysis classifiers `src/logical`, poset dualization, `dualizer` executable, Boost-based `Configurable`/`logging_utils`, `3rd-party/` reference implementations, experiments, configs, mathematica notebooks, `.int` datasets); see `legacy/README.md`.
 
-Re-enabling an excluded file usually means re-adding it (and its dependencies) to the relevant `SOURCE_FILES` list.
+Re-enabling an excluded file usually means adding it (and its dependencies) to the source/header lists of the relevant `CMakeLists.txt`.
 
 ## RUNC architecture
 
@@ -48,5 +55,5 @@ Changes go through GitHub issues and pull requests (issue first, branch `type/N_
 
 ## Conventions
 
-- Many source comments are in Russian.
+- Comments are in English; sources are UTF-8.
 - `datasets/` holds `.hg` input matrices; logical-analysis configs, experiments and `.int` datasets are in `legacy/`.
