@@ -25,7 +25,7 @@ cmake -S . -B build && cmake --build build -j && ctest --test-dir build
 - Targets: `dual::common` (static, file `libdual_common.a`), `dual::dual` (static, RUNC and friends), `dual::runc` (shared `librunc.so`, C ABI). Own targets get flags via `dual_target_options()` in `cmake/DualTargetOptions.cmake`; no global `include_directories`.
 - Install / package: `cmake --install build --prefix <dir>` installs libs, flat headers under `include/dual/` and `lib/cmake/dual/dualConfig.cmake`; consumers use `find_package(dual)` + `target_link_libraries(app PRIVATE dual::dual)` and `#include "Runc.h"`.
 - clangd: `compile_commands.json` is generated in every build dir; `.clangd` points at `build/dev`, so configure the `dev` preset once.
-- Known: `TestUtils.load_CSV_and_create_columns` fails (pre-existing); under the `asan` preset RUNC and several IO tests report heap-buffer-overflow / use-after-free (pre-existing bugs, e.g. `bit_chunk::assign_or` from `Runc::RuncLocalState::CollectRestCols`).
+- All tests pass under the `dev` and `asan` presets (since #21); keep it that way.
 
 Python wrapper: `cmake --build build --target InstallRuncLib` builds `librunc.so` and copies it into `src/pyrunc/`, where `src/pyrunc/runc.py` loads it via `ctypes` (requires numpy). `runc.py` contains example `test_*` functions; `test_enumerate_from_file` has a hardcoded absolute path.
 
@@ -37,7 +37,7 @@ Only sources listed in each `CMakeLists.txt` are built. Before assuming a file i
 
 - `src/common` → `dual::common` (bit containers, IO, graph utils). `CSVLoader.cpp` is not compiled (its header is used by `TestUtils`).
 - `src/dual` → `dual::dual` (RUNC, RuncFixed, PUNC, AOT1, pruning, cover collectors, weighters) and `dual::runc` (`RuncExecutor.cpp`). `GeneticDualizer.h` and `FrequentInfrequentEnumerator.h` are dead leftovers of the poset code, not referenced by CMake.
-- `src/tests`: `TestDual` builds `RUNCTests.cpp` and `AOT1PUNCTests.cpp`; `TestRuncFixedO2` builds its own `-O2` copy of `RuncFixed.cpp` against `dual::common` only; `TestUtils` builds all of its files.
+- `src/tests`: `TestDual` builds `RUNCTests.cpp`, `RuncApiTests.cpp`, `RuncDifferentialTests.cpp` (with `RuncExecutor.cpp` compiled in) and `AOT1PUNCTests.cpp`; `TestRuncFixedO2` builds its own `-O2` copy of `RuncFixed.cpp` against `dual::common` only; `TestUtils` builds all of its files.
 - `legacy/` holds unmaintained, unbuilt code and data moved out of the tree (logical-analysis classifiers `src/logical`, poset dualization, `dualizer` executable, Boost-based `Configurable`/`logging_utils`, `3rd-party/` reference implementations, experiments, configs, mathematica notebooks, `.int` datasets); see `legacy/README.md`.
 
 Re-enabling an excluded file usually means adding it (and its dependencies) to the source/header lists of the relevant `CMakeLists.txt`.
@@ -46,7 +46,7 @@ Re-enabling an excluded file usually means adding it (and its dependencies) to t
 
 - `DualizationBacktrackAlgorithmBase` (`src/dual`) holds the input `bit_matrix`, `loadMatrix(file)`, and two callback hooks, `InnerCallback` and `CoverCallback` (`IDualizationCallback::Call(DualizationNode&)`). Algorithms report each inner node / found cover through these; `Counters` and the collectors in `CoverCollector`/`MostCoverCollector` are callback implementations.
 - `Runc::RuncGlobalState` (`Runc.h/.cpp`) implements the algorithm, selected by `AlgorithmType` (`OPT`, `RUNC`, `RUNCM`; default `RUNCM`). It keeps a stack of `RuncLocalState` (uncovered rows, support rows, remaining columns) and is **iterative, not recursive**: `startDualize()` sets up, `doStep()` advances one step, so enumeration can be paused and resumed.
-- That resumability is what the Python API relies on: `RuncExecutor.cpp` exports `init_dualizer` / `set_input_row` / `enumerate_covers` / `release_dualizer` as `extern "C"`. `enumerate_covers` fills a caller buffer with `[size, col...]` records until there is no room for another `width+1` entries, then returns the count; repeated calls continue where the previous one stopped, and a return of 0 means enumeration is finished.
+- That resumability is what the Python API relies on: `RuncExecutor.cpp` exports `init_dualizer` / `set_input_row` / `enumerate_covers` / `release_dualizer` as `extern "C"`. `enumerate_covers` fills a caller buffer with `[size, col...]` records until there is no room for another `width+1` entries, then returns the count; repeated calls continue where the previous one stopped, a return of 0 means enumeration is finished, and negative returns are error codes (e.g. buffer smaller than `width+1`). The full contract (input semantics, restart on input change) is the comment in `RuncExecutor.h`; the C++ side is documented at `RuncGlobalState` in `Runc.h`.
 - Test inputs `*.hg` are hypergraph/matrix files: one row per line, space-separated column indices of ones. Filenames follow `rows_cols_expectedCoverCount` (e.g. `15_20_275.hg` has 275 minimal covers), which the tests assert.
 
 ## Workflow

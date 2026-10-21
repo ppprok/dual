@@ -144,6 +144,9 @@ struct bit_mask : bit_chunk {
 
         for (; d0 != end && d1 != b1.end && d2 != b2.end; ++d0, ++d1, ++d2) {
             auto a = *d1 & *d0;
+            if (a == (*d2 & *d0))
+                continue;
+
             if ((*d2 & a) == a) {
                 if (r == 1)
                     return 0;
@@ -165,12 +168,12 @@ struct bit_mask : bit_chunk {
         if (r != 1)
             for (; d0 != end && d1 != b1.end; ++d0, ++d1)
                 if (*d1 & *d0)
-                    return 0;
+                    return r + 1;
 
         if (r != -1)
             for (; d0 != end && d2 != b2.end; ++d0, ++d2)
                 if (*d2 & *d0)
-                    return 0;
+                    return r - 1;
 
         if (r == 0)
             return 1;
