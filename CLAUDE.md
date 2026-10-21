@@ -25,7 +25,7 @@ cmake -S . -B build && cmake --build build -j && ctest --test-dir build
 - Targets: `dual::common` (static, file `libdual_common.a`), `dual::dual` (static, RUNC and friends), `dual::runc` (shared `librunc.so`, C ABI). Own targets get flags via `dual_target_options()` in `cmake/DualTargetOptions.cmake`; no global `include_directories`.
 - Install / package: `cmake --install build --prefix <dir>` installs libs, flat headers under `include/dual/` and `lib/cmake/dual/dualConfig.cmake`; consumers use `find_package(dual)` + `target_link_libraries(app PRIVATE dual::dual)` and `#include "Runc.h"`.
 - clangd: `compile_commands.json` is generated in every build dir; `.clangd` points at `build/dev`, so configure the `dev` preset once.
-- Known: `TestUtils.load_CSV_and_create_columns` fails (pre-existing); under the `asan` preset RUNC and several IO tests report heap-buffer-overflow / use-after-free (pre-existing bugs, e.g. `bit_chunk::assign_or` from `Runc::RuncLocalState::CollectRestCols`).
+- All tests pass under the `dev` and `asan` presets (since #21); keep it that way.
 
 Python wrapper: `cmake --build build --target InstallRuncLib` builds `librunc.so` and copies it into `src/pyrunc/`, where `src/pyrunc/runc.py` loads it via `ctypes` (requires numpy). `runc.py` contains example `test_*` functions; `test_enumerate_from_file` has a hardcoded absolute path.
 

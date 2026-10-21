@@ -156,7 +156,8 @@ public:
             _end = _begin + s;
         } else if (s > size()) {
             if (!_begin) {
-                _begin = _end = (T*) calloc(s, sizeof(*_begin));
+                _begin = (T*) calloc(s, sizeof(*_begin));
+                _end = _begin + s;
             } else {
                 _begin = (T*) realloc(_begin, s * sizeof(*_begin));
                 _end = _begin + s;

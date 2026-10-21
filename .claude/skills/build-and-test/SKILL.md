@@ -32,8 +32,9 @@ cd build/dev/src/tests && ./TestDual -tc="DualizeRUNCTest4" -s
 
 ## Известное состояние (обновлять при исправлении)
 
-- `TestUtils.load_CSV_and_create_columns` падает — давний дефект, разбирается в аудите #11.
-- Под `asan` падают тесты RUNC и IO `bit_matrix` (heap-buffer-overflow / use-after-free) — давние дефекты.
+- `ctest --preset dev` и `ctest --preset asan` проходят полностью, отчётов ASan/UBSan нет (#21 исправил
+  `chunk` rebase, `blob::resize`, `bit_mask::subset_cmp`, `bit_chunk::get_last`, `bit_vector::zero` —
+  из-за них падали `load_CSV_and_create_columns`, тесты RUNC и IO `bit_matrix` под `asan`).
 - С `-Wall -Wextra` много предупреждений, поэтому `DUAL_WARNINGS_AS_ERRORS` выключен.
 
 Сравнивайте с этим списком: новое падение — ваше, старое — не чинить попутно, а упомянуть в PR.
