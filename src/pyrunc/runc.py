@@ -56,6 +56,8 @@ class RuncDualizer:
         if buffer_count < 1:
             raise ValueError("buffer_count must be at least 1")
         size = buffer_count * (self.n + 1)
+        if size > 0xFFFFFFFF:
+            raise ValueError("buffer_count * (width + 1) must fit into uint32")
         covers_buffer = numpy.zeros(size, dtype=numpy.uint32)
         c = librunc.enumerate_covers(self.dualizer, size, covers_buffer)
         if c < 0:
