@@ -5,6 +5,7 @@
 #include <stdexcept>
 
 #include "Counters.h"
+#include "CoverCollector.h"
 #include "RuncTestUtils.h"
 
 using namespace runc_test;
@@ -85,6 +86,59 @@ TEST_CASE("RuncApi: CoverCallback is restored and the enumeration reset when a c
             s.add(rows, c);
     CHECK(s.covers == expected);
     CHECK(s.duplicates == 0);
+}
+
+// Review of PR #27: a callback that stopped the node left the enumeration Running forever
+TEST_CASE("RuncApi: a callback stop finishes the enumeration") {
+    auto rows = pathRows();
+    auto expected = fullEnumeration(rows);
+    REQUIRE(expected.size() > 2);
+
+    Runc::RuncGlobalState g(Runc::RUNCM);
+    g.setMatrix(makeMatrix(rows));
+    CoverCollector collector;
+    collector.MaxCount = 2;
+    g.CoverCallback = &collector;
+    g.dualize();
+    CHECK(collector.GetCovers().size() == 2);
+    CHECK(g.isDualizeFinished());
+
+    // Further portions return nothing, the enumeration stays finished
+    CHECK(g.dualize(size_t(100)).empty());
+    std::vector<uint32_t> buffer(64);
+    CHECK(g.dualize(uint32_t(buffer.size()), buffer.data()) == 0);
+    CHECK(g.isDualizeFinished());
+    CHECK(g.CoverCallback == &collector);
+
+    // resetDualize() restarts the enumeration from the first cover
+    g.resetDualize();
+    CHECK_FALSE(g.isDualizeFinished());
+    CoverSet s;
+    for (auto v = g.dualize(size_t(3)); !v.empty(); v = g.dualize(size_t(3)))
+        for (auto& c : v)
+            s.add(rows, c);
+    CHECK(s.covers == expected);
+    CHECK(s.duplicates == 0);
+    CHECK(g.isDualizeFinished());
+
+    // A stop by the InnerCallback during a portion finishes the enumeration as well
+    struct StopInner : IDualizationCallback {
+        void Call(DualizationNode& node) override {
+            node.stoped = true;
+        }
+    } stop;
+    g.resetDualize();
+    g.InnerCallback = &stop;
+    g.dualize(size_t(100));
+    CHECK(g.isDualizeFinished());
+    CHECK(g.dualize(size_t(100)).empty());
+    g.InnerCallback = nullptr;
+
+    // A full run starts over after a stop
+    collector.Reset();
+    collector.MaxCount = 0;
+    g.dualize();
+    CHECK(collector.GetCovers().size() == expected.size());
 }
 
 // Finding 10: the enumeration state survived setMatrix and pointed into the freed matrix

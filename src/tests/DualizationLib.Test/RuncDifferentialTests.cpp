@@ -28,13 +28,18 @@ std::set<Cover> bruteForce(Rows const& rows) {
     return result;
 }
 
+// Mostly matrices without zero rows; rarely an empty matrix (exactly the empty cover) or a zero row (no covers)
 Rows randomRows(std::mt19937& rng, int max_n, int max_m) {
+    if (rng() % 50 == 0)
+        return {};
     int n = 1 + rng() % max_n;
     int m = 1 + rng() % max_m;
     double p = 0.05 + (rng() % 50) / 100.0;
     std::uniform_real_distribution<> coin(0, 1);
     Rows rows(m);
     for (auto& r : rows) {
+        if (rng() % 100 == 0)
+            continue;
         for (int j = 0; j < n; ++j)
             if (coin(rng) < p)
                 r.push_back(j);
