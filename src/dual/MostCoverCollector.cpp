@@ -32,9 +32,11 @@ void MostCoverCollector::Trim(int size) {
         return;
 
     if (Options.RandomShuffle) {
-        // Shared like the rand() state std::random_shuffle (removed in C++17) used to rely on
-        static std::mt19937 random;
-        std::shuffle(_covers.begin(), _covers.end(), random);
+        if (!_seeded) {
+            _random.seed(Options.Seed);
+            _seeded = true;
+        }
+        std::shuffle(_covers.begin(), _covers.end(), _random);
     }
 
     if (Options.TrimOrder < 0) {
