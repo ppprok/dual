@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+
 // Chunk defined by bounds
 template<typename T>
 struct chunk {
@@ -21,7 +23,8 @@ struct chunk {
     void resize(int s, T const& value) {
         assert(s >= 0);
         assert(valid());
-        auto c = end, end = begin + s;
+        auto c = end;
+        end = begin + s;
         if (c >= end)
             return;
 
@@ -45,7 +48,7 @@ struct chunk {
     }
 
     chunk& operator+=(T* base) {
-        int offset = (base - (T*) 0);
+        std::ptrdiff_t offset = (base - (T*) 0);
         begin += offset;
         end += offset;
         assert(valid());
@@ -54,7 +57,7 @@ struct chunk {
 
     chunk& operator-=(T* base) {
         assert(valid());
-        int offset = (base - (T*) 0);
+        std::ptrdiff_t offset = (base - (T*) 0);
         begin -= offset;
         end -= offset;
         return *this;
