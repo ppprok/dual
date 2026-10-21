@@ -20,6 +20,7 @@ The maintained part of the project stays in `src/` (`src/common`, the built part
 | `experiments/`, `configs/` | `.info` configurations, task lists and results of the logical-analysis experiments (cross-validation, leave-one-out, train/test, timing). | Inputs for the unbuilt `logcls`. |
 | `mathematica/` | Mathematica notebooks (`Boosting.nb`, `LA.nb`), plots and raw result logs of those experiments. | Analysis of the logical-analysis experiments. |
 | `datasets/*.int`, `test-datasets/` | Classification datasets (UCI: iris, mushrooms, nursery, zoo, ...) in the `.int` format of `src/logical`. | Only read by `src/logical` and the experiments. |
+| `docs/task/` | `project_tasks_2.tex` (LaTeX, cp1251) and `project_tasks_2.pdf`: the Russian research task statement on dualization and joint enumeration of maximal/minimal independent elements. | Russian original; the English rendering is `docs/research-tasks.md`. |
 
 ## Left in place on purpose
 
