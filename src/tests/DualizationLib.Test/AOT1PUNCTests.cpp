@@ -70,11 +70,20 @@ std::vector<NamedAlgorithm> Algorithms() {
     return algs;
 }
 
-bit_matrix MakeMatrix(Rows const& rows) {
+// Zero rows get width n, or the largest column in rows + 1 if that is larger
+bit_matrix MakeMatrix(Rows const& rows, int n = 0) {
+    for (auto const& row : rows)
+        for (int j : row)
+            n = std::max(n, j + 1);
+
     bit_matrix matrix;
-    for (int i = 0; i < (int) rows.size(); ++i)
+    for (int i = 0; i < (int) rows.size(); ++i) {
+        // set() alone would drop a trailing zero row and put a leading one's successor in its place
+        if (rows[i].empty())
+            matrix.add_rows(1, n);
         for (int j : rows[i])
             matrix.set(i, j);
+    }
     return matrix;
 }
 
@@ -95,7 +104,7 @@ Rows LoadRows(std::string const& filename) {
     return ToRows(reader.get_matrix());
 }
 
-// Random matrix with no zero rows
+// Random matrix; about one matrix in eight gets a zero row, the rest have none
 Rows RandomRows(std::mt19937& random, int m, int n) {
     std::uniform_real_distribution<double> density(0.05, 0.65);
     std::uniform_real_distribution<double> uniform(0, 1);
@@ -108,6 +117,8 @@ Rows RandomRows(std::mt19937& random, int m, int n) {
         if (row.empty())
             row.push_back(random() % n);
     }
+    if (random() % 8 == 0)
+        rows[random() % m].clear();
     return rows;
 }
 
@@ -196,13 +207,13 @@ TEST_CASE("AOT1 and PUNC match RUNCM and brute force on random small matrices") 
         auto rows = RandomRows(random, m, n);
         CAPTURE(it);
 
-        auto expected = RuncmCovers(MakeMatrix(rows));
+        auto expected = RuncmCovers(MakeMatrix(rows, n));
         REQUIRE(expected == BruteForceCovers(rows, n));
 
         for (auto const& alg : algs) {
             CAPTURE(alg.name);
             auto a = alg.create();
-            a->setMatrix(MakeMatrix(rows));
+            a->setMatrix(MakeMatrix(rows, n));
             CHECK(Collect(*a) == expected);
         }
     }
@@ -221,14 +232,14 @@ TEST_CASE("AOT1 and PUNC match RUNCM on random larger matrices") {
         auto rows = RandomRows(random, m, n);
         CAPTURE(it);
 
-        auto expected = RuncmCovers(MakeMatrix(rows), maxCovers + 1);
+        auto expected = RuncmCovers(MakeMatrix(rows, n), maxCovers + 1);
         if ((int) expected.size() > maxCovers)
             continue;
         ++tested;
         for (auto const& alg : algs) {
             CAPTURE(alg.name);
             auto a = alg.create();
-            a->setMatrix(MakeMatrix(rows));
+            a->setMatrix(MakeMatrix(rows, n));
             CHECK(Collect(*a) == expected);
         }
     }
@@ -238,18 +249,45 @@ TEST_CASE("AOT1 and PUNC match RUNCM on random larger matrices") {
 TEST_CASE("AOT1 and PUNC edge matrices") {
     // A single cover of the maximal depth: PUNC used to reallocate its states during recursion here
     Rows single = {{0}};
-    // n < m: AOT1 used to need one more state than it reserved
     Rows tall = {{0, 1}, {1, 2}, {0, 2}, {0}, {2}};
     Rows diagonal = {{0}, {1}, {2}, {3}, {4}, {5}};
+    // A zero row with n < m: the only case where AOT1 reaches state q + 1, one more than it used to reserve
+    Rows zeroRowTall = {{0}, {}, {0}, {0}};
 
-    for (auto const& rows : {single, tall, diagonal}) {
+    for (auto const& rows : {single, tall, diagonal, zeroRowTall}) {
         auto expected = RuncmCovers(MakeMatrix(rows));
+        if (rows == zeroRowTall)
+            CHECK(expected.empty());
         for (auto const& alg : Algorithms()) {
             CAPTURE(alg.name);
             auto a = alg.create();
             a->setMatrix(MakeMatrix(rows));
             CHECK(Collect(*a) == expected);
         }
+    }
+}
+
+TEST_CASE("All algorithms agree on the empty matrix") {
+    // The dual of the empty hypergraph is {empty set}
+    CoverSet expected = {Cover()};
+    for (auto type : {Runc::OPT, Runc::RUNC, Runc::RUNCM}) {
+        CAPTURE(type);
+        Runc::RuncGlobalState runc(type);
+        runc.setMatrix(bit_matrix());
+        CHECK(Collect(runc) == expected);
+    }
+    {
+        // The resumable API reports the empty cover once, then nothing
+        Runc::RuncGlobalState runc;
+        runc.setMatrix(bit_matrix());
+        CHECK_EQ(1, (int) runc.dualize(10).size());
+        CHECK(runc.dualize(10).empty());
+    }
+    for (auto const& alg : Algorithms()) {
+        CAPTURE(alg.name);
+        auto a = alg.create();
+        a->setMatrix(bit_matrix());
+        CHECK(Collect(*a) == expected);
     }
 }
 
