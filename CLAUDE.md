@@ -56,4 +56,5 @@ Changes go through GitHub issues and pull requests (issue first, branch `type/N_
 ## Conventions
 
 - Comments are in English; sources are UTF-8.
+- Language: everything is written in English — code comments, docs, issues, pull requests, commit messages and review comments. Russian originals that are kept for reference live in `legacy/`.
 - `datasets/` holds `.hg` input matrices; logical-analysis configs, experiments and `.int` datasets are in `legacy/`.

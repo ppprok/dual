@@ -1,45 +1,46 @@
 Closes #
 
-## Описание изменений
+## Description of changes
 
-<!-- Списком — что изменено в коде; естественным языком — что меняется в поведении алгоритмов/API. -->
+<!-- As a list: what changed in the code; in plain language: what changes in the behavior of the algorithms/API. -->
 
-## Инструкция для ручной проверки
+## Manual verification instructions
 
-<!-- Ненужные части можно удалить. -->
+<!-- Unneeded parts can be removed. -->
 
-### 1. Сборка
+### 1. Build
 
 1. `cmake -S . -B build && cmake --build build -j`
 
-### 2. Тестовые кейсы и их воспроизведение
+### 2. Test cases and how to reproduce them
 
 1. `cd build/src/tests && ./TestDual && ./TestUtils`
 
-### 3. Ожидаемые результаты
+### 3. Expected results
 
 1.
 
 ---
 
-## 📋 Чек-лист автора
+## 📋 Author checklist
 
 **PR:**
 
-- [ ] Имя `[#N] - type - Title`, в теле `Closes #N`
-- [ ] Ветка `type/N_description`, коммиты `[#N] type: Description`
-- [ ] Метка задачи переведена в `In review`
+- [ ] Title `[#N] - type - Title`, `Closes #N` in the body
+- [ ] Branch `type/N_description`, commits `[#N] type: Description`
+- [ ] Task label switched to `In review`
+- [ ] Issue, PR, commits and docs are in English
 
-**Код:**
+**Code:**
 
-- [ ] Проект собирается без ошибок
-- [ ] `TestDual` и `TestUtils` проходят
-- [ ] Новые/изменённые файлы добавлены в соответствующий `CMakeLists.txt`
-- [ ] Изменённый C++ прогнан через `clang-format`
-- [ ] Нет отладочного вывода и TODO/FIXME без номера задачи
-- [ ] Если менялся C ABI `librunc.so` — обновлён `src/pyrunc/runc.py`
+- [ ] The project builds without errors
+- [ ] `TestDual` and `TestUtils` pass
+- [ ] New/changed files are added to the corresponding `CMakeLists.txt`
+- [ ] Changed C++ is run through `clang-format`
+- [ ] No debug output and no TODO/FIXME without a task number
+- [ ] If the C ABI of `librunc.so` changed — `src/pyrunc/runc.py` is updated
 
-**Документация:**
+**Documentation:**
 
-- [ ] Сложная логика имеет комментарии
-- [ ] `README.md` / `CLAUDE.md` обновлены (если нужно)
+- [ ] Complex logic has comments
+- [ ] `README.md` / `CLAUDE.md` are updated (if needed)
