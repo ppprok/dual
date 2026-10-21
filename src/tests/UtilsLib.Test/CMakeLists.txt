@@ -6,6 +6,7 @@ dual_add_test(TestUtils
         ContainerMemoryTests.cpp
         CSVTests.cpp
         GraphTests.cpp
+        InputMatrixTests.cpp
         IOTests.cpp
         RegistratorTests.cpp
         LIBS dual::common)
