@@ -1,5 +1,7 @@
 #include "MostCoverCollector.h"
 
+#include <random>
+
 void MostCoverCollector::Call(DualizationNode& node) {
     if (!node.IsCover())
         return;
@@ -29,8 +31,13 @@ void MostCoverCollector::Trim(int size) {
     if ((int) _covers.size() <= size)
         return;
 
-    if (Options.RandomShuffle)
-        std::random_shuffle(_covers.begin(), _covers.end());
+    if (Options.RandomShuffle) {
+        if (!_seeded) {
+            _random.seed(Options.Seed);
+            _seeded = true;
+        }
+        std::shuffle(_covers.begin(), _covers.end(), _random);
+    }
 
     if (Options.TrimOrder < 0) {
         std::sort(_covers.begin(), _covers.end(), [](WeightedCover const& c1, WeightedCover const& c2) {

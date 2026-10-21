@@ -37,7 +37,7 @@ Only sources listed in each `CMakeLists.txt` are built. Before assuming a file i
 
 - `src/common` → `dual::common` (bit containers, IO, graph utils). `CSVLoader.cpp` is not compiled (its header is used by `TestUtils`).
 - `src/dual` → `dual::dual` (RUNC, RuncFixed, PUNC, AOT1, pruning, cover collectors, weighters) and `dual::runc` (`RuncExecutor.cpp`). `GeneticDualizer.h` and `FrequentInfrequentEnumerator.h` are dead leftovers of the poset code, not referenced by CMake.
-- `src/tests`: `TestDual` builds only `RUNCTests.cpp`; `TestUtils` builds all of its files.
+- `src/tests`: `TestDual` builds `RUNCTests.cpp`, `RuncApiTests.cpp`, `RuncDifferentialTests.cpp` (with `RuncExecutor.cpp` compiled in) and `AOT1PUNCTests.cpp`; `TestRuncFixedO2` builds its own `-O2` copy of `RuncFixed.cpp` against `dual::common` only; `TestUtils` builds all of its files.
 - `legacy/` holds unmaintained, unbuilt code and data moved out of the tree (logical-analysis classifiers `src/logical`, poset dualization, `dualizer` executable, Boost-based `Configurable`/`logging_utils`, `3rd-party/` reference implementations, experiments, configs, mathematica notebooks, `.int` datasets); see `legacy/README.md`.
 
 Re-enabling an excluded file usually means adding it (and its dependencies) to the source/header lists of the relevant `CMakeLists.txt`.

@@ -271,3 +271,8 @@ template bits64 RuncFixedDualize<bits64>(std::vector<bits64> input, std::vector<
 template typename RuncFixed<bits32>::Rows RuncFixedDualize<bits32>(typename RuncFixed<bits32>::Rows input);
 
 template typename RuncFixed<bits64>::Rows RuncFixedDualize<bits64>(typename RuncFixed<bits64>::Rows input);
+
+// RuncFixedDualize is defined in the header and instantiated by clients, so the members it calls
+// must be emitted here even when the optimizer inlines them into the instantiations above.
+template class RuncFixed<bits32>;
+template class RuncFixed<bits64>;
