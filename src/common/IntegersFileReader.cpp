@@ -1,4 +1,5 @@
 #include "IntegersFileReader.h"
+#include <algorithm>
 #include <climits>
 #include <stdexcept>
 
@@ -9,7 +10,8 @@ bit_matrix IntegersFileReader::ReadBitMatrix() {
         _lastChar = getc(_input.get());
         if (IsDigitChar(_lastChar)) {
             int j = ReadUnsignedInteger(_lastChar - '0');
-            _bm.set(i, j);
+            if (!_bm.set(i, j))
+                throw std::out_of_range("row or column index in the input file is too large");
         }
 
         if (_lastChar == '\n') {
@@ -39,7 +41,7 @@ int IntegersFileReader::EstimateBitMatrixCapacity() const {
         throw std::runtime_error("cannot restore the input file position");
     if (fsize <= pos)
         return size;
-    return size * (fsize / pos + 1);
+    return (int) std::min<long long>((long long) size * (fsize / pos + 1), INT_MAX);
 }
 
 void IntegersFileReader::OpenInputFile(std::string const& filename) {
