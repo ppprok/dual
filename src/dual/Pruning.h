@@ -1,9 +1,16 @@
+/// @file
+/// @brief `CoveredRowsWeighter`: pruning by the total weight of covered rows.
+
 #pragma once
 
 #include "DualizationBacktrackAlgorithmBase.h"
 #include "WeightBoundsPruning.h"
 
-// Pruning of search tree branches by bounds on the total weight of covered rows
+/// @brief Pruning of search tree branches by bounds on the total weight of covered rows.
+///
+/// The weight of a node is the total weight of the target rows covered by its columns. Install it
+/// as both `InnerCallback` (to weigh and prune inner nodes) and `CoverCallback` (to prune covers and
+/// move dynamic bounds).
 class CoveredRowsWeighter : public IDualizationCallback {
     // Rows that have to be covered
     bit_chunks _targetRows;
@@ -26,44 +33,47 @@ class CoveredRowsWeighter : public IDualizationCallback {
     WeightBoundsPruningCallback _pruner;
 
 public:
+    /// @brief Rows and their weights.
     struct Options {
-        // Rows to be covered
+        /// Rows to be covered.
         bit_chunks TargetRows;
 
-        // Row weights
+        /// Row weights, by row.
         Weights RowsWeights;
 
-        // Default weight
+        /// Weight of the rows past the end of `RowsWeights`.
         Weight DefaultWeight;
 
+        /// @brief No rows, default weight 0.
         Options() : DefaultWeight(0) {}
     };
 
 public:
+    /// @brief Weighter without rows and without bounds.
     CoveredRowsWeighter();
 
-    // Reset the parameters to defaults
+    /// @brief Reset the parameters to defaults: no rows, no bounds.
     void Reset();
 
-    // Set the default weight
+    /// @brief Reset, then set the rows to cover and their weights.
     void SetOptions(Options options);
 
-    // Recompute the weights and cut the branch if necessary
+    /// @brief Recompute the weights and cut the branch if necessary.
     virtual void Call(DualizationNode& node);
 
-    // Set a strict upper bound
+    /// @brief Set a fixed upper bound; nodes heavier than it are pruned.
     void FixMaxBound(Weight bound);
 
-    // Set a strict lower bound
+    /// @brief Set a fixed lower bound; nodes lighter than it are pruned.
     void FixMinBound(Weight bound);
 
-    // Search for the minimum value
+    /// @brief Search for the minimum value: each cover lowers the upper bound to its weight + epsilon.
     void TargetToMin();
 
-    // Search for the maximum value
+    /// @brief Search for the maximum value: each cover raises the lower bound to its weight - epsilon.
     void TargetToMax();
 
-    // Set the allowed deviation outside the interval
+    /// @brief Set the allowed deviation outside the interval (used by dynamic bounds).
     void SetEpsilon(Weight eps);
 
 private:

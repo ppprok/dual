@@ -1,11 +1,20 @@
+/// @file
+/// @brief `bit_mask`: operations on bit sets restricted to a mask.
+
 #pragma once
 
 #include "bit_chunk.h"
 
-// Mask applied to bit arrays when performing operations on them
+/// @brief Mask applied to bit arrays when performing operations on them.
+///
+/// Unless stated otherwise, every operation works on `bits & mask` without materialising it,
+/// e.g. `count(bits)` is the number of set bits of `bits` that are also set in the mask.
 struct bit_mask : bit_chunk {
+    /// @brief Use the bits of @p b (a view, not a copy) as the mask.
     inline bit_mask(bit_chunk b) : bit_chunk(b) {}
 
+    /// @brief Shrink `bits.end` to the last block that has a bit in common with the mask.
+    /// @note The blocks themselves are not changed; an empty mask makes @p bits empty.
     inline void trim(bit_chunk& bits) {
         assert(valid());
         assert(bits.valid());
@@ -35,6 +44,7 @@ struct bit_mask : bit_chunk {
         bits.end = bits.begin;
     }
 
+    /// @brief Check whether `bits & mask` is empty.
     inline bool none(bit_chunk const& bits) const {
         assert(valid());
         assert(bits.valid());
@@ -49,6 +59,7 @@ struct bit_mask : bit_chunk {
         return true;
     }
 
+    /// @brief Index of the highest bit of `bits & mask`, or -1 if it is empty.
     inline int find_last(bit_chunk const& bits) const {
         assert(valid());
         assert(bits.valid());
@@ -69,7 +80,8 @@ struct bit_mask : bit_chunk {
         return -1;
     }
 
-    // Compare the number of set bits after applying the mask
+    /// @brief Compare the number of set bits after applying the mask.
+    /// @return `true` if `count(r1) < count(r2)`.
     inline bool less_count(bit_chunk const& r1, bit_chunk const& r2) const {
         assert(valid());
         assert(r1.valid());
@@ -79,6 +91,7 @@ struct bit_mask : bit_chunk {
         return c2 && count(r1, c2) < c2;
     }
 
+    /// @brief `bit_chunk::operator<` applied to `r1 & mask` and `r2 & mask`.
     inline bool less_bits(bit_chunk const& r1, bit_chunk const& r2) const {
         assert(valid());
         assert(r1.valid());
@@ -108,6 +121,7 @@ struct bit_mask : bit_chunk {
         return false;
     }
 
+    /// @brief Check whether `r1 & mask == r2 & mask`.
     inline bool equal_bits(bit_chunk const& r1, bit_chunk const& r2) const {
         assert(valid());
         assert(r1.valid());
@@ -134,6 +148,10 @@ struct bit_mask : bit_chunk {
         return true;
     }
 
+    /// @brief Compare `b1 & mask` and `b2 & mask` by inclusion.
+    /// @return -1 if `b1 & mask` is a proper subset of `b2 & mask`, 1 if `b2 & mask` is a subset of
+    ///         `b1 & mask` (including equality), 0 if they are incomparable.
+    /// @note Unlike `bit_chunk::subset_cmp`, equal sets give 1.
     inline int subset_cmp(bit_chunk const& b1, bit_chunk const& b2) const {
         assert(valid());
         assert(b1.valid());
@@ -181,6 +199,7 @@ struct bit_mask : bit_chunk {
         return r;
     }
 
+    /// @brief Check whether the mask, @p b1 and @p b2 have a common bit.
     inline bool intersects(bit_chunk const& b1, bit_chunk const& b2) const {
         assert(valid());
         assert(b1.valid());
@@ -193,6 +212,7 @@ struct bit_mask : bit_chunk {
         return false;
     }
 
+    /// @brief Number of set bits of `bits & mask`.
     inline int count(bit_chunk const& bits) const {
         assert(valid());
         assert(bits.valid());
@@ -207,6 +227,8 @@ struct bit_mask : bit_chunk {
         return c;
     }
 
+    /// @brief Number of set bits of `bits & mask`, with early exit.
+    /// @return The exact count if it is at most @p maxc; otherwise some value greater than @p maxc.
     inline int count(bit_chunk const& bits, int maxc) const {
         assert(valid());
         assert(bits.valid());
@@ -223,10 +245,12 @@ struct bit_mask : bit_chunk {
         return c;
     }
 
+    /// @brief Check whether `bits & mask` is not empty.
     inline bool any(bit_chunk const& bits) const {
         return !none(bits);
     }
 
+    /// @brief Index of the lowest bit of `bits & mask` greater than @p k (`k >= -1`), or -1.
     inline int find_next(bit_chunk const& bits, int k) const {
         assert(valid());
         assert(bits.valid());
@@ -258,6 +282,7 @@ struct bit_mask : bit_chunk {
         return -1;
     }
 
+    /// @brief Index of the lowest bit of `bits & mask`, or -1 if it is empty.
     inline int find_first(bit_chunk const& bits) const {
         assert(valid());
         assert(bits.valid());
@@ -272,7 +297,8 @@ struct bit_mask : bit_chunk {
         return -1;
     }
 
-    // Find the first difference
+    /// @brief Find the first difference: the lowest bit of `mask ^ bits` (the mask itself is
+    ///        compared, not applied), or -1 if they are equal.
     inline int find_first_diff(bit_chunk const& bits) const {
         assert(valid());
         assert(bits.valid());
@@ -300,6 +326,7 @@ struct bit_mask : bit_chunk {
         return -1;
     }
 
+    /// @brief The lowest bit of `mask ^ bits` greater than @p k (`k >= -1`), or -1.
     inline int find_next_diff(bit_chunk const& bits, int k) const {
         assert(valid());
         assert(bits.valid());

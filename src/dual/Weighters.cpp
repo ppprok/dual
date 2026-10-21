@@ -164,7 +164,7 @@ Weight WeighterBase::GetDefaultWeight() {
     if (_weights.empty())
         return 0;
 
-    // ��������� ������� � ������ ��������� � �������� ���� �� ���������
+    // The last element of the list serves as the default weight
     return _weights.back();
 }
 

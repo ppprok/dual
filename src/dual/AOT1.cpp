@@ -5,7 +5,7 @@
 #include "BoolMatrixPreparation.h"
 #include "bit_mask.h"
 
-// ���������������� �� ����������� ���������
+// Initialize from the global state
 void AOT1::LocalState::Init(GlobalState& g) {
     int m = g._matrix.height();
     int n = g._matrix.width();
@@ -20,7 +20,7 @@ void AOT1::LocalState::Init(GlobalState& g) {
     _restCols = g._tempMatrix.get_row(row);
 }
 
-// �������� �������
+// Add a column
 AOT1::LocalState::AddResult AOT1::LocalState::AddItem(GlobalState& g, LocalState const& l, int i, int col) {
     _competing.clear();
     _uncovered.clear();
@@ -54,12 +54,12 @@ AOT1::LocalState::AddResult AOT1::LocalState::AddItem(GlobalState& g, LocalState
     return IsCover() ? Cover : Inner;
 }
 
-// ������� �������
+// Remove a column
 void AOT1::LocalState::RemCol(int j) {
     _restCols.set(j, 0);
 }
 
-// ����� ����������� ���������� ������
+// Find the minimal uncovered row
 bit_chunk AOT1::LocalState::GetMinUncovered(int mc /*= 0*/) const {
     bit_chunk row;
     int count = INT_MAX;
@@ -92,7 +92,7 @@ bit_chunk AOT1::LocalState::GetMinUncovered(int mc /*= 0*/) const {
     return row;
 }
 
-// ������� ������� �������
+// Remove zero columns
 bit_chunk AOT1::LocalState::CollectRestCols() {
     _restCols.clear();
 
@@ -102,7 +102,7 @@ bit_chunk AOT1::LocalState::CollectRestCols() {
     return _restCols;
 }
 
-// ������� ������ ������������ ������
+// Remove the covering rows (rows that are supersets of another row)
 void AOT1::LocalState::RemoveDependentRows() {
     BoolMatrixPreparation::RemoveDependentRows(_uncovered, _restCols);
 }

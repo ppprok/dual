@@ -1,6 +1,9 @@
+/// @file
+/// @brief Small math helpers.
+
 #pragma once
 
-// Square a value
+/// @brief Square a value.
 template<typename T>
 T sqr(T const& v) {
     return v * v;
