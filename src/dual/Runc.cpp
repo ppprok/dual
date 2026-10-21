@@ -3,6 +3,28 @@
 #include "DualizationBacktrackAlgorithmBase.h"
 #include <iostream>
 
+namespace {
+
+// Installs a temporary CoverCallback and restores the caller's one on scope exit
+class CoverCallbackGuard {
+public:
+    CoverCallbackGuard(DualizationBacktrackAlgorithmBase& algorithm, IDualizationCallback* callback) :
+            algorithm_(algorithm), saved_(algorithm.CoverCallback) {
+        algorithm_.CoverCallback = callback;
+    }
+    ~CoverCallbackGuard() {
+        algorithm_.CoverCallback = saved_;
+    }
+    CoverCallbackGuard(CoverCallbackGuard const&) = delete;
+    CoverCallbackGuard& operator=(CoverCallbackGuard const&) = delete;
+
+private:
+    DualizationBacktrackAlgorithmBase& algorithm_;
+    IDualizationCallback* saved_;
+};
+
+}  // namespace
+
 bool Runc::RuncLocalState::SetUncoveredSupportRows(int col, const marked_ranges& groups, const rows& support) {
 
     for (auto g : groups) {
@@ -206,7 +228,13 @@ Runc::RuncLocalState& Runc::RuncGlobalState::getLocalState(std::size_t state_num
 
 void Runc::RuncGlobalState::dualize() {
     startDualize();
-    doDualize();
+    try {
+        doDualize();
+    }
+    catch (...) {
+        resetDualize();
+        throw;
+    }
 }
 
 Runc::RuncGlobalState::RuncGlobalState(AlgorithmType type /*= AlgorithmType::RUNCM*/) : _type(type) {}
@@ -215,36 +243,70 @@ void Runc::RuncGlobalState::startDualize() {
     int n = _matrix.width();
     int m = _matrix.height();
     int q = std::min(m, n);
-    if (q <= 0)
-        return;
 
     _states.clear();
+    state_depth_ = 0;
+    resetCurrentNode(std::max(q, 0));
+
+    if (m <= 0) {
+        // No rows: the empty set is the only minimal cover
+        enumeration_ = Enumeration::EmptyCover;
+        return;
+    }
+
+    for (auto const& r : _matrix.get_rows()) {
+        if (!r.begin || r.find_first() < 0) {
+            // A zero row cannot be covered
+            enumeration_ = Enumeration::Finished;
+            return;
+        }
+    }
+
     _states.reserve(q + 1);
     auto& root = getLocalState(0);
     root.uncovered_.assign(_matrix.get_rows().begin(), _matrix.get_rows().end());
     root.CollectRestCols();
     root.setCollectedCols(root.collectCols(_type));
-    current_local_state_ = &root;
+    enumeration_ = Enumeration::Running;
+}
+
+void Runc::RuncGlobalState::resetDualize() {
+    _states.clear();
     state_depth_ = 0;
-    resetCurrentNode(q);
+    enumeration_ = Enumeration::NotStarted;
+}
+
+bool Runc::RuncGlobalState::isDualizeFinished() const {
+    return enumeration_ == Enumeration::Finished;
+}
+
+void Runc::RuncGlobalState::onMatrixChanged() {
+    resetDualize();
 }
 
 bool Runc::RuncGlobalState::doStep() {
 
-    if (! current_local_state_)
-        current_local_state_ = &getLocalState(state_depth_);
+    if (enumeration_ == Enumeration::EmptyCover) {
+        enumeration_ = Enumeration::Finished;
+        doCoverCallback();
+        return false;
+    }
 
-    int j = current_local_state_->getRestCols().find_last(current_local_state_->getCollectedCols());
+    if (enumeration_ != Enumeration::Running)
+        return false;
+
+    auto* current = &_states[state_depth_];
+    int j = current->getRestCols().find_last(current->getCollectedCols());
     if (j >= 0) {
-        current_local_state_->RemoveColumn(j);
+        current->RemoveColumn(j);
         if (addColumn(j)) {
             auto& child = getLocalState(state_depth_ + 1);
-            auto add_result = child.AddColumn(*current_local_state_, j);
+            current = &_states[state_depth_];  // getLocalState may have reallocated _states
+            auto add_result = child.AddColumn(*current, j);
             switch (add_result) {
                 case Runc::RuncLocalState::Inner:
                     ++state_depth_;
-                    current_local_state_ = &getLocalState(state_depth_);
-                    current_local_state_->setCollectedCols(current_local_state_->collectCols(_type));
+                    child.setCollectedCols(child.collectCols(_type));
                     return true;
                 case Runc::RuncLocalState::Cover:
                     doCoverCallback();
@@ -255,35 +317,50 @@ bool Runc::RuncGlobalState::doStep() {
         }
     } else if (state_depth_ > 0) {
         --state_depth_;
-        current_local_state_ = &getLocalState(state_depth_);
     }
     else{
+        enumeration_ = Enumeration::Finished;
         return false;
     }
     backtrack();
-    return ! _currentNode.stoped;
+    if (_currentNode.stoped) {
+        // A callback stopped the enumeration: treat it as finished
+        enumeration_ = Enumeration::Finished;
+        return false;
+    }
+    return true;
 }
 std::vector<Columns> Runc::RuncGlobalState::dualize(size_t max_count) {
-    if (! current_local_state_){
+    if (enumeration_ == Enumeration::NotStarted) {
         startDualize();
     }
 
     std::vector<Columns> result;
-    result.reserve(max_count);
+    result.reserve(std::min<size_t>(max_count, 1024));
     auto callback = dualization_callback([&result](DualizationNode& node){
         if (node.IsCover()){
             result.push_back(node.columns);
         }
     });
-    CoverCallback = callback.get();
-    while(result.size() < max_count){
-        if (! doStep())
-            break;
+    CoverCallbackGuard guard(*this, callback.get());
+    try {
+        while (result.size() < max_count) {
+            if (!doStep())
+                break;
+        }
+    }
+    catch (...) {
+        resetDualize();
+        throw;
     }
     return result;
 }
 size_t Runc::RuncGlobalState::dualize(uint32_t buffer_size, uint32_t* buffer) {
-    if (! current_local_state_){
+    size_t n = _matrix.width();
+    if (!buffer || buffer_size < n + 1)
+        return 0;
+
+    if (enumeration_ == Enumeration::NotStarted) {
         startDualize();
     }
 
@@ -302,11 +379,16 @@ size_t Runc::RuncGlobalState::dualize(uint32_t buffer_size, uint32_t* buffer) {
         buffer_size -= cover.size();
         ++count;
     });
-    CoverCallback = callback.get();
-    auto n = _matrix.width();
-    while(buffer_size >= n+1){
-        if (! doStep())
-            break;
+    CoverCallbackGuard guard(*this, callback.get());
+    try {
+        while (buffer_size >= n + 1) {
+            if (!doStep())
+                break;
+        }
+    }
+    catch (...) {
+        resetDualize();
+        throw;
     }
     return count;
 }

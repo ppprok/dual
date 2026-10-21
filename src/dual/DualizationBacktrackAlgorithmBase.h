@@ -146,7 +146,9 @@ public:
 
     DualizationBacktrackAlgorithmBase();
     void setMatrix(bit_matrix matrix);
+    // Mutable access counts as a matrix change (see onMatrixChanged)
     bit_matrix& get_matrix();
+    bit_matrix const& get_matrix() const;
     void loadMatrix(std::string const& filename);
     void setRestrictions(bit_matrix const& restrictions);
     void loadRestrictions(std::string const& filename);
@@ -159,4 +161,6 @@ protected:
     bool addColumn(int j);
     void backtrack();
     void resetCurrentNode(int n = 0);
+    // Called after the input matrix was replaced or handed out for modification
+    virtual void onMatrixChanged() {}
 };
