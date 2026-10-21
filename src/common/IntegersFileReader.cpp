@@ -1,4 +1,6 @@
 #include "IntegersFileReader.h"
+#include <algorithm>
+#include <climits>
 #include <stdexcept>
 
 bit_matrix IntegersFileReader::ReadBitMatrix() {
@@ -8,7 +10,8 @@ bit_matrix IntegersFileReader::ReadBitMatrix() {
         _lastChar = getc(_input.get());
         if (IsDigitChar(_lastChar)) {
             int j = ReadUnsignedInteger(_lastChar - '0');
-            _bm.set(i, j);
+            if (!_bm.set(i, j))
+                throw std::out_of_range("row or column index in the input file is too large");
         }
 
         if (_lastChar == '\n') {
@@ -29,9 +32,16 @@ IntegersFileReader::IntegersFileReader(std::string const& filename) {
 
 int IntegersFileReader::EstimateBitMatrixCapacity() const {
     int size = _bm.size();
-    long fsize = 0;
-    long pos = ftell(_input.get());
-    return size * (fsize / pos + 1);
+    FILE* f = _input.get();
+    long pos = ftell(f);
+    if (pos <= 0 || fseek(f, 0, SEEK_END) != 0)
+        return size;
+    long fsize = ftell(f);
+    if (fseek(f, pos, SEEK_SET) != 0)
+        throw std::runtime_error("cannot restore the input file position");
+    if (fsize <= pos)
+        return size;
+    return (int) std::min<long long>((long long) size * (fsize / pos + 1), INT_MAX);
 }
 
 void IntegersFileReader::OpenInputFile(std::string const& filename) {
@@ -56,7 +66,10 @@ int IntegersFileReader::ReadUnsignedInteger(int firstDigit) {
         _lastChar = getc(_input.get());
         if (!IsDigitChar(_lastChar))
             return v;
-        v = v * 10 + (_lastChar - '0');
+        int d = _lastChar - '0';
+        if (v > (INT_MAX - d) / 10)
+            throw std::out_of_range("integer in the input file is too large");
+        v = v * 10 + d;
     }
     return v;
 }

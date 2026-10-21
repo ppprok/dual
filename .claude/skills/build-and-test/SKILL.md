@@ -1,61 +1,63 @@
 ---
 name: build-and-test
-description: Сборка и тесты этого репо (CMake presets dev/release/asan, ctest, doctest, санитайзеры, проверка find_package). Триггеры — «собери», «прогони тесты», «запусти тест», «проверь под санитайзерами», «ASan», «почему не собирается», «проверь перед PR», «compile_commands», «clangd не видит».
+description: Building and testing this repo (CMake presets dev/release/asan, ctest, doctest, sanitizers, find_package check). Triggers — "build it", "run the tests", "run a test", "check under sanitizers", "ASan", "why doesn't it build", "check before the PR", "compile_commands", "clangd can't see it".
 ---
 
-# Сборка и тесты
+# Build and test
 
-Инструменты — `cmake`, `ninja`, `clang-format`, `clang-tidy`, `clangd` — стоят через `uv tool` в `~/.local/bin`.
-Нет какого-то — `uv tool install <name>`, не `apt`. Компилятор — g++ 11 (clang-компилятора нет).
-Внешних зависимостей нет (Boost и spdlog не нужны); doctest скачивается `FetchContent` при первом configure — нужна сеть.
+The tools — `cmake`, `ninja`, `clang-format`, `clang-tidy`, `clangd` — are installed via `uv tool` into `~/.local/bin`.
+If one is missing, use `uv tool install <name>`, not `apt`. The compiler is g++ 11 (there is no clang compiler).
+There are no external dependencies (Boost and spdlog are not needed); doctest is downloaded by `FetchContent` on the
+first configure, which needs network access.
 
-## Основной цикл
+## Main loop
 
 ```bash
 cmake --preset dev && cmake --build --preset dev && ctest --preset dev   # build/dev, Debug
-ctest --preset dev -R DualizeRUNC                                        # подмножество по regex
-ctest --preset dev --output-on-failure -R 'TestUtils\.read_bit_matrix'   # один тест с выводом
+ctest --preset dev -R DualizeRUNC                                        # subset by regex
+ctest --preset dev --output-on-failure -R 'TestUtils\.read_bit_matrix'   # one test with output
 ```
 
 Presets: `dev` (Debug), `release`, `asan` (RelWithDebInfo + ASan/UBSan, `DUAL_ENABLE_SANITIZERS=ON`).
-Каждый doctest-кейс — отдельный CTest-тест `TestDual.<case>` / `TestUtils.<case>`.
+Each doctest case is a separate CTest test `TestDual.<case>` / `TestUtils.<case>`.
 
-Вручную, с опциями doctest (`-tc`, `-s`, `-d`): **только из каталога тестов** — бинарники открывают
-`data/...` по относительному пути, данные туда копирует таргет `dual_test_data`:
+By hand, with doctest options (`-tc`, `-s`, `-d`): **only from the tests directory** — the binaries open
+`data/...` by relative path, and the `dual_test_data` target copies the data there:
 
 ```bash
 cd build/dev/src/tests && ./TestDual -tc="DualizeRUNCTest4" -s
 ```
 
-В git-worktree preset кладёт сборку в `<worktree>/build/<preset>` — у каждого worktree своя сборка,
-`build/` в `.gitignore`.
+In a git worktree the preset puts the build into `<worktree>/build/<preset>` — each worktree has its own build,
+and `build/` is in `.gitignore`.
 
-## Известное состояние (обновлять при исправлении)
+## Known state (update when fixed)
 
-- `TestUtils.load_CSV_and_create_columns` падает — давний дефект, разбирается в аудите #11.
-- Под `asan` падают тесты RUNC и IO `bit_matrix` (heap-buffer-overflow / use-after-free) — давние дефекты.
-- С `-Wall -Wextra` много предупреждений, поэтому `DUAL_WARNINGS_AS_ERRORS` выключен.
+- `ctest --preset dev` and `ctest --preset asan` pass fully, with no ASan/UBSan reports (#21 fixed the `chunk`
+  rebase, `blob::resize`, `bit_mask::subset_cmp`, `bit_chunk::get_last` and `bit_vector::zero` — they caused the
+  `load_CSV_and_create_columns`, RUNC and IO `bit_matrix` failures under `asan`).
+- `-Wall -Wextra` produces many warnings, so `DUAL_WARNINGS_AS_ERRORS` is off.
 
-Сравнивайте с этим списком: новое падение — ваше, старое — не чинить попутно, а упомянуть в PR.
+Compare against this list: a new failure is yours; an old one is not to be fixed along the way, but mentioned in the PR.
 
-## Перед PR
+## Before a PR
 
-1. `ctest --preset dev` — падает не больше, чем в списке выше.
-2. Трогали алгоритмы или bit-контейнеры — ещё `cmake --preset asan && cmake --build --preset asan && ctest --preset asan`
-   и сравнить число падений с `master`.
-3. `clang-format -i` на изменённые `.cpp/.h` (конфиг `.clang-format`; `legacy/` не форматировать).
-4. Меняли CMake-экспорт или публичные заголовки — проверить потребителя:
-   `cmake --install build/release --prefix /tmp/<scratch>/prefix`, затем мини-проект с
-   `find_package(dual REQUIRED)` + `target_link_libraries(app PRIVATE dual::dual)` и `-DCMAKE_PREFIX_PATH=<prefix>`.
-5. Добавили `.cpp/.h` — внесите в список исходников своего `CMakeLists.txt`, иначе файл не собирается
-   и clangd его не видит.
+1. `ctest --preset dev` — no more failures than in the list above.
+2. If you touched the algorithms or the bit containers — also `cmake --preset asan && cmake --build --preset asan && ctest --preset asan`
+   and compare the number of failures with `master`.
+3. `clang-format -i` on the changed `.cpp/.h` (config `.clang-format`; do not format `legacy/`).
+4. If you changed the CMake export or public headers — check a consumer:
+   `cmake --install build/release --prefix /tmp/<scratch>/prefix`, then a mini project with
+   `find_package(dual REQUIRED)` + `target_link_libraries(app PRIVATE dual::dual)` and `-DCMAKE_PREFIX_PATH=<prefix>`.
+5. If you added a `.cpp/.h` — add it to the source list of its `CMakeLists.txt`, otherwise the file is not built
+   and clangd does not see it.
 
-## Корректность алгоритмов
+## Algorithm correctness
 
-Ожидаемое число минимальных покрытий зашито в имя файла `src/tests/data/<rows>_<cols>_<count>.hg`.
-Варианты `OPT`, `RUNC`, `RUNCM` обязаны давать одно и то же множество покрытий — при правке алгоритма
-сравнивайте их между собой на случайных матрицах и с перебором на малых `n`.
+The expected number of minimal covers is encoded in the file name `src/tests/data/<rows>_<cols>_<count>.hg`.
+The `OPT`, `RUNC`, `RUNCM` variants must produce the same set of covers — when changing an algorithm,
+compare them with each other on random matrices and against brute force for small `n`.
 
 ## clangd
 
-`.clangd` указывает на `build/dev/compile_commands.json` — достаточно один раз `cmake --preset dev`.
+`.clangd` points at `build/dev/compile_commands.json` — running `cmake --preset dev` once is enough.
