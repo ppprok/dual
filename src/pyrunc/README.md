@@ -21,11 +21,13 @@ cmake --build --preset release --target InstallRuncLib
 
 - `RuncDualizer()`: creates a dualizer (`init_dualizer`); `__del__` releases it.
 - `add_input_row(columns_with_ones)`: appends the next matrix row given by the indices of its ones.
-  Negative indices are dropped; a row with no ones is skipped and the call returns `False`.
+  An index outside `[0, 2**31 - 1)` raises `ValueError`; an empty row is a zero row, and then the
+  matrix has no covers.
 - `enumerate_covers(buffer_count=128)`: returns the next portion of minimal covers as a list of
   numpy `int32` arrays of column indices (in search order, not sorted). The buffer has room for
   `buffer_count` covers of the maximal size. Call it repeatedly; an empty list means the
-  enumeration is finished. Add all rows before the first call.
+  enumeration is finished. Adding a row restarts the enumeration. A C ABI error raises
+  `RuntimeError`; a too large `buffer_count` raises `ValueError`.
 
 ```python
 import sys

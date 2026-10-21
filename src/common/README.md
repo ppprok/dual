@@ -13,7 +13,7 @@ Only the files listed in [`CMakeLists.txt`](CMakeLists.txt) are built and instal
 | `bit_chunk.h` | `bit_chunk`: a non-owning view of a bit string stored in `unsigned int` blocks, with set/get, find, count and bitwise `assign_*` operations; `bit_chunks` is a vector of them. |
 | `bit_vector.h` | `bit_vector`: a `bit_chunk` that owns its storage. |
 | `bit_mask.h` | `bit_mask`: a `bit_chunk` used as a mask on other bit strings (`trim`, masked counts and searches). |
-| `bit_matrix.h` | `bit_matrix`: rows as `bit_chunk`s over one contiguous block buffer. Move-only. `set(i, j)` grows the matrix, but only the last row can grow wider: setting a bit in an earlier row returns `false` when that row has no room, so fill rows in increasing order. |
+| `bit_matrix.h` | `bit_matrix`: rows as `bit_chunk`s over one contiguous block buffer. Move-only. `set(i, j)` grows the matrix in any order (missing rows are added as zero rows, rows are re-laid out when a column does not fit); it returns `false` only for negative or `INT_MAX` indices and throws `std::length_error` when the size does not fit into `int`. |
 | `bits.h`, `bits.cpp` | `bits32` / `bits64` words and byte lookup tables for bit counts and lowest/highest set bits; used by `bit_chunk` and `RuncFixed`. |
 | `blob.h`, `raw_vector.h` | Containers that do not run element constructors. |
 

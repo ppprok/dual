@@ -27,33 +27,35 @@ listed in [`CMakeLists.txt`](CMakeLists.txt) are built. Two targets:
 
 | File | Contents |
 |---|---|
-| `Runc.h/.cpp` | `Runc::RuncGlobalState`, the RUNC family; `Runc::AlgorithmType` = `OPT`, `RUNC`, `RUNCM` (default). Iterative: a stack of `RuncLocalState` (uncovered rows, support rows, remaining columns), `startDualize()` + `doStep()`. Public entry points: `dualize()` runs to the end reporting through the callbacks; `dualize(max_count)` returns the next at most `max_count` covers as `std::vector<Columns>`; `dualize(buffer_size, buffer)` writes `[size, col...]` records into a `uint32_t` buffer while at least `width + 1` entries are free and returns how many covers it wrote. Repeated calls of the last two resume the enumeration; an empty result / 0 means it is finished. Tested. |
-| `RuncFixed.h/.cpp` | `RuncFixed<Row>`: recursive RUNC-M for at most 32 / 64 columns (`Row` = `bits32` / `bits64`), plus `DualizeIntervals`; helpers `RuncFixedDualize<T>()`. Only `RuncFixedDualize` is explicitly instantiated in the library, and the header defines it inline, so a caller has to declare `extern template ... RuncFixedDualize<bits64>(...)` to link. Its tests (`../tests/DualizationLib.Test/RuncFixedTests.cpp`) are not built. |
-| `AOT1.h/.cpp` | `AOT1::GlobalState`, variants `AO1`, `AO2`, `AO1K`, `AO2K`, `AO1M` (default), `AO2M`; entry point `Dualize()`. Not tested. The class does not override the base's pure virtual `dualize()`, so it is abstract: derive from it to instantiate. |
-| `PUNC.h/.cpp` | `PUNC::GlobalState`: enumeration with row/column order set by weights (`SetRowsOrder`, `SetColsOrder`); entry point `Dualize()`. Not tested, abstract for the same reason as `AOT1`. |
-
-A quick run of `AOT1` and `PUNC` on the test matrices on `master` gave cover counts that differ
-from the expected ones for some `AOT1` variants, `PUNC` crashed on `15_20_275.hg` and `AO1M` on
-`10_25_480.hg`; treat them as experimental.
+| `Runc.h/.cpp` | `Runc::RuncGlobalState`, the RUNC family; `Runc::AlgorithmType` = `OPT`, `RUNC`, `RUNCM` (default). Iterative: a stack of `RuncLocalState` (uncovered rows, support rows, remaining columns), `startDualize()` + `doStep()`. Public entry points: `dualize()` runs to the end reporting through the callbacks; `dualize(max_count)` returns the next at most `max_count` covers as `std::vector<Columns>`; `dualize(buffer_size, buffer)` writes `[size, col...]` records into a `uint32_t` buffer while at least `width + 1` entries are free and returns how many covers it wrote. Repeated calls of the last two resume the enumeration; `isDualizeFinished()` tells a finished enumeration from a too small buffer, `resetDualize()` restarts it, and changing the matrix resets it. An empty matrix has one (empty) cover, a zero row none; a callback that stops the search finishes the enumeration. Tested. |
+| `RuncFixed.h/.cpp` | `RuncFixed<Row>`: recursive RUNC-M for at most 32 / 64 columns (`Row` = `bits32` / `bits64`), plus `DualizeIntervals`; helpers `RuncFixedDualize<T>()`. `RuncFixed<bits32>` and `RuncFixed<bits64>` are explicitly instantiated; `RuncFixedDualize<T>()` still needs an `extern template` declaration in the caller to link (#34). Tested by `TestRuncFixedO2`. |
+| `AOT1.h/.cpp` | `AOT1::GlobalState`, variants `AO1`, `AO2`, `AO1K`, `AO2K`, `AO1M` (default), `AO2M`; entry point `dualize()`. Tested against RUNCM. |
+| `PUNC.h/.cpp` | `PUNC::GlobalState`: enumeration with row/column order set by weights (`SetRowsOrder`, `SetColsOrder`); entry point `dualize()`. Tested against RUNCM. |
 
 ## C ABI
 
 `RuncExecutor.h/.cpp`, built into `librunc.so`:
 
 ```c
+#define RUNC_OK 0
+#define RUNC_ERROR_INVALID_ARGUMENT (-1)
+#define RUNC_ERROR_BUFFER_TOO_SMALL (-2)
+#define RUNC_ERROR_INTERNAL (-3)
+
 typedef void* DualizerHandler;
-DualizerHandler init_dualizer();                     // new RuncGlobalState (RUNCM)
-void release_dualizer(DualizerHandler dualizer);
-void set_input_row(DualizerHandler dualizer, int32_t row_num, int32_t ones_num, int32_t* ones);
-uint32_t enumerate_covers(DualizerHandler dualizer, uint32_t buffer_size, uint32_t* covers);
+DualizerHandler init_dualizer(void);                 // new RuncGlobalState (RUNCM); NULL if out of memory
+void release_dualizer(DualizerHandler dualizer);     // NULL is ignored
+int32_t set_input_row(DualizerHandler dualizer, int32_t row_num, int32_t ones_num, const int32_t* ones);
+int32_t enumerate_covers(DualizerHandler dualizer, uint32_t buffer_size, uint32_t* covers);
 ```
 
-`set_input_row` sets the ones of row `row_num`; pass rows in increasing order (see `bit_matrix` in
-[`../common`](../common/README.md)) and before the first `enumerate_covers`. `enumerate_covers`
-calls `dualize(buffer_size, covers)`: it fills the buffer with `[size, col...]` records and returns
-the number of covers written; repeated calls continue the enumeration, and 0 means it is finished
-(or that the buffer has fewer than `width + 1` entries). The algorithm is always RUNCM. Errors are
-not reported.
+`set_input_row` adds the ones of row `row_num` (0-based); rows may come in any order, rows never
+given are zero rows, and changing the input restarts the enumeration. `enumerate_covers` fills
+the buffer with `[size, col...]` records and returns how many covers it wrote; repeated calls
+continue the enumeration and 0 means it is finished. Errors are negative codes: an invalid
+argument, a buffer with fewer than `width + 1` entries (nothing is written, the enumeration does
+not advance) or an internal error. No exception crosses the ABI. An empty matrix has one empty
+cover, a matrix with a zero row has none. The full contract is in `RuncExecutor.h`.
 
 ## Not built
 

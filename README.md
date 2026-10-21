@@ -47,7 +47,8 @@ All of them are in [`src/dual`](src/dual/README.md).
   weight (`Weighters.h`, `Pruning.h`). `dualization_callback(lambda)` wraps a lambda.
 - **C ABI.** The shared library `librunc.so` exports `init_dualizer`, `set_input_row`,
   `enumerate_covers` and `release_dualizer` as `extern "C"` functions over RUNCM, used from Python
-  through `ctypes`.
+  through `ctypes`. Rows may be given in any order; errors are reported as negative return codes
+  (`RUNC_ERROR_*` in `RuncExecutor.h`) and no exception crosses the ABI.
 
 ## Repository layout
 
@@ -91,10 +92,8 @@ cmake --build build -j
 ctest --test-dir build
 ```
 
-Known failures on `master`: `TestUtils.load_CSV_and_create_columns` fails in every configuration,
-and under the `asan` preset the RUNC tests and several `TestUtils` IO and graph tests report
-heap-buffer-overflow / use-after-free. These are pre-existing defects. More on running single tests
-in [`src/tests/README.md`](src/tests/README.md).
+All tests pass under the `dev`, `release` and `asan` presets. More on running single tests in
+[`src/tests/README.md`](src/tests/README.md).
 
 CMake options: `DUAL_BUILD_TESTS` (ON when this is the top-level project), `DUAL_INSTALL` (ON when
 top-level), `DUAL_ENABLE_SANITIZERS` (OFF), `DUAL_WARNINGS_AS_ERRORS` (OFF; the code still has many
@@ -130,7 +129,7 @@ target_link_libraries(app PRIVATE dual::dual)
 #include "Counters.h"
 #include "Runc.h"
 
-// The 3x3 example matrix. bit_matrix is move-only; set bits row by row, in increasing row order.
+// The 3x3 example matrix. bit_matrix is move-only; set() grows it as needed, in any order.
 //   1 1 0
 //   0 1 1
 //   1 0 1
@@ -177,10 +176,10 @@ cmake --build build
 Output:
 
 ```
-0 1
-0 2
---
 1 2
+1 0
+--
+0 2
 --
 covers: 3
 ```
@@ -247,8 +246,6 @@ MIT, see [`LICENSE`](LICENSE). Third-party code under `legacy/3rd-party/` keeps 
 ## Status
 
 This is research code being turned into a reusable library (epic #7). The RUNC family
-(`Runc::RuncGlobalState`) and the C ABI are the maintained, tested part. `AOT1`, `PUNC` and
-`RuncFixed` are built but have no tests in the current build; a quick run on `master` showed that
-some `AOT1` variants report cover counts different from the expected ones and that `AOT1` and
-`PUNC` can crash, so treat them as experimental. The API, the header layout and the C ABI
-are expected to change.
+(`Runc::RuncGlobalState`) and the C ABI are the main maintained part. `AOT1`, `PUNC` and
+`RuncFixed` are tested against RUNCM on the test matrices and on random ones, but are less used.
+The API and the header layout are expected to change (#12).

@@ -8,8 +8,8 @@ and in all presets. Each doctest case is registered as a separate CTest test nam
 | Path | Contents |
 |---|---|
 | `CMakeLists.txt` | Fetches doctest, defines `dual_add_test()` and the `dual_test_data` target that copies `data/` next to the test executables. |
-| `DualizationLib.Test/` | `TestDual` (links `dual::dual`). Built from `main.cpp` and `RUNCTests.cpp` only: `OPT`, `RUNC` and `RUNCM` on `data/*.hg` must find the number of covers given in the file name; enumeration by portions (`dualize(100)`) and into a buffer must find all 12226 covers of `15_35_12226.hg`. `RuncFixedTests.cpp` is **not built** (it reads `../ao.test/datasets/`, which does not exist). |
-| `UtilsLib.Test/` | `TestUtils` (links `dual::common`): bit operations, `bit_chunk`, graph algorithms, integer file IO, `Registrator`, CSV loading. |
+| `DualizationLib.Test/` | `TestDual` (links `dual::dual`): `RUNCTests.cpp` (`OPT`, `RUNC` and `RUNCM` on `data/*.hg` find the number of covers given in the file name; portions and buffers find all covers), `RuncApiTests.cpp` (resumable API and C ABI contract; `RuncExecutor.cpp` is compiled in), `RuncDifferentialTests.cpp` (RUNC variants vs brute force on random matrices, including empty matrices and zero rows), `AOT1PUNCTests.cpp` (all `AOT1` variants and `PUNC` vs RUNCM). `TestRuncFixedO2`: `RuncFixedO2Tests.cpp` with its own `-O2` copy of `RuncFixed.cpp`, linked against `dual::common` only, to check the explicit instantiations. |
+| `UtilsLib.Test/` | `TestUtils` (links `dual::common`): bit operations, `bit_chunk`, container memory regressions (`ContainerMemoryTests.cpp`), input matrix reading and `bit_matrix` growth (`InputMatrixTests.cpp`), graph algorithms, integer file IO, `Registrator`, CSV loading. |
 | `data/` | Test inputs: `rows_cols_count.hg` matrices, `6_6_6.hg`, `integers.txt`, `iris.txt`, `winequality-red.csv`, `write_bm_test.hg`. The `*.json`, `*.info` and poset `*.csv` files are inputs of the poset tests in `legacy/` and are not used by the built tests. |
 
 ## Run
@@ -31,14 +31,9 @@ cd build/dev/src/tests
 ./TestUtils -ltc               # list test cases
 ```
 
-## Known failures on `master`
+## Expected state
 
-- `TestUtils.load_CSV_and_create_columns` fails in every configuration.
-- Under the `asan` preset (`cmake --preset asan && cmake --build --preset asan && ctest --preset asan`)
-  all `TestDual` cases and `TestUtils.read_bit_matrix`, `TestUtils.write_bit_matrix`,
-  `TestUtils.TopologicalOrderNotAcyclicTest` report heap-buffer-overflow / use-after-free.
-
-These are pre-existing defects; a new failure is a regression.
+All tests pass under the `dev`, `release` and `asan` presets (no ASan/UBSan reports); any failure is a regression.
 
 ## Adding a test
 
