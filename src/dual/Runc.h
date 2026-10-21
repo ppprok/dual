@@ -111,6 +111,9 @@ public:
 // - setMatrix(), loadMatrix() and the non-const get_matrix() reset the enumeration: the next
 //   portion starts from the first cover of the (new) matrix. So does resetDualize().
 // - If a callback throws, the exception propagates and the enumeration is reset.
+// - If a callback stops the node (DualizationNode::stoped, e.g. CoverCollector::MaxCount), the
+//   enumeration is finished: isDualizeFinished() is true, further portions return nothing, and
+//   resetDualize() (or dualize()) starts it again from the first cover.
 // - The object is neither copyable nor movable; one object must not be used from several threads
 //   at once.
 class RuncGlobalState : public DualizationBacktrackAlgorithmBase {

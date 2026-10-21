@@ -323,7 +323,12 @@ bool Runc::RuncGlobalState::doStep() {
         return false;
     }
     backtrack();
-    return ! _currentNode.stoped;
+    if (_currentNode.stoped) {
+        // A callback stopped the enumeration: treat it as finished
+        enumeration_ = Enumeration::Finished;
+        return false;
+    }
+    return true;
 }
 std::vector<Columns> Runc::RuncGlobalState::dualize(size_t max_count) {
     if (enumeration_ == Enumeration::NotStarted) {
