@@ -22,6 +22,7 @@ option(DUAL_BUILD_PYTHON "Build Python bindings (placeholder, see #13; librunc.s
 option(DUAL_ENABLE_SANITIZERS "Build own targets with AddressSanitizer and UndefinedBehaviorSanitizer" OFF)
 option(DUAL_WARNINGS_AS_ERRORS "Treat compiler warnings as errors for own targets" OFF)
 option(DUAL_INSTALL "Generate install rules and the dualConfig.cmake package" ${DUAL_IS_TOP_LEVEL})
+option(DUAL_BUILD_DOCS "Add the dual_docs target that builds the API documentation with Doxygen" OFF)
 
 if(DUAL_IS_TOP_LEVEL)
     if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
@@ -47,4 +48,8 @@ endif()
 
 if(DUAL_INSTALL)
     include(DualInstall)
+endif()
+
+if(DUAL_BUILD_DOCS)
+    include(DualDocs)
 endif()

@@ -21,7 +21,7 @@ cmake -S . -B build && cmake --build build -j && ctest --test-dir build
 ```
 
 - Test executables live in `<build>/src/tests` and run from there: they open `data/...` by relative path, and the `dual_test_data` target copies `src/tests/data/` next to them. Running by hand: `cd build/dev/src/tests && ./TestDual -tc="DualizeRUNC*"`.
-- Options: `DUAL_BUILD_TESTS` (ON when top-level), `DUAL_ENABLE_SANITIZERS` (ASan+UBSan, used by the `asan` preset), `DUAL_WARNINGS_AS_ERRORS` (OFF; the code still has many `-Wall -Wextra` warnings), `DUAL_INSTALL` (ON when top-level), `DUAL_BUILD_PYTHON` (placeholder until #13).
+- Options: `DUAL_BUILD_TESTS` (ON when top-level), `DUAL_ENABLE_SANITIZERS` (ASan+UBSan, used by the `asan` preset), `DUAL_WARNINGS_AS_ERRORS` (OFF; the code still has many `-Wall -Wextra` warnings), `DUAL_INSTALL` (ON when top-level), `DUAL_BUILD_PYTHON` (placeholder until #13), `DUAL_BUILD_DOCS` (OFF; adds target `dual_docs`, which runs Doxygen with `docs/Doxyfile` into `<build>/docs/html`).
 - Targets: `dual::common` (static, file `libdual_common.a`), `dual::dual` (static, RUNC and friends), `dual::runc` (shared `librunc.so`, C ABI). Own targets get flags via `dual_target_options()` in `cmake/DualTargetOptions.cmake`; no global `include_directories`.
 - Install / package: `cmake --install build --prefix <dir>` installs libs, flat headers under `include/dual/` and `lib/cmake/dual/dualConfig.cmake`; consumers use `find_package(dual)` + `target_link_libraries(app PRIVATE dual::dual)` and `#include "Runc.h"`.
 - clangd: `compile_commands.json` is generated in every build dir; `.clangd` points at `build/dev`, so configure the `dev` preset once.
