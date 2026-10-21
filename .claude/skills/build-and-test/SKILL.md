@@ -33,8 +33,9 @@ and `build/` is in `.gitignore`.
 
 ## Known state (update when fixed)
 
-- `TestUtils.load_CSV_and_create_columns` fails — a long-standing defect, investigated in audit #11.
-- Under `asan` the RUNC and IO `bit_matrix` tests fail (heap-buffer-overflow / use-after-free) — long-standing defects.
+- `ctest --preset dev` and `ctest --preset asan` pass fully, with no ASan/UBSan reports (#21 fixed the `chunk`
+  rebase, `blob::resize`, `bit_mask::subset_cmp`, `bit_chunk::get_last` and `bit_vector::zero` — they caused the
+  `load_CSV_and_create_columns`, RUNC and IO `bit_matrix` failures under `asan`).
 - `-Wall -Wextra` produces many warnings, so `DUAL_WARNINGS_AS_ERRORS` is off.
 
 Compare against this list: a new failure is yours; an old one is not to be fixed along the way, but mentioned in the PR.

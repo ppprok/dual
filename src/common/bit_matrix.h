@@ -1,5 +1,9 @@
 #pragma once
 
+#include <algorithm>
+#include <climits>
+#include <stdexcept>
+
 #include "bit_chunk.h"
 #include "blob.h"
 #include "containers.h"
@@ -31,14 +35,17 @@ public:
 
     // Number of blocks in use
     int size() const {
+        return (int) size_for_width(_n);
+    }
+
+    // Number of blocks in use if the matrix had n columns
+    long long size_for_width(int n) const {
         if (_rows.empty())
             return 0;
 
-        auto p = _rows.back().begin + bit_chunk::block_for_bits(_n);
-        if (p < _rows.back().end)
-            p = _rows.back().end;
-
-        return p - _data.begin();
+        auto const& last = _rows.back();
+        long long begin = last.begin - _data.begin();
+        return std::max(begin + bit_chunk::block_for_bits(n), (long long) (last.end - _data.begin()));
     }
 
     // Number of allocated blocks
@@ -63,8 +70,9 @@ public:
         add_rows(m, n);
     }
 
-    // Reserve the required number of blocks
+    // Reserve the required number of blocks. Never shrinks the buffer below the blocks used by the rows
     void reserve(int blocks) {
+        blocks = std::max(blocks, size());
         if (_data.size() >= blocks)
             return;
 
@@ -82,7 +90,7 @@ public:
     // Reserve enough blocks for the given size
     void reserve(int m, int n) {
         _rows.reserve(m);
-        reserve(m * bit_chunk::block_for_bits(n));
+        reserve(checked_blocks((long long) m * bit_chunk::block_for_bits(n)));
     }
 
     // Set or clear the bit in row i and column j
@@ -94,26 +102,27 @@ public:
         return true;
     }
 
-    // Set the bit in row i and column j
+    // Set the bit in row i and column j. Rows and columns may come in any order: missing rows are added
+    // as zero rows and rows are re-laid out when a column does not fit. Returns false and changes nothing
+    // when i or j is negative or equal to INT_MAX. Throws std::length_error when the matrix would need more
+    // blocks than fit into int
     bool set(int i, int j) {
-        if (i < 0 || j < 0)
+        if (i < 0 || j < 0 || i == INT_MAX || j == INT_MAX)
             return false;
 
         int m = height();
-        if (m == 0 || i == m - 1) {
+        if (i == m - 1) {
             add_bit(j);
             return true;
         }
 
         if (i >= m) {
-            if (_n <= j)
-                _n = j + 1;
-            add_rows(i + 1 - m, _n);
+            add_rows(i + 1 - m, std::max(_n, j + 1));
         } else {
-            // Check whether the bit can be inserted in an intermediate row
+            // An intermediate row has no room past its stride: re-lay out the rows with a larger one
             int b = bit_chunk::block_for_bits(j + 1);
             if (_rows[i].begin + b > _rows[i + 1].begin)
-                return false;
+                restride(b);
             if (_n <= j)
                 _n = j + 1;
         }
@@ -122,6 +131,39 @@ public:
         return true;
     }
 
+private:
+    // Convert a block count computed in 64 bits to int, the size type of the containers
+    static int checked_blocks(long long blocks) {
+        if (blocks > INT_MAX)
+            throw std::length_error("bit_matrix: too many blocks");
+        return (int) blocks;
+    }
+
+    // Copy the rows into a new buffer where every row but the last one has a stride of at least b blocks.
+    // The stride at least doubles, so setting bits in any order costs amortized linear time.
+    void restride(int b) {
+        int m = height();
+        assert(m > 0);
+        long long stride = bit_chunk::block_for_bits(_n);
+        for (int t = 0; t + 1 < m; ++t)
+            stride = std::max(stride, 2 * (long long) (_rows[t + 1].begin - _rows[t].begin));
+        stride = std::max(stride, (long long) b);
+
+        long long last = std::max(stride, (long long) _rows.back().size());
+        blob<typename bit_chunk::Block> data(checked_blocks((m - 1) * stride + last));
+        std::fill(data.begin(), data.end(), 0);
+
+        auto p = data.begin();
+        for (auto& r : _rows) {
+            std::copy(r.begin, r.end, p);
+            r.end = p + r.size();
+            r.begin = p;
+            p += stride;
+        }
+        _data = std::move(data);
+    }
+
+public:
     // Clear a bit
     void reset(int i, int j) {
         if (j >= 0 && inside(_rows, i))
@@ -156,21 +198,23 @@ public:
         return _rows[i];
     }
 
-    // Append m zero rows with n columns
+    // Append m zero rows with n columns. Throws std::length_error and changes nothing when the rows would
+    // need more blocks than fit into int
     void add_rows(int m, int n) {
         if (m <= 0)
             return;
 
-        if (_n < n)
-            _n = n;
+        n = std::max(_n, n);
+        int bn = bit_chunk::block_for_bits(n);
+        long long s = (long long) m * bn;
+        long long cs = size_for_width(n);
+        if (capacity() - cs < s) {
+            checked_blocks(cs + s);
+            reserve((int) std::min<long long>(cs * 5LL / 4 + s, INT_MAX));
+        }
 
-        int bn = bit_chunk::block_for_bits(_n);
-        int s = m * bn;
-        int cs = size();
-        if (capacity() - cs < s)
-            reserve(cs * 5 / 4 + s);
-
-        auto p = _data.begin() + size();
+        _n = n;
+        auto p = _data.begin() + cs;
 
         _rows.reserve(_rows.size() + m);
         for (int t = 0; t < m; ++t, p += bn) {
@@ -183,13 +227,15 @@ public:
         if (_rows.empty()) {
             add_rows(1, j + 1);
         } else {
-            if (_n <= j)
-                _n = j + 1;
-
             // make sure the buffer has enough memory allocated
             int b = bit_chunk::block_for_bits(j + 1);
-            if (_rows.back().begin + b > _data.end())
-                reserve(_data.size() * 5 / 4 + b);
+            if (_rows.back().begin + b > _data.end()) {
+                long long need = checked_blocks((_rows.back().begin - _data.begin()) + (long long) b);
+                reserve((int) std::min<long long>(std::max(need, _data.size() * 5LL / 4 + b), INT_MAX));
+            }
+
+            if (_n <= j)
+                _n = j + 1;
         }
 
         _rows.back().set(j);

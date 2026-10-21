@@ -1,4 +1,6 @@
 #pragma once
+#include <random>
+
 #include "CoverCollector.h"
 #include "DualizationBacktrackAlgorithmBase.h"
 #include "Pruning.h"
@@ -40,6 +42,9 @@ struct MostCoverCollectorOptions {
     // greater than zero --- keep the lightest covers, 0 --- keep random ones)
     int TrimOrder;
 
+    // Seed of the random order, applied on the first truncation
+    unsigned Seed;
+
     // Stop after the given number of covers
     //int StopAfter;
 
@@ -52,6 +57,7 @@ struct MostCoverCollectorOptions {
         TrimSize = trimSize;
         TrimOrder = trimOrder;
         RandomShuffle = randomShuffle;
+        Seed = std::mt19937::default_seed;
         //StopAfter = -1;
     }
 };
@@ -60,6 +66,10 @@ struct MostCoverCollectorOptions {
 class MostCoverCollector : public CoverCollector {
 
     int _counter;
+
+    // Random order engine, seeded from Options.Seed on the first truncation
+    std::mt19937 _random;
+    bool _seeded = false;
 
 public:
     // Truncation options
