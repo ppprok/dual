@@ -215,8 +215,16 @@ void Runc::RuncGlobalState::startDualize() {
     int n = _matrix.width();
     int m = _matrix.height();
     int q = std::min(m, n);
-    if (q <= 0)
+    trivial_ = q <= 0;
+    if (trivial_) {
+        // The dual of the empty hypergraph is {empty set}; with a zero row there are no covers
+        trivial_cover_pending_ = m == 0;
+        _states.clear();
+        current_local_state_ = nullptr;
+        state_depth_ = 0;
+        resetCurrentNode(n);
         return;
+    }
 
     _states.clear();
     _states.reserve(q + 1);
@@ -230,6 +238,13 @@ void Runc::RuncGlobalState::startDualize() {
 }
 
 bool Runc::RuncGlobalState::doStep() {
+    if (trivial_) {
+        if (trivial_cover_pending_) {
+            trivial_cover_pending_ = false;
+            doCoverCallback();
+        }
+        return false;
+    }
 
     if (! current_local_state_)
         current_local_state_ = &getLocalState(state_depth_);
@@ -264,7 +279,7 @@ bool Runc::RuncGlobalState::doStep() {
     return ! _currentNode.stoped;
 }
 std::vector<Columns> Runc::RuncGlobalState::dualize(size_t max_count) {
-    if (! current_local_state_){
+    if (!current_local_state_ && !trivial_) {
         startDualize();
     }
 
@@ -283,7 +298,7 @@ std::vector<Columns> Runc::RuncGlobalState::dualize(size_t max_count) {
     return result;
 }
 size_t Runc::RuncGlobalState::dualize(uint32_t buffer_size, uint32_t* buffer) {
-    if (! current_local_state_){
+    if (!current_local_state_ && !trivial_) {
         startDualize();
     }
 

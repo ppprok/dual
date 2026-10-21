@@ -103,6 +103,9 @@ private:
     AlgorithmType _type;
     size_t state_depth_ = 0;
     RuncLocalState* current_local_state_ = nullptr;
+    // No rows or no columns: there is no search tree, only the empty cover of the empty matrix
+    bool trivial_ = false;
+    bool trivial_cover_pending_ = false;
 
 public:
     RuncGlobalState(AlgorithmType type = AlgorithmType::RUNCM);

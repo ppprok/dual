@@ -244,10 +244,19 @@ void AOT1::GlobalState::dualize() {
     int m = _matrix.height();
     int q = std::min(m, n);
 
-    if (q <= 0)
+    if (m == 0) {
+        // The dual of the empty hypergraph is {empty set}, as in PUNC and RUNC
+        resetCurrentNode(n);
+        doCoverCallback();
+        return;
+    }
+
+    // Some row is zero, so there are no covers
+    if (n == 0)
         return;
 
-    // DoDualize(s) runs for s <= q and requests state s + 1, so up to q + 2 states are needed.
+    // DoDualize(s) runs for s <= q and requests state s + 1, so up to q + 2 states are needed
+    // (q + 1 is reached only when the matrix has a zero row and n < m).
     // States are reached through pointers kept across recursion, so _states must not reallocate,
     // and their _restCols point into _tempMatrix, so all its rows are allocated here at once
     // (zero() also drops the rows left by a previous run).
