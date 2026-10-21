@@ -86,9 +86,9 @@ public:
             n = block_for_bits(n);
             if (_capacity < n) {
                 if (_capacity > 0)
-                    bit_chunk::begin = bit_chunk::end = (unsigned int*) realloc(begin, n);
+                    bit_chunk::begin = bit_chunk::end = (unsigned int*) realloc(begin, n * sizeof(Block));
                 else
-                    bit_chunk::begin = bit_chunk::end = (unsigned int*) malloc(n);
+                    bit_chunk::begin = bit_chunk::end = (unsigned int*) malloc(n * sizeof(Block));
                 _capacity = n;
             } else {
                 bit_chunk::end = bit_chunk::begin;
