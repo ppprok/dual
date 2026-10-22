@@ -205,7 +205,7 @@ struct bit_mask : bit_chunk {
         assert(b1.valid());
         assert(b2.valid());
 
-        for (auto d = begin, e1 = b1.begin, e2 = b2.begin; d != end && e1 != b1.end && e1 != b2.end; ++d, ++e1, ++e2) {
+        for (auto d = begin, e1 = b1.begin, e2 = b2.begin; d != end && e1 != b1.end && e2 != b2.end; ++d, ++e1, ++e2) {
             if (*d & *e1 & *e2)
                 return true;
         }
