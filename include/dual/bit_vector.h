@@ -3,7 +3,8 @@
 
 #pragma once
 
-#include <memory.h>
+#include <cstdlib>
+#include <new>
 
 #include <dual/bit_chunk.h>
 
@@ -21,7 +22,7 @@ private:
 
     inline void free() {
         if (_capacity > 0 && begin)
-            ::free(begin);
+            std::free(begin);
 
         _capacity = 0;
         begin = end = nullptr;
@@ -73,10 +74,14 @@ public:
     }
 
     /// @brief Empty (all-zero) vector with capacity for @p n bits; no memory is allocated if `n <= 0`.
+    /// @throws std::bad_alloc If the memory cannot be allocated.
     inline bit_vector(int n) {
         if (n > 0) {
+            auto* p = static_cast<Block*>(std::calloc(block_for_bits(n), sizeof(Block)));
+            if (!p)
+                throw std::bad_alloc();
             _capacity = block_for_bits(n);
-            bit_chunk::begin = bit_chunk::end = (Block*) calloc(_capacity, sizeof(Block));
+            bit_chunk::begin = bit_chunk::end = p;
         } else {
             _capacity = 0;
         }
@@ -98,14 +103,18 @@ public:
     ///
     /// Grows the capacity to at least `block_for_bits(n)` blocks if needed (existing bits are
     /// discarded) and makes the vector empty, i.e. all bits zero.
+    /// @throws std::bad_alloc If the memory cannot be allocated; the vector is unchanged then.
     void zero(int n) {
         if (n > 0) {
             n = block_for_bits(n);
             if (_capacity < n) {
-                if (_capacity > 0)
-                    bit_chunk::begin = bit_chunk::end = (unsigned int*) realloc(begin, n * sizeof(Block));
-                else
-                    bit_chunk::begin = bit_chunk::end = (unsigned int*) malloc(n * sizeof(Block));
+                // The old bits are discarded, so allocate anew instead of realloc; on failure the
+                // vector keeps its old memory (realloc's result used to overwrite it and leak it).
+                auto* p = static_cast<Block*>(std::malloc(n * sizeof(Block)));
+                if (!p)
+                    throw std::bad_alloc();
+                free();
+                bit_chunk::begin = bit_chunk::end = p;
                 _capacity = n;
             } else {
                 bit_chunk::end = bit_chunk::begin;

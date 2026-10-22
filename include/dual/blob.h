@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
+#include <new>
 
 namespace dual {
 
@@ -39,12 +40,15 @@ public:
     {}
 
     /// @brief Blob of @p n uninitialised elements (`n >= 0`).
+    /// @throws std::bad_alloc If the memory cannot be allocated.
     inline blob(int n)
     //:_capacity(n)
     {
         assert(n >= 0);
         if (n > 0) {
-            _begin = (T*) malloc(n * sizeof(T));
+            _begin = static_cast<T*>(std::malloc(n * sizeof(T)));
+            if (!_begin)
+                throw std::bad_alloc();
             _end = _begin + n;
         } else {
             _begin = _end = nullptr;
@@ -188,19 +192,20 @@ public:
     ///
     /// Shrinking only moves the end. Growing reallocates: a blob without memory gets zeroed
     /// elements (`calloc`), otherwise the added elements are uninitialised (`realloc`).
+    /// @throws std::bad_alloc If the memory cannot be allocated; the blob is unchanged then.
     inline void resize(int s) {
         if (s <= 0) {
             _end = _begin;
         } else if (s < size()) {
             _end = _begin + s;
         } else if (s > size()) {
-            if (!_begin) {
-                _begin = (T*) calloc(s, sizeof(*_begin));
-                _end = _begin + s;
-            } else {
-                _begin = (T*) realloc(_begin, s * sizeof(*_begin));
-                _end = _begin + s;
-            }
+            // On failure the blob keeps its memory and size (no leak through realloc's null result)
+            auto* p = static_cast<T*>(_begin ? std::realloc(_begin, s * sizeof(*_begin))
+                                             : std::calloc(s, sizeof(*_begin)));
+            if (!p)
+                throw std::bad_alloc();
+            _begin = p;
+            _end = _begin + s;
         }
     }
 

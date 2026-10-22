@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <memory>
+#include <new>
 
 namespace dual {
 
@@ -170,18 +171,17 @@ public:
     }
 
     /// @brief Make the capacity at least @p s elements (exactly @p s if it grows).
+    /// @throws std::bad_alloc If the memory cannot be allocated; the vector is unchanged then.
     void reserve(int s) {
         if (_capacity >= s)
             return;
 
-        if (!_begin) {
-            _begin = _end = (T*) malloc(s * sizeof(T));
-            _capacity = s;
-            return;
-        }
-
-        int cs = size();
-        _begin = (T*) realloc(_begin, s * sizeof(T));
+        // On failure the vector keeps its memory and size (no leak through realloc's null result)
+        int cs = _begin ? size() : 0;
+        auto* p = static_cast<T*>(_begin ? std::realloc(_begin, s * sizeof(T)) : std::malloc(s * sizeof(T)));
+        if (!p)
+            throw std::bad_alloc();
+        _begin = p;
         _end = _begin + cs;
         _capacity = s;
     }
