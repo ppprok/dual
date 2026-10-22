@@ -6,13 +6,15 @@ here; follow the DOI or URL to the publisher or preprint server.
 ## Own works (included in `docs/references/`)
 
 - E. V. Djukova, P. A. Prokofjev. *Construction and investigation of new asymptotically optimal
-  algorithms for dualization* (Дюкова Е. В., Прокофьев П. А. Построение и исследование новых
-  асимптотически оптимальных алгоритмов дуализации). Machine Learning and Data Analysis (JMLDA),
+  algorithms for dualization* (Dyukova E. V., Prokof'ev P. A. Postroenie i issledovanie novykh
+  asimptoticheski optimal'nykh algoritmov dualizatsii [Construction and investigation of new
+  asymptotically optimal algorithms for dualization]). Machine Learning and Data Analysis (JMLDA),
   2014. — [`references/prokofjev_djukova_dual.pdf`](references/prokofjev_djukova_dual.pdf).
   Describes the RUNC family of algorithms implemented in `src/dual`.
 - P. A. Prokofyev. *Correct recognition by precedents: construction of general-form logical
-  correctors and computational aspects* (Прокофьев П. А. Корректное распознавание по прецедентам:
-  построение логических корректоров общего вида и вычислительные аспекты). PhD (Candidate of
+  correctors and computational aspects* (Prokof'ev P. A. Korrektnoe raspoznavanie po pretsedentam:
+  postroenie logicheskikh korrektorov obshchego vida i vychislitel'nye aspekty [Correct recognition
+  by precedents: construction of general-form logical correctors and computational aspects]). PhD (Candidate of
   Sciences) thesis, specialty 05.13.17, Dorodnitsyn Computing Centre, FRC CSC RAS, Moscow, 2016. —
   [`references/dissertation.pdf`](references/dissertation.pdf).
 
