@@ -5,6 +5,7 @@
 #include "bit_matrix.h"
 #include "bit_vector.h"
 #include "graph_algorithms.h"
+#include "string_utils.h"
 
 TEST_CASE("remove_rows_returns_zero_when_no_row_matches") {
     bit_matrix m;
@@ -46,4 +47,13 @@ TEST_CASE("is_transitive_closed_checks_rows_wider_than_a_block") {
 
     adj.reset(n - 3, n - 1);
     CHECK_FALSE(is_transitive_closed(adj));
+}
+
+TEST_CASE("streq_compares_two_ranges_by_length_and_content") {
+    char const a[] = "abcabd";
+    CHECK(streq(a, a + 2, a + 3, a + 5));
+    CHECK_FALSE(streq(a, a + 3, a + 3, a + 6));
+    CHECK_FALSE(streq(a, a + 2, a + 3, a + 6));
+    CHECK_FALSE(streq(a, a + 3, a + 3, a + 5));
+    CHECK(streq(a, a, a + 3, a + 3));
 }
