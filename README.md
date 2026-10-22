@@ -46,8 +46,8 @@ All of them are in [`src/dual`](src/dual/README.md).
   `MostCoverCollector`), write them to files (`FileWriters.h`), weigh them and prune branches by
   weight (`Weighters.h`, `Pruning.h`). `dualization_callback(lambda)` wraps a lambda.
 - **C ABI.** The shared library `librunc.so` exports `init_dualizer`, `set_input_row`,
-  `enumerate_covers` and `release_dualizer` as `extern "C"` functions over RUNCM, used from Python
-  through `ctypes`. Rows may be given in any order; errors are reported as negative return codes
+  `enumerate_covers` and `release_dualizer` as `extern "C"` functions over RUNCM, for use from C
+  or through `ctypes`. Rows may be given in any order; errors are reported as negative return codes
   (`RUNC_ERROR_*` in `RuncExecutor.h`) and no exception crosses the ABI.
 
 ## Repository layout
@@ -57,7 +57,8 @@ All of them are in [`src/dual`](src/dual/README.md).
 | [`src/`](src/README.md) | All maintained sources. |
 | [`src/common/`](src/common/README.md) | `dual::common`: bit containers (`bit_chunk`, `bit_vector`, `bit_matrix`), integer file IO, graph utilities. |
 | [`src/dual/`](src/dual/README.md) | `dual::dual` (the algorithms and callbacks) and `dual::runc` (`librunc.so`, the C ABI). |
-| [`src/pyrunc/`](src/pyrunc/README.md) | Python `ctypes` wrapper over `librunc.so`. |
+| [`python/`](python/README.md) | Python package `dual` (pybind11 bindings, pytest tests); built by `pyproject.toml`. |
+| [`src/pyrunc/`](src/pyrunc/README.md) | Deprecated Python `ctypes` wrapper over `librunc.so`. |
 | [`src/tests/`](src/tests/README.md) | doctest unit tests (`TestDual`, `TestUtils`) and their data. |
 | [`cmake/`](cmake/README.md) | CMake helpers: compile options, install rules, package config. |
 | [`datasets/`](datasets/README.md) | Input matrices in `.hg` format. |
@@ -70,7 +71,7 @@ All of them are in [`src/dual`](src/dual/README.md).
 - CMake 3.16 or newer; the presets in `CMakePresets.json` need 3.21. The presets use Ninja.
 - Network access on the first configure when tests are enabled: doctest v2.5.3 is fetched with
   `FetchContent`. There are no other dependencies.
-- For the Python wrapper: Python 3 and numpy.
+- For the Python package: Python 3.8+ and pip (numpy is optional, for array input).
 
 ## Build and test
 
@@ -99,7 +100,7 @@ project against it. More on running single tests in
 
 CMake options: `DUAL_BUILD_TESTS` (ON when this is the top-level project), `DUAL_INSTALL` (ON when
 top-level), `DUAL_ENABLE_SANITIZERS` (OFF), `DUAL_WARNINGS_AS_ERRORS` (OFF; the code still has many
-`-Wall -Wextra` warnings), `DUAL_BUILD_PYTHON` (a placeholder, does nothing yet).
+`-Wall -Wextra` warnings), `DUAL_BUILD_PYTHON` (OFF; builds the Python extension module, see [`python/`](python/README.md)).
 
 ## Use from C++
 
@@ -192,32 +193,29 @@ not necessarily sorted. Headers are included by bare name (`"Runc.h"`) for now; 
 
 ## Use from Python
 
-[`src/pyrunc/runc.py`](src/pyrunc/README.md) wraps `librunc.so` with `ctypes` (requires numpy).
-Build the library and copy it next to `runc.py`:
+The Python package `dual` ([`python/`](python/README.md)) wraps the algorithms with pybind11 and is
+built with scikit-build-core. From the repository root (needs a C++17 compiler; pip fetches CMake
+and pybind11 into the build environment if needed):
 
 ```bash
-cmake --preset release
-cmake --build --preset release --target InstallRuncLib
+pip install .            # or ".[test]" for pytest and numpy; then run `pytest`
 ```
 
 ```python
-import sys
-sys.path.insert(0, "src/pyrunc")
-from runc import RuncDualizer
+import dual
 
-runc = RuncDualizer()
-runc.add_input_row([0, 1])     # row 0: ones in columns 0 and 1
-runc.add_input_row([1, 2])
-runc.add_input_row([0, 2])
-while True:
-    covers = runc.enumerate_covers()   # next portion; the buffer is sized for 128 covers by default
-    if not covers:
-        break
-    for cover in covers:
-        print(sorted(cover.tolist()))  # [0, 1], [0, 2], [1, 2]
+rows = [[0, 1], [1, 2], [0, 2]]               # row i: the column indices of its ones
+for cover in dual.enumerate_covers(rows):     # a generator; RUNCM by default
+    print(cover)                              # [1, 2], [0, 1], [0, 2]
+
+dual.count_covers("datasets/15_20_275.hg")    # 275; a .hg path or a 2-D numpy array work too
+dual.minimal_covers(rows, algorithm="opt")    # all covers as a list
 ```
 
-A pip-installable package is planned in #13.
+Covers are fetched from C++ in portions with the GIL released; the RUNC-family algorithms resume
+the search between portions, so a generator can be stopped at any time. See
+[`python/README.md`](python/README.md) for the whole API and the development workflow. The older
+`ctypes` wrapper [`src/pyrunc`](src/pyrunc/README.md) over `librunc.so` is deprecated.
 
 ## Input format
 
@@ -248,6 +246,6 @@ MIT, see [`LICENSE`](LICENSE). Third-party code under `legacy/3rd-party/` keeps 
 ## Status
 
 This is research code being turned into a reusable library (epic #7). The RUNC family
-(`Runc::RuncGlobalState`) and the C ABI are the main maintained part. `AOT1`, `PUNC` and
+(`Runc::RuncGlobalState`), the Python package `dual` and the C ABI are the main maintained part. `AOT1`, `PUNC` and
 `RuncFixed` are tested against RUNCM on the test matrices and on random ones, but are less used.
 The API and the header layout are expected to change (#12).

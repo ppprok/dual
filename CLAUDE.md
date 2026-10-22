@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-C++17 research code for **dualization** algorithms: enumerating all minimal covers of a Boolean matrix (equivalently, minimal transversals of a hypergraph), plus generalizations over products of partially ordered sets. The actively maintained piece is the **RUNC** family of algorithms, exposed to Python through a C ABI shared library. Literature behind the algorithms is listed in `docs/references.md` (the owner's own paper and dissertation are in `docs/references/`). License: MIT (`LICENSE`).
+C++17 research code for **dualization** algorithms: enumerating all minimal covers of a Boolean matrix (equivalently, minimal transversals of a hypergraph), plus generalizations over products of partially ordered sets. The actively maintained piece is the **RUNC** family of algorithms, exposed to Python as the pybind11 package `dual` (`python/`) and through a C ABI shared library. Literature behind the algorithms is listed in `docs/references.md` (the owner's own paper and dissertation are in `docs/references/`). License: MIT (`LICENSE`).
 
 ## Build and test
 
@@ -21,13 +21,13 @@ cmake -S . -B build && cmake --build build -j && ctest --test-dir build
 ```
 
 - Test executables live in `<build>/src/tests` and run from there: they open `data/...` by relative path, and the `dual_test_data` target copies `src/tests/data/` next to them. Running by hand: `cd build/dev/src/tests && ./TestDual -tc="DualizeRUNC*"`.
-- Options: `DUAL_BUILD_TESTS` (ON when top-level), `DUAL_ENABLE_SANITIZERS` (ASan+UBSan, used by the `asan` preset), `DUAL_WARNINGS_AS_ERRORS` (OFF; the code still has many `-Wall -Wextra` warnings), `DUAL_INSTALL` (ON when top-level), `DUAL_BUILD_PYTHON` (placeholder until #13), `DUAL_BUILD_DOCS` (OFF; adds target `dual_docs`, which runs Doxygen with `docs/Doxyfile` into `<build>/docs/html`).
+- Options: `DUAL_BUILD_TESTS` (ON when top-level), `DUAL_ENABLE_SANITIZERS` (ASan+UBSan, used by the `asan` preset), `DUAL_WARNINGS_AS_ERRORS` (OFF; the code still has many `-Wall -Wextra` warnings), `DUAL_INSTALL` (ON when top-level), `DUAL_BUILD_PYTHON` (OFF; adds `python/`, the pybind11 module `_dual`; `pip install .` turns it on), `DUAL_BUILD_DOCS` (OFF; adds target `dual_docs`, which runs Doxygen with `docs/Doxyfile` into `<build>/docs/html`).
 - Targets: `dual::common` (static, file `libdual_common.a`), `dual::dual` (static, RUNC and friends), `dual::runc` (shared `librunc.so`, C ABI). Own targets get flags via `dual_target_options()` in `cmake/DualTargetOptions.cmake`; no global `include_directories`.
 - Install / package: `cmake --install build --prefix <dir>` installs libs, flat headers under `include/dual/` and `lib/cmake/dual/dualConfig.cmake`; consumers use `find_package(dual)` + `target_link_libraries(app PRIVATE dual::dual)` and `#include "Runc.h"`.
 - clangd: `compile_commands.json` is generated in every build dir; `.clangd` points at `build/dev`, so configure the `dev` preset once.
 - All tests pass under the `dev` and `asan` presets (since #21); keep it that way.
 
-Python wrapper: `cmake --build build --target InstallRuncLib` builds `librunc.so` and copies it into `src/pyrunc/`, where `src/pyrunc/runc.py` loads it via `ctypes` (requires numpy). `runc.py` contains example `test_*` functions; `test_enumerate_from_file` has a hardcoded absolute path.
+Python package `dual` (see the `python-bindings` skill and `python/README.md`): `pyproject.toml` (scikit-build-core + pybind11) builds `python/src/_dual.cpp` into `dual._dual`; the API is `python/dual/__init__.py` (`enumerate_covers`, `iter_batches`, `minimal_covers`, `count_covers`, `Dualizer`). Check with `pip install ".[test]" && pytest` (tests in `python/tests`, they read `src/tests/data`). All C++ includes of the bindings are in `_dual.cpp`. The old `ctypes` wrapper `src/pyrunc/runc.py` (over `librunc.so`, copied there by the `InstallRuncLib` target) is deprecated but kept as a C ABI example.
 
 Formatting: `.clang-format` (LLVM-based, 4-space indent, 120 columns).
 
@@ -37,6 +37,7 @@ Only sources listed in each `CMakeLists.txt` are built. Before assuming a file i
 
 - `src/common` → `dual::common` (bit containers, IO, graph utils). `CSVLoader.cpp` is not compiled (its header is used by `TestUtils`).
 - `src/dual` → `dual::dual` (RUNC, RuncFixed, PUNC, AOT1, pruning, cover collectors, weighters) and `dual::runc` (`RuncExecutor.cpp`).
+- `python` → the extension module `_dual`, only when `DUAL_BUILD_PYTHON=ON` (pip sets it and builds only that target).
 - `src/tests`: `TestDual` builds `RUNCTests.cpp`, `RuncApiTests.cpp`, `RuncDifferentialTests.cpp` (with `RuncExecutor.cpp` compiled in), `AOT1PUNCTests.cpp` and `PruningTests.cpp`; `TestRuncFixedO2` builds its own `-O2` copy of `RuncFixed.cpp` against `dual::common` only; `TestUtils` builds all of its files. `dual_consumer` (when `DUAL_INSTALL` is ON) installs the build into `<build>/src/tests/consumer/prefix` and builds/runs `src/tests/consumer/` against it with `find_package(dual)`.
 - `legacy/` holds unmaintained, unbuilt code and data moved out of the tree (logical-analysis classifiers `src/logical`, poset dualization, `dualizer` executable, Boost-based `Configurable`/`logging_utils`, `3rd-party/` reference implementations, experiments, configs, mathematica notebooks, `.int` datasets); see `legacy/README.md`.
 
