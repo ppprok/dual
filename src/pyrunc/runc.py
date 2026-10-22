@@ -19,7 +19,7 @@ librunc.enumerate_covers.argtypes = [ctypes.c_void_p, ctypes.c_uint32,
                                      numpy.ctypeslib.ndpointer(dtype=numpy.uint32, flags="C_CONTIGUOUS")]
 librunc.enumerate_covers.restype = ctypes.c_int32
 
-# Error codes of the C ABI, see RuncExecutor.h
+# Error codes of the C ABI, see include/dual/runc_executor.h
 RUNC_OK = 0
 RUNC_ERROR_INVALID_ARGUMENT = -1
 RUNC_ERROR_BUFFER_TOO_SMALL = -2

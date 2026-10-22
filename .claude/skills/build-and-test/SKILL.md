@@ -39,7 +39,10 @@ and `build/` is in `.gitignore`.
 - `ctest --preset dev` and `ctest --preset asan` pass fully, with no ASan/UBSan reports (#21 fixed the `chunk`
   rebase, `blob::resize`, `bit_mask::subset_cmp`, `bit_chunk::get_last` and `bit_vector::zero` — they caused the
   `load_CSV_and_create_columns`, RUNC and IO `bit_matrix` failures under `asan`).
-- `-Wall -Wextra` produces many warnings, so `DUAL_WARNINGS_AS_ERRORS` is off.
+- Live code is free of g++ `-Wall -Wextra` warnings in all three presets, and the presets build with
+  `DUAL_WARNINGS_AS_ERRORS=ON` (`-Werror`), so a new warning breaks the build (#12). Plain
+  `cmake -S . -B build` keeps it OFF.
+- `.clang-tidy` reports nothing on live code (#12).
 
 Compare against this list: a new failure is yours; an old one is not to be fixed along the way, but mentioned in the PR.
 
@@ -48,12 +51,20 @@ Compare against this list: a new failure is yours; an old one is not to be fixed
 1. `ctest --preset dev` — no more failures than in the list above.
 2. If you touched the algorithms or the bit containers — also `cmake --preset asan && cmake --build --preset asan && ctest --preset asan`
    and compare the number of failures with `master`.
-3. `clang-format -i` on the changed `.cpp/.h` (config `.clang-format`; do not format `legacy/`).
-4. If you changed the CMake export or public headers — `ctest --preset dev -R dual_consumer` checks an installed
+3. `clang-format -i` on the changed `.cpp/.h` under `include/` and `src/` (config `.clang-format`; do not format
+   `legacy/`). A pure mass-reformatting commit goes into `.git-blame-ignore-revs`.
+4. clang-tidy on the changed code: `run-clang-tidy.py -p build/dev -quiet 'src/(common|dual|tests)/'` (uses
+   `build/dev/compile_commands.json`; headers in `include/dual` are checked through the sources), or configure a
+   separate build dir with `-DDUAL_CLANG_TIDY=ON`. It must stay clean; suppress a single finding only with
+   `// NOLINT(check): reason`.
+5. If you touched public headers or `docs/` — `mkdir -p build && doxygen docs/Doxyfile` must print no warnings.
+6. If you changed the CMake export or public headers — `ctest --preset dev -R dual_consumer` checks an installed
    consumer (it is part of the full `ctest` run too). A new public symbol that consumers need should be used in
    `src/tests/consumer/main.cpp`.
-5. If you added a `.cpp/.h` — add it to the source list of its `CMakeLists.txt`, otherwise the file is not built
-   and clangd does not see it.
+7. If you added a `.cpp/.h` — add it to the source list of its `CMakeLists.txt`, otherwise the file is not built
+   and clangd does not see it. A header that library users need (or that a public header includes) is public:
+   `include/dual/<snake_case>.h`, listed in `DUAL_*_PUBLIC_HEADERS`, included as `<dual/...>`, code in namespace
+   `dual`. Other headers stay internal next to their sources in `src/`.
 
 ## Algorithm correctness
 
