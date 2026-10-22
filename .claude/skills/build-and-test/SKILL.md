@@ -39,8 +39,9 @@ and `build/` is in `.gitignore`.
 - `ctest --preset dev` and `ctest --preset asan` pass fully, with no ASan/UBSan reports (#21 fixed the `chunk`
   rebase, `blob::resize`, `bit_mask::subset_cmp`, `bit_chunk::get_last` and `bit_vector::zero` — they caused the
   `load_CSV_and_create_columns`, RUNC and IO `bit_matrix` failures under `asan`).
-- Live code is free of g++ `-Wall -Wextra` warnings in all three presets, and the presets build with
-  `DUAL_WARNINGS_AS_ERRORS=ON` (`-Werror`), so a new warning breaks the build (#12). Plain
+- Live code is free of `-Wall -Wextra` warnings with g++ here and with clang / Apple clang in CI, and the presets
+  build with `DUAL_WARNINGS_AS_ERRORS=ON` (`-Werror`), so a new warning breaks the build (#12). On MSVC the option
+  adds no `/WX`: `/W4` still reports int-size conversions (C4244/C4267), `fopen` (C4996) and shadowing (C4456). Plain
   `cmake -S . -B build` keeps it OFF.
 - `.clang-tidy` reports nothing on live code (#12).
 

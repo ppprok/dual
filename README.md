@@ -109,7 +109,8 @@ CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs on every pull r
 
 CMake options: `DUAL_BUILD_TESTS` (ON when this is the top-level project), `DUAL_INSTALL` (ON when
 top-level), `DUAL_ENABLE_SANITIZERS` (OFF), `DUAL_WARNINGS_AS_ERRORS` (OFF by default, ON in all
-presets; live code builds without `-Wall -Wextra` warnings), `DUAL_CLANG_TIDY` (OFF; runs clang-tidy
+presets; `-Werror` for GCC/Clang, where live code builds without `-Wall -Wextra` warnings; not
+applied to MSVC), `DUAL_CLANG_TIDY` (OFF; runs clang-tidy
 with [`.clang-tidy`](.clang-tidy) during the build), `DUAL_BUILD_DOCS` (OFF; the `dual_docs` Doxygen
 target), `DUAL_BUILD_PYTHON` (OFF; builds the Python extension module, see
 [`python/`](python/README.md)).
