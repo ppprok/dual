@@ -3,6 +3,7 @@ dual_add_test(TestUtils
         main.cpp
         BitChunkTests.cpp
         BitsTests.cpp
+        CommonHelpersTests.cpp
         ContainerMemoryTests.cpp
         CSVTests.cpp
         GraphTests.cpp
