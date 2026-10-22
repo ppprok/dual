@@ -21,4 +21,5 @@ dual_add_test(TestRuncFixedO2
         "${PROJECT_SOURCE_DIR}/src/dual/RuncFixed.cpp"
         LIBS dual::common)
 target_include_directories(TestRuncFixedO2 PRIVATE "${PROJECT_SOURCE_DIR}/src/dual")
-target_compile_options(TestRuncFixedO2 PRIVATE -O2)
+# MSVC rejects /O2 together with the /RTC1 of Debug builds; /Ob2 still inlines aggressively.
+target_compile_options(TestRuncFixedO2 PRIVATE $<IF:$<CXX_COMPILER_ID:MSVC>,/Ob2,-O2>)
