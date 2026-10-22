@@ -4,6 +4,7 @@
 
 #include "bit_matrix.h"
 #include "bit_vector.h"
+#include "graph_algorithms.h"
 
 TEST_CASE("remove_rows_returns_zero_when_no_row_matches") {
     bit_matrix m;
@@ -27,4 +28,22 @@ TEST_CASE("remove_rows_returns_zero_when_no_row_matches") {
 
     bit_matrix empty;
     CHECK_EQ(0, empty.remove_zero_rows());
+}
+
+// Rows of more than one block: the old loop ran over size() (blocks in use), past the last row.
+TEST_CASE("is_transitive_closed_checks_rows_wider_than_a_block") {
+    int const n = 40;
+    bit_matrix adj;
+    adj.zero(n, n);
+    for (int i = 0; i + 1 < n; ++i)
+        adj.set(i, i + 1);
+
+    CHECK_FALSE(is_transitive_closed(adj));
+
+    transitive_closure(adj);
+    CHECK(is_transitive_closed(adj));
+    CHECK_EQ(n * (n - 1) / 2, edges_number(adj));
+
+    adj.reset(n - 3, n - 1);
+    CHECK_FALSE(is_transitive_closed(adj));
 }

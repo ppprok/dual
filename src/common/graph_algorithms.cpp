@@ -84,7 +84,7 @@ bool is_topological_order(bit_matrix const& adj_mat, std::vector<int> const& ord
 }
 
 bool is_transitive_closed(bit_matrix const& adj_mat) {
-    int n = adj_mat.size();
+    int n = adj_mat.height();
     for (int i = 0; i != n; ++i) {
         auto& row = adj_mat.get_row(i);
 
