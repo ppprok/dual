@@ -105,12 +105,10 @@ inline bool contains(C const& c, V const& v) {
     return std::find(c.begin(), e, v) != e;
 }
 
-/// @brief Remove from @p c the elements contained in @p excl.
-/// @note Calls an unqualified `remove(c, pred)` that this header does not define, so it compiles
-///       only where such an overload is visible.
+/// @brief Remove from @p c the elements contained in @p excl, keeping the order of the others.
 template<typename C, typename C1>
 inline void exclude(C& c, C1 const& excl) {
-    remove(c, [&excl](typename C::value_type const& v) { return contains(excl, v); });
+    remove_if(c, [&excl](typename C::value_type const& v) { return contains(excl, v); });
 }
 
 /// @brief Sort the whole container with `operator<`.

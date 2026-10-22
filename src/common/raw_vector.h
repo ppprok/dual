@@ -16,9 +16,10 @@
 template<typename T>
 class raw_vector {
 
-    T* _begin;
-    T* _end;
-    int _capacity;
+    // Initialised here, so that every constructor starts from an empty vector without memory.
+    T* _begin = nullptr;
+    T* _end = nullptr;
+    int _capacity = 0;
 
 public:
     /// Iterator type.
@@ -277,7 +278,7 @@ public:
 
     /// @brief Remove several elements `[b, e)`, shifting the following ones.
     void erase(T* b, T* e) {
-        int s = b - e;
+        int s = e - b;
         if (s == 0)
             return;
         assert(_begin <= b && s > 0 && e <= _end);

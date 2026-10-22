@@ -35,8 +35,6 @@ void create_adjacency_matrix(int n, Edges const& edges, bit_matrix& adj_mat) {
 void transitive_closure(bit_matrix& adj_mat);
 
 /// @brief Check whether the graph given by its adjacency matrix is transitively closed.
-/// @note Iterates over `adj_mat.size()` rows (the number of blocks in use), which equals the
-///       number of vertices only while every row fits into one block (at most 32 vertices).
 bool is_transitive_closed(bit_matrix const& adj_mat);
 
 /// @brief Get the topological order of the vertices of a directed acyclic graph given by its

@@ -9,6 +9,7 @@ dual_add_test(TestDual
         "${PROJECT_SOURCE_DIR}/src/dual/RuncExecutor.cpp"
         AOT1PUNCTests.cpp
         PruningTests.cpp
+        CoverCollectorTests.cpp
         LIBS dual::dual)
 
 # RuncFixed.cpp compiled with -O2 into its own client, independently of the build type: the link

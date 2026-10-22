@@ -316,8 +316,7 @@ public:
     }
 
     /// @brief Remove the rows that satisfy the predicate, keeping the order of the others.
-    /// @return Number of removed rows if at least one row was removed; if no row satisfies the
-    ///         predicate, the current height (not 0).
+    /// @return Number of removed rows (0 if no row satisfies the predicate).
     template<typename Pred>
     int remove_rows(Pred pred) {
         int m = height();
@@ -325,7 +324,7 @@ public:
             return 0;
         int i = find_row(pred);
         if (i == -1)
-            return m;
+            return 0;
 
         for (int t = i + 1; t < m; ++t) {
             if (!pred(_rows[t]))

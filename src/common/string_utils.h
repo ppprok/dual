@@ -67,11 +67,9 @@ inline bool streq(char const* begin1, char const* end1, char const* begin2) {
 }
 
 /// @brief Compare the character ranges `[begin1, end1)` and `[begin2, end2)`.
-/// @note The length check compares with `begin2 - end2` (a non-positive value), so only two empty
-///       ranges compare equal.
 inline bool streq(char const* begin1, char const* end1, char const* begin2, char const* end2) {
     int n = end1 - begin1;
-    return n == begin2 - end2 && strncmp(begin1, begin2, n) == 0;
+    return n == end2 - begin2 && strncmp(begin1, begin2, n) == 0;
 }
 
 /// @brief Check whether two zero-terminated strings are equal.
