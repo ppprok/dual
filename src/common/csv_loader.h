@@ -197,8 +197,8 @@ public:
     // Create default rows structures
     void CreateRows();
 
-    CSVArray& GetColumn(std::string const& name) {
-        for (auto& column : _arrays) {
+    CSVArray const& GetColumn(std::string const& name) const {
+        for (auto const& column : _arrays) {
             if (column.values.empty())
                 continue;
             if (column.GetValue(0) == name)
@@ -208,8 +208,9 @@ public:
         throw std::runtime_error("Column '" + name + "' doesn't exist");
     }
 
-    CSVArray const& GetColumn(std::string const& name) const {
-        return GetColumn(name);
+    // The const overload used to call itself (infinite recursion, found by clang -Winfinite-recursion)
+    CSVArray& GetColumn(std::string const& name) {
+        return const_cast<CSVArray&>(static_cast<CSVLoader const&>(*this).GetColumn(name));
     }
 
 public:
