@@ -1,0 +1,39 @@
+cff-version: 1.2.0
+message: >-
+  If you use this software, please cite the paper that describes its RUNC
+  family of algorithms (preferred-citation below); the software itself can be
+  cited with the metadata in this file.
+type: software
+title: "dual: dualization algorithms for enumerating minimal covers of Boolean matrices"
+abstract: >-
+  C++17 library that enumerates all minimal covers of a Boolean matrix,
+  equivalently the minimal transversals of a hypergraph (dualization of a
+  monotone Boolean function), with the asymptotically optimal RUNC family of
+  algorithms, resumable enumeration, a C ABI and a Python package.
+authors:
+  - family-names: Prokofyev
+    given-names: Petr
+    alias: ppprok
+version: 0.1.0
+license: MIT
+repository-code: "https://github.com/ppprok/dual"
+url: "https://ppprok.github.io/dual/"
+keywords:
+  - dualization
+  - minimal covers
+  - hypergraph transversals
+  - hitting sets
+  - Boolean matrix
+  - enumeration algorithms
+preferred-citation:
+  type: article
+  title: "Construction and investigation of new asymptotically optimal algorithms for dualization"
+  authors:
+    - family-names: Djukova
+      given-names: E. V.
+    - family-names: Prokofjev
+      given-names: P. A.
+  journal: "Machine Learning and Data Analysis"
+  year: 2014
+  languages:
+    - rus
