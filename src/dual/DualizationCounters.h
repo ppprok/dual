@@ -1,8 +1,12 @@
+/// @file
+/// @brief `DualizationCounters`: counters of results, inner states and delays.
+
 #pragma once
 #include <string>
 
-// Counters of dualization results
+/// @brief Counters of dualization results, including the delay (number of steps) between results.
 struct DualizationCounters {
+    /// Counter type.
     typedef long long int Int;
 
     Int results;       ///< Number of solutions found
@@ -11,15 +15,17 @@ struct DualizationCounters {
     Int currentDelay;  ///< Current delay
     Int maxDelay;      ///< Maximum delay
 
-    // Reset the counters
+    /// @brief Reset the counters.
     void Reset();
 
-    // Constructor that zeroes the counters
+    /// @brief Constructor that zeroes the counters.
     DualizationCounters();
 
-    // Convert the counters to text
+    /// @brief Convert the counters to text.
     std::string ToString() const;
 
+    /// @brief Count a result: update `maxDelay` with the steps since the previous result and
+    ///        restart `currentDelay`.
     void IncResult() {
         ++results;
         if (results == 1)
@@ -29,11 +35,13 @@ struct DualizationCounters {
         currentDelay = 0;
     }
 
+    /// @brief Count an extra step.
     void IncExtra() {
         ++extras;
         ++currentDelay;
     }
 
+    /// @brief Count an inner state.
     void IncInners() {
         ++inners;
         ++currentDelay;

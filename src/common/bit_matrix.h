@@ -1,3 +1,6 @@
+/// @file
+/// @brief Growable bit matrix `bit_matrix`.
+
 #pragma once
 
 #include <algorithm>
@@ -8,12 +11,24 @@
 #include "blob.h"
 #include "containers.h"
 
-// Bit matrix
+/// @brief Bit matrix: rows are `bit_chunk` views into one contiguous block buffer.
+///
+/// Every row occupies a slot of whole blocks in a shared buffer; a row added with `n` columns gets
+/// `bit_chunk::block_for_bits(n)` blocks. The width (`width()`) grows automatically when a bit is set
+/// in a column past it, and the buffer grows (and rows are re-laid out) as needed, so bits may be set
+/// in any order.
+///
+/// @warning Growing the matrix (`set`, `add_bit`, `add_row*`, `reserve`, `zero`) may reallocate the
+/// buffer and the row container: references to rows and `bit_chunk` copies of rows obtained earlier
+/// become invalid.
+/// @tparam bit_rows_type Container of row views, e.g. `bit_chunks` (`std::vector<bit_chunk>`).
 template<typename bit_rows_type>
 class bit_matrix_ {
 public:
+    /// Container of rows.
     typedef bit_rows_type bit_rows;
 
+    /// Row type (a `bit_chunk` view).
     typedef typename bit_rows::value_type bit_row;
 
 private:
@@ -24,21 +39,24 @@ private:
     bit_rows _rows;
 
 public:
+    /// @brief Matrix without rows and with @p n columns (`n >= 0`).
     bit_matrix_(int n = 0) {
         assert(n >= 0);
         _n = n;
     }
 
+    /// @brief Zero matrix with @p m rows and @p n columns.
+    /// @throws std::length_error If the matrix needs more blocks than fit into `int`.
     bit_matrix_(int m, int n) {
         zero(m, n);
     }
 
-    // Number of blocks in use
+    /// @brief Number of blocks in use (from the buffer start to the end of the last row's slot).
     int size() const {
         return (int) size_for_width(_n);
     }
 
-    // Number of blocks in use if the matrix had n columns
+    /// @brief Number of blocks in use if the last row had a slot for @p n columns.
     long long size_for_width(int n) const {
         if (_rows.empty())
             return 0;
@@ -48,29 +66,33 @@ public:
         return std::max(begin + bit_chunk::block_for_bits(n), (long long) (last.end - _data.begin()));
     }
 
-    // Number of allocated blocks
+    /// @brief Number of allocated blocks.
     int capacity() const {
         return _data.size();
     }
 
-    // Number of rows
+    /// @brief Number of rows.
     int height() const {
         return _rows.size();
     }
 
-    // Number of columns
+    /// @brief Number of columns: one past the highest column ever set or requested.
     int width() const {
         return _n;
     }
 
-    // Create a zero matrix
+    /// @brief Create a zero matrix: drop all rows and add @p m zero rows with @p n columns.
+    /// @throws std::length_error If the matrix needs more blocks than fit into `int`.
     void zero(int m, int n) {
         _rows.clear();
         _n = n;
         add_rows(m, n);
     }
 
-    // Reserve the required number of blocks. Never shrinks the buffer below the blocks used by the rows
+    /// @brief Reserve the required number of blocks.
+    ///
+    /// Never shrinks the buffer below the blocks used by the rows; the rows are rebased if the
+    /// buffer moves.
     void reserve(int blocks) {
         blocks = std::max(blocks, size());
         if (_data.size() >= blocks)
@@ -87,13 +109,16 @@ public:
         }
     }
 
-    // Reserve enough blocks for the given size
+    /// @brief Reserve enough blocks for @p m rows with @p n columns.
+    /// @throws std::length_error If that needs more blocks than fit into `int`.
     void reserve(int m, int n) {
         _rows.reserve(m);
         reserve(checked_blocks((long long) m * bit_chunk::block_for_bits(n)));
     }
 
-    // Set or clear the bit in row i and column j
+    /// @brief Set or clear the bit in row @p i and column @p j.
+    /// @return For `v == true` the result of `set(i, j)`; for `v == false` always `true` (see `reset`).
+    /// @throws std::length_error See `set(int, int)`.
     bool set(int i, int j, bool v) {
         if (v)
             return set(i, j);
@@ -102,10 +127,14 @@ public:
         return true;
     }
 
-    // Set the bit in row i and column j. Rows and columns may come in any order: missing rows are added
-    // as zero rows and rows are re-laid out when a column does not fit. Returns false and changes nothing
-    // when i or j is negative or equal to INT_MAX. Throws std::length_error when the matrix would need more
-    // blocks than fit into int
+    /// @brief Set the bit in row @p i and column @p j.
+    ///
+    /// Rows and columns may come in any order: missing rows are added as zero rows, the width grows
+    /// to `j + 1` if needed, and rows are re-laid out when a column does not fit into a row's slot
+    /// (the slot size at least doubles, so setting bits in any order costs amortized linear time).
+    /// @return `false` (and nothing changes) when @p i or @p j is negative or equal to `INT_MAX`;
+    ///         `true` otherwise.
+    /// @throws std::length_error If the matrix would need more blocks than fit into `int`.
     bool set(int i, int j) {
         if (i < 0 || j < 0 || i == INT_MAX || j == INT_MAX)
             return false;
@@ -164,42 +193,44 @@ private:
     }
 
 public:
-    // Clear a bit
+    /// @brief Clear the bit in row @p i and column @p j; no-op if the row does not exist or `j < 0`.
     void reset(int i, int j) {
         if (j >= 0 && inside(_rows, i))
             _rows[i].set(j, false);
     }
 
-    // Get the bit in row i and column j
+    /// @brief Get the bit in row @p i (must exist) and column @p j; `false` past the row's end.
     bool get(int i, int j) const {
         assert(inside(_rows, i));
         return _rows[i].get(j);
     }
 
-    // Get the rows
+    /// @brief Get the rows.
     bit_rows const& get_rows() const {
         return _rows;
     }
 
-    // Get the rows
+    /// @brief Get the rows.
     bit_rows& get_rows() {
         return _rows;
     }
 
-    // Get the row with the given index
+    /// @brief Get the row with the given index (`0 <= i < height()`).
     bit_row const& get_row(int i) const {
         assert(inside(_rows, i));
         return _rows[i];
     }
 
-    // Get the row with the given index
+    /// @brief Get the row with the given index (`0 <= i < height()`).
+    /// @warning Setting bits through the returned view does not grow the matrix; stay within
+    ///          `width()` columns.
     bit_row& get_row(int i) {
         assert(inside(_rows, i));
         return _rows[i];
     }
 
-    // Append m zero rows with n columns. Throws std::length_error and changes nothing when the rows would
-    // need more blocks than fit into int
+    /// @brief Append @p m zero rows with `max(width(), n)` columns; the width becomes that value.
+    /// @throws std::length_error If the rows would need more blocks than fit into `int` (nothing changes then).
     void add_rows(int m, int n) {
         if (m <= 0)
             return;
@@ -222,7 +253,10 @@ public:
         }
     }
 
-    // Add a bit to the last row
+    /// @brief Set bit @p j (`j >= 0`) in the last row, adding a first row if there is none.
+    ///
+    /// The last row may grow past its slot; the buffer is enlarged if needed.
+    /// @throws std::length_error If the matrix would need more blocks than fit into `int`.
     void add_bit(int j) {
         if (_rows.empty()) {
             add_rows(1, j + 1);
@@ -241,7 +275,7 @@ public:
         _rows.back().set(j);
     }
 
-    // Keep only the first m rows of the matrix
+    /// @brief Keep only the first @p m rows of the matrix (the buffer is kept).
     void trim_rows(int m) {
         if (m <= 0)
             _rows.clear();
@@ -249,34 +283,41 @@ public:
             _rows.resize(m);
     }
 
+    /// @brief Clear all bits of row @p i (`0 <= i < height()`).
     void zero_row(int i) {
         assert(inside(_rows, i));
         _rows[i].clear();
     }
 
-    // Assign the given bits to the i-th row
+    /// @brief Assign the given bits to the i-th row.
+    /// @warning @p row must fit into the row's slot (at most `width()` columns).
     void assign_row(int i, bit_chunk row) {
         assert(inside(_rows, i));
         _rows[i].assign(row);
     }
 
-    // Find a row that satisfies the predicate
+    /// @brief Find a row that satisfies the predicate.
+    /// @return Index of the first such row, or -1.
     template<typename Pred>
     int find_row(Pred pred) const {
         return find_if(_rows, pred);
     }
 
-    // Find a row that is a subset of the given row
+    /// @brief Find a row that is a subset of the given row.
+    /// @return Index of the first such row, or -1.
     int find_sub_row(bit_chunk suprow) const {
         return find_row([suprow](bit_chunk const& row) { return row.is_subset_of(suprow); });
     }
 
-    // Find a row equal to the given row
+    /// @brief Find a row equal to the given row.
+    /// @return Index of the first such row, or -1.
     int find_equal_row(bit_chunk row) const {
         return find_row([row](bit_chunk const& r) { return row == r; });
     }
 
-    // Remove the rows that satisfy the predicate
+    /// @brief Remove the rows that satisfy the predicate, keeping the order of the others.
+    /// @return Number of removed rows if at least one row was removed; if no row satisfies the
+    ///         predicate, the current height (not 0).
     template<typename Pred>
     int remove_rows(Pred pred) {
         int m = height();
@@ -295,46 +336,57 @@ public:
         return m - i;
     }
 
-    // Remove zero rows
+    /// @brief Remove zero rows.
+    /// @return See `remove_rows`.
     int remove_zero_rows() {
         return remove_rows([](bit_chunk const& r) { return r.none(); });
     }
 
-    // Remove the rows covered by the columns
+    /// @brief Remove the rows covered by the columns (rows that intersect @p columns).
+    /// @return See `remove_rows`.
     int remove_covered_rows(bit_chunk columns) {
         return remove_rows([columns](bit_chunk const& r) { return r.intersects(columns); });
     }
 
-    // Remove the rows equal to the given row
+    /// @brief Remove the rows equal to the given row.
+    /// @return See `remove_rows`.
     int remove_equal_rows(bit_chunk row) {
         return remove_rows([row](bit_chunk const& r) { return r == row; });
     }
 
-    // Remove the rows that are supersets of the given row
+    /// @brief Remove the rows that are supersets of the given row.
+    /// @return See `remove_rows`.
     int remove_sup_rows(bit_chunk subrow) {
         return remove_rows([subrow](bit_chunk const& r) { return subrow.is_subset_of(r); });
     }
 
-    // Append a row with an explicitly specified length
+    /// @brief Append a copy of @p row with an explicitly specified length of @p n columns.
+    /// @param row Bits of the new row; must fit into `max(width(), n)` columns.
+    /// @param n Number of columns of the new row's slot.
+    /// @return The new row.
+    /// @throws std::length_error If the matrix would need more blocks than fit into `int`.
     bit_row& add_row(bit_row const& row, int n) {
         add_rows(1, n);
         _rows.back().assign(row);
         return _rows.back();
     }
 
-    // Append a row
+    /// @brief Append a copy of @p row, sized to its highest set bit.
+    /// @throws std::length_error If the matrix would need more blocks than fit into `int`.
     void add_row(bit_chunk row) {
         add_row(row, row.find_last() + 1);
     }
 
-    // Append a zero row
+    /// @brief Append a zero row, growing the width to at least @p n columns.
+    /// @throws std::length_error If the matrix would need more blocks than fit into `int`.
     void add_row(int n) {
         if (_n < n)
             _n = n;
         add_row();
     }
 
-    // Append a zero row
+    /// @brief Append a zero row with `width()` columns (at least one).
+    /// @throws std::length_error If the matrix would need more blocks than fit into `int`.
     void add_row() {
         if (_n <= 1)
             add_rows(1, 1);
@@ -343,4 +395,5 @@ public:
     }
 };
 
+/// Bit matrix with rows stored as `std::vector<bit_chunk>`.
 typedef bit_matrix_<bit_chunks> bit_matrix;

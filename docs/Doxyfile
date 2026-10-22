@@ -1,0 +1,78 @@
+# Doxygen configuration for the public API of dual::dual, dual::common and dual::runc.
+#
+# Only settings that differ from Doxygen's defaults are listed. Paths are relative to the
+# repository root, so run it from there:
+#
+#     mkdir -p build && doxygen docs/Doxyfile    # HTML in build/docs/html
+#
+# or build the `dual_docs` target (configure with -DDUAL_BUILD_DOCS=ON), which writes to
+# <build dir>/docs/html. Keep INPUT in sync with the header lists in src/common/CMakeLists.txt and
+# src/dual/CMakeLists.txt; dead headers (errors.h, Registrator.h, CSVLoader.h, GeneticDualizer.h,
+# FrequentInfrequentEnumerator.h) are deliberately left out.
+
+PROJECT_NAME           = dual
+PROJECT_BRIEF          = "Dualization algorithms: enumeration of minimal covers of Boolean matrices"
+OUTPUT_DIRECTORY       = build/docs
+STRIP_FROM_PATH        = src
+JAVADOC_AUTOBRIEF      = NO
+MARKDOWN_SUPPORT       = YES
+
+INPUT                  = docs/mainpage.md \
+                         src/common/bit_chunk.h \
+                         src/common/bit_mask.h \
+                         src/common/bit_matrix.h \
+                         src/common/bit_vector.h \
+                         src/common/bits.h \
+                         src/common/blob.h \
+                         src/common/chunk.h \
+                         src/common/containers.h \
+                         src/common/graph_algorithms.h \
+                         src/common/IntegersFileReader.h \
+                         src/common/IntegersFileWriter.h \
+                         src/common/io_utils.h \
+                         src/common/IteratorRange.h \
+                         src/common/marked.h \
+                         src/common/math_utils.h \
+                         src/common/Randomizer.h \
+                         src/common/range.h \
+                         src/common/raw_vector.h \
+                         src/common/string_utils.h \
+                         src/dual/AOT1.h \
+                         src/dual/BoolMatrixPreparation.h \
+                         src/dual/Counters.h \
+                         src/dual/CoverCollector.h \
+                         src/dual/DualizationBacktrackAlgorithmBase.h \
+                         src/dual/DualizationCounters.h \
+                         src/dual/FileWriters.h \
+                         src/dual/MostCoverCollector.h \
+                         src/dual/Pruning.h \
+                         src/dual/PUNC.h \
+                         src/dual/Runc.h \
+                         src/dual/RuncFixed.h \
+                         src/dual/WeightBoundsPruning.h \
+                         src/dual/WeightedCover.h \
+                         src/dual/Weighters.h \
+                         src/dual/RuncExecutor.h
+RECURSIVE              = NO
+USE_MDFILE_AS_MAINPAGE = docs/mainpage.md
+FILE_PATTERNS          = *.h *.md
+
+EXTRACT_ALL            = NO
+EXTRACT_PRIVATE        = NO
+EXTRACT_STATIC         = YES
+EXTRACT_ANON_NSPACES   = NO
+# Bodies of @cond INTERNAL ... @endcond blocks are implementation details.
+ENABLED_SECTIONS       =
+
+QUIET                  = YES
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_DOC_ERROR      = YES
+WARN_IF_INCOMPLETE_DOC = YES
+WARN_NO_PARAMDOC       = NO
+WARN_AS_ERROR          = NO
+
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+HAVE_DOT               = NO
+SOURCE_BROWSER         = NO

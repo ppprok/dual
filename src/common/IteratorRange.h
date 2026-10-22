@@ -1,17 +1,28 @@
+/// @file
+/// @brief `IteratorRange`: a pair of iterators.
+
 #pragma once
 
+/// @brief Pair of iterators `[_begin, _end)` usable in range-based `for`.
+/// @tparam IteratorT Random-access iterator type.
 template<typename IteratorT>
 struct IteratorRange {
+    /// Iterator type.
     typedef IteratorT iterator;
 
+    /// Range begin.
     iterator _begin;
 
+    /// Range end.
     iterator _end;
 
+    /// @brief Empty range of value-initialised iterators.
     IteratorRange() : _begin(iterator()), _end(iterator()) {}
 
+    /// @brief Range `[begin, end)`.
     IteratorRange(iterator begin, iterator end) : _begin(begin), _end(end) {}
 
+    /// @brief Elements `[from, to)` of @p objects; the bounds are clamped to the container.
     template<typename C>
     IteratorRange(C& objects, int from, int to) {
         if (from < 0)
@@ -30,26 +41,31 @@ struct IteratorRange {
             _end += to;
     }
 
+    /// @brief All elements of @p objects.
     template<typename C>
     IteratorRange(C& objects) {
         _begin = std::begin(objects);
         _end = std::end(objects);
     }
 
+    /// @brief Check whether the range is empty.
     bool empty() const {
         return _begin == _end;
     }
 
+    /// @brief Number of elements.
     int size() const {
         if (empty())
             return 0;
         return _end - _begin;
     }
 
+    /// @brief Range begin.
     iterator begin() const {
         return _begin;
     }
 
+    /// @brief Range end.
     iterator end() const {
         return _end;
     }
@@ -61,8 +77,10 @@ IteratorRange<typename C::iterator> make_iterator_range(C& c)
     return IteratorRange<typename C::iterator>(c);
 }*/
 
-// Join two ranges of objects
-// If necessary, gather them into a single collection buffer
+/// @brief Join two ranges of objects.
+///
+/// If the ranges are adjacent, the result spans both without copying; otherwise both are gathered,
+/// @p r1 first, into @p buffer and the result spans the buffer.
 template<typename IteratorRange, typename Buffer>
 IteratorRange join_ranges(IteratorRange const& r1, IteratorRange const& r2, Buffer& buffer) {
     if (r1.end() == r2.begin())

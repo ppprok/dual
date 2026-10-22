@@ -1,11 +1,17 @@
+/// @file
+/// @brief Owning bit array `bit_vector`.
+
 #pragma once
 
 #include "bit_chunk.h"
 #include <memory.h>
 
-//////////////////////////////////////////////////////////////////////////
-// ������� ������ � ���������� ������ ��� �����
-//////////////////////////////////////////////////////////////////////////
+/// @brief Bit array that allocates memory for its blocks.
+///
+/// An owning `bit_chunk`: the blocks are allocated with `malloc`/`realloc` and freed in the
+/// destructor. The capacity (in blocks) is fixed by the constructor or `zero`; the inherited
+/// `bit_chunk` operations never reallocate, so bits must stay below `capacity * bits_per_block`.
+/// Move-only.
 class bit_vector : public bit_chunk {
 private:
     int _capacity;
@@ -39,6 +45,7 @@ public:
         return bit_chunk::end;
     }*/
 
+    /// @brief Free own memory and take over the memory of @p v, leaving @p v empty.
     inline bit_vector& operator=(bit_vector&& v) {
         free();
 
@@ -52,6 +59,7 @@ public:
         return *this;
     }
 
+    /// @brief Take over the memory of @p v, leaving @p v empty.
     inline bit_vector(bit_vector&& v) : _capacity(0) {
         bit_chunk::begin = v.begin;
         bit_chunk::end = v.end;
@@ -61,6 +69,7 @@ public:
         v.free();
     }
 
+    /// @brief Empty (all-zero) vector with capacity for @p n bits; no memory is allocated if `n <= 0`.
     inline bit_vector(int n) {
         if (n > 0) {
             _capacity = block_for_bits(n);
@@ -70,17 +79,22 @@ public:
         }
     }
 
+    /// @brief Empty vector without memory.
     inline bit_vector() : _capacity(0) {}
 
     /*inline bit_vector::bit_vector( bit_chunk bits ) :bit_chunk(bits), _capacity(0)
     {
     }*/
 
+    /// @brief Free the memory.
     inline ~bit_vector() {
         free();
     }
 
-    // �������� ������ �����
+    /// @brief Zero the bit vector, making room for @p n bits.
+    ///
+    /// Grows the capacity to at least `block_for_bits(n)` blocks if needed (existing bits are
+    /// discarded) and makes the vector empty, i.e. all bits zero.
     void zero(int n) {
         if (n > 0) {
             n = block_for_bits(n);
