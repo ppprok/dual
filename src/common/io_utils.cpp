@@ -34,7 +34,7 @@ std::string read_all(std::string const& filename) {
 
 void write(FILE* file, char const* begin, char const* end) {
     assert(file);
-    auto count = end - begin;
+    auto count = static_cast<size_t>(end - begin);
     if (count == 0)
         return;
 

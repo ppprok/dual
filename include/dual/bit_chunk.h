@@ -107,13 +107,13 @@ struct bit_chunk : chunk<unsigned int> {
 private:
     inline void do_pad_zeros(Block* end1) {
         assert(end < end1);
-        for (; end != end1; ++end)
+        for (; end < end1; ++end)
             *end = 0;
     }
 
     inline void do_pad_ones(Block* end1) {
         assert(end < end1);
-        for (; end != end1; ++end)
+        for (; end < end1; ++end)
             *end = -1;
     }
 
@@ -139,7 +139,7 @@ public:
         auto e2 = r2.begin;
 
         for (auto d = begin; e1 != r1.end && e2 != r2.end; ++d, ++e1, ++e2) {
-            if (*d = *e1 & *e2)
+            if ((*d = *e1 & *e2) != 0)
                 endd = d + 1;
         }
 
@@ -159,17 +159,17 @@ public:
         auto e2 = r2.begin;
 
         for (; e1 != r1.end && e2 != r2.end; ++d, ++e1, ++e2) {
-            if (*d = *e1 | *e2)
+            if ((*d = *e1 | *e2) != 0)
                 endd = d + 1;
         }
 
         for (; e1 != r1.end; ++e1, ++d) {
-            if (*d = *e1)
+            if ((*d = *e1) != 0)
                 endd = d + 1;
         }
 
         for (; e2 != r2.end; ++e2, ++d) {
-            if (*d = *e2)
+            if ((*d = *e2) != 0)
                 endd = d + 1;
         }
         end = endd;
@@ -188,12 +188,12 @@ public:
         auto e2 = r2.begin;
 
         for (; e1 != r1.end && e2 != r2.end; ++d, ++e1, ++e2) {
-            if (*d = *e1 & ~*e2)
+            if ((*d = *e1 & ~*e2) != 0)
                 endd = d + 1;
         }
 
         for (; e1 != r1.end; ++e1, ++d) {
-            if (*d = *e1)
+            if ((*d = *e1) != 0)
                 endd = d + 1;
         }
 
@@ -208,7 +208,7 @@ public:
 
         auto endd = begin;
         for (auto d = begin, e = r.begin; e != r.end; ++e, ++d) {
-            if (*d = *e)
+            if ((*d = *e) != 0)
                 endd = d + 1;
         }
         end = endd;
@@ -221,7 +221,7 @@ public:
 
         auto cend = end;
         for (auto i = end = begin; i != cend; ++i) {
-            if (*i = ~*i)
+            if ((*i = ~*i) != 0)
                 end = i + 1;
         }
     }

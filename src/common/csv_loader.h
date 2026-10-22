@@ -47,7 +47,7 @@ struct CSVArray {
     template<typename T>
     T GetValue(int i) const {
         auto s = GetValue(i);
-        T val;
+        T val{};
         std::from_chars(s.data(), s.data() + s.size(), val);
         return val;
     }
@@ -94,7 +94,7 @@ struct CharMap {
     CharMap(std::string const& select = "") {
         memset(selected, 0, 256);
         for (auto c : select)
-            selected[c] = 1;
+            selected[(unsigned char) c] = 1;
     }
 
     template<typename Selector>
@@ -104,7 +104,7 @@ struct CharMap {
     }
 
     bool operator()(char c) const {
-        return selected[c] != 0;
+        return selected[(unsigned char) c] != 0;
     }
 };
 

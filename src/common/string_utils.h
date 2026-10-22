@@ -64,7 +64,7 @@ typedef std::vector<std::string> Strings;
 
 /// @brief Check whether the characters `[begin1, end1)` equal the zero-terminated string @p begin2.
 inline bool streq(char const* begin1, char const* end1, char const* begin2) {
-    int n = end1 - begin1;
+    size_t n = end1 - begin1;
     return n == strlen(begin2) && strncmp(begin1, begin2, n) == 0;
 }
 

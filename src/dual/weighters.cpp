@@ -197,6 +197,11 @@ void WeighterBase::WeightInnerNode(DualizationNode& node) {
         case NodeType::BacktrackNode:
             WeightBacktrackNode(node);
             break;
+
+        case NodeType::CoverNode:
+        case NodeType::ExtraNode:
+        case NodeType::RootNode:
+            break;
     }
 }
 

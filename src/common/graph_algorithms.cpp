@@ -65,7 +65,7 @@ void topological_order(bit_matrix const& adj_mat, std::vector<int>& order) {
 
 bool is_topological_order(bit_matrix const& adj_mat, std::vector<int> const& order) {
     int n = adj_mat.height();
-    if (n != order.size())
+    if (n != (int) order.size())
         throw std::invalid_argument("Length of array 'order' must be equal to number of verticies");
 
     if (n == 0)

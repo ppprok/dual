@@ -69,7 +69,7 @@ bool Runc::RuncLocalState::AddUncoveredSupportRows(int col, int l, rows_citerato
         support_.push_back(r);
     }
 
-    if (s == support_.size())
+    if (s == (int) support_.size())
         return false;
 
     if (!temp_row_.empty())

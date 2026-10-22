@@ -20,6 +20,8 @@ endif()
 option(DUAL_BUILD_TESTS "Build the doctest-based unit tests" ${DUAL_IS_TOP_LEVEL})
 option(DUAL_BUILD_PYTHON "Build Python bindings (placeholder, see #13; librunc.so is always built)" OFF)
 option(DUAL_ENABLE_SANITIZERS "Build own targets with AddressSanitizer and UndefinedBehaviorSanitizer" OFF)
+# OFF by default so a newer compiler cannot break a consumer's or packager's build; the CMake presets
+# (dev, release, asan) turn it ON, so the warning-free state of live code is kept in development.
 option(DUAL_WARNINGS_AS_ERRORS "Treat compiler warnings as errors for own targets" OFF)
 option(DUAL_INSTALL "Generate install rules and the dualConfig.cmake package" ${DUAL_IS_TOP_LEVEL})
 option(DUAL_BUILD_DOCS "Add the dual_docs target that builds the API documentation with Doxygen" OFF)

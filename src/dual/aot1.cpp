@@ -12,7 +12,6 @@ namespace dual {
 // Initialize from the global state
 void AOT1::LocalState::Init(GlobalState& g) {
     int m = g._matrix.height();
-    int n = g._matrix.width();
     _uncovered.reserve(m);
     _competing.reserve(m);
 
@@ -25,7 +24,7 @@ void AOT1::LocalState::Init(GlobalState& g) {
 }
 
 // Add a column
-AOT1::LocalState::AddResult AOT1::LocalState::AddItem(GlobalState& g, LocalState const& l, int i, int col) {
+AOT1::LocalState::AddResult AOT1::LocalState::AddItem(GlobalState& /*g*/, LocalState const& l, int i, int col) {
     _competing.clear();
     _uncovered.clear();
     _restCols.assign_sub(l._restCols, l._uncovered[i]);
@@ -132,12 +131,17 @@ bit_chunk AOT1::LocalState::GetNonZeroCols(GlobalState& g) {
     return _restCols;
 }
 
-bit_chunk AOT1::LocalState::GetCols(GlobalState& g, AOT1::AlgorithmType alg) {
+bit_chunk AOT1::LocalState::GetCols(GlobalState& /*g*/, AOT1::AlgorithmType alg) {
     switch (alg) {
         case AOT1::AO2:
         case AOT1::AO2K:
         case AOT1::AO2M:
             RemoveDependentRows();
+            break;
+        case AOT1::AO1:
+        case AOT1::AO1K:
+        case AOT1::AO1M:
+            break;
     }
 
     switch (alg) {
@@ -222,7 +226,7 @@ bool AOT1::GlobalState::DoDualize(int stateNum) {
 
 /*Positions const& AOT1::GlobalState::GetCurrentCols()
 {
-    /*_cols.clear();
+    _cols.clear();
     for (int s = 1; s <= _currentState; ++s)
     {
         int j = _states[s]._col;

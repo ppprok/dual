@@ -234,7 +234,7 @@ Row RuncFixed<Row>::FindRow(Rows const& uncoveredRows, Row const& mask) const {
 }
 
 template<typename Row>
-RuncFixed<Row>::RuncFixed() : innerCount(0), extraCount(0), resultsCount(0), callbackDelay(100), _callbackTick(0) {}
+RuncFixed<Row>::RuncFixed() : _callbackTick(0), innerCount(0), resultsCount(0), extraCount(0), callbackDelay(100) {}
 
 template<typename Row>
 void RuncFixed<Row>::InitLocalStates(Rows rows, LocalStates& localStates) {

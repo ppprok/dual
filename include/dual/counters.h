@@ -42,6 +42,9 @@ struct Counters : IDualizationCallback {
             case NodeType::ExtraNode:
                 ++extra;
                 break;
+            case NodeType::BacktrackNode:
+            case NodeType::RootNode:
+                break;
         }
     }
 

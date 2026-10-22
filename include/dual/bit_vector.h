@@ -76,7 +76,7 @@ public:
     inline bit_vector(int n) {
         if (n > 0) {
             _capacity = block_for_bits(n);
-            bit_chunk::begin = bit_chunk::end = (unsigned int*) malloc(_capacity * sizeof(Block));
+            bit_chunk::begin = bit_chunk::end = (Block*) calloc(_capacity, sizeof(Block));
         } else {
             _capacity = 0;
         }

@@ -87,7 +87,6 @@ void IntegersFileReader::CloseInputFile() {
 
 std::vector<bits32> IntegersFileReader::ReadBitMatrix32(int first) {
     assert(_input);
-    int i = 0;
 
     std::vector<bits32> bm;
     bits32 row = 0;
@@ -110,12 +109,11 @@ std::vector<bits32> IntegersFileReader::ReadBitMatrix32(int first) {
     if (row)
         bm.push_back(row);
 
-    return std::move(bm);
+    return bm;
 }
 
 std::vector<bits64> IntegersFileReader::ReadBitMatrix64(int first) {
     assert(_input);
-    int i = 0;
 
     std::vector<bits64> bm;
     bits64 row = 0;
@@ -138,7 +136,7 @@ std::vector<bits64> IntegersFileReader::ReadBitMatrix64(int first) {
     if (row)
         bm.push_back(row);
 
-    return std::move(bm);
+    return bm;
 }
 
 }  // namespace dual
