@@ -1,7 +1,8 @@
 #include <doctest.h>
 
-#include "Registrator.h"
 #include <string>
+
+#include "common/registrator.h"
 
 TEST_CASE("register_instance") {
     auto& registrator = Registrator<std::string>::Instance();

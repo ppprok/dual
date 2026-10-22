@@ -3,8 +3,9 @@
 
 #pragma once
 
-#include "bit_matrix.h"
 #include <stdexcept>
+
+#include <dual/bit_matrix.h>
 
 /// @brief Number of edges (set bits) of a graph given by its adjacency matrix.
 int edges_number(bit_matrix& adj_mat);

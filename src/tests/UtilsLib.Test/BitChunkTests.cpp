@@ -1,8 +1,8 @@
 #include <doctest.h>
 
-#include "bit_mask.h"
-#include "bit_vector.h"
-#include "containers.h"
+#include <dual/bit_mask.h>
+#include <dual/bit_vector.h>
+#include <dual/containers.h>
 
 TEST_CASE("get_set_bits_test") {
     bit_vector bits(1000);

@@ -1,13 +1,13 @@
-// Consumer of the installed dual package: links only against dual::dual and includes headers by
-// bare name, as a library user would. Exits with 0 when every check passes.
+// Consumer of the installed dual package: links only against dual::dual and includes the public
+// headers as <dual/...>, as a library user would. Exits with 0 when every check passes.
 #include <cstdio>
 #include <utility>
 #include <vector>
 
-#include "CoverCollector.h"
-#include "Pruning.h"
-#include "Runc.h"
-#include "RuncFixed.h"
+#include <dual/cover_collector.h>
+#include <dual/pruning.h>
+#include <dual/runc.h>
+#include <dual/runc_fixed.h>
 
 namespace {
 

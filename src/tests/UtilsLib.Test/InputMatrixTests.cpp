@@ -11,8 +11,8 @@
 #include <utility>
 #include <vector>
 
-#include "IntegersFileReader.h"
-#include "common/bit_matrix.h"
+#include <dual/bit_matrix.h>
+#include <dual/integers_file_reader.h>
 
 namespace {
 

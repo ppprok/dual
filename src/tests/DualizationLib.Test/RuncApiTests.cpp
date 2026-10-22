@@ -4,8 +4,9 @@
 
 #include <stdexcept>
 
-#include "Counters.h"
-#include "CoverCollector.h"
+#include <dual/counters.h>
+#include <dual/cover_collector.h>
+
 #include "RuncTestUtils.h"
 
 using namespace runc_test;

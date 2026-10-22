@@ -1,5 +1,5 @@
 
-#include "bits.h"
+#include <dual/bits.h>
 
 //template <typename tag>
 const int BitOpTables::bit_count[] = {

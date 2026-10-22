@@ -7,7 +7,8 @@
 #include <sstream>
 #include <string>
 
-#include "CoverCollector.h"
+#include <dual/cover_collector.h>
+
 #include "RuncTestUtils.h"
 
 using namespace runc_test;

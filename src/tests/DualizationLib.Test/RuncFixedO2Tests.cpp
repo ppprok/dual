@@ -6,8 +6,8 @@
 
 #include <string>
 
-#include "IntegersFileReader.h"
-#include "RuncFixed.h"
+#include <dual/integers_file_reader.h>
+#include <dual/runc_fixed.h>
 
 TEST_CASE("RuncFixed client built with -O2 links and dualizes") {
     struct {

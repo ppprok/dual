@@ -4,8 +4,8 @@
 #include <set>
 #include <vector>
 
-#include "Runc.h"
-#include "RuncExecutor.h"
+#include <dual/runc.h>
+#include <dual/runc_executor.h>
 
 // Helpers shared by the RUNC API and differential tests
 namespace runc_test {

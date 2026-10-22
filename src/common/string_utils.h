@@ -5,7 +5,7 @@
 
 #include <string>
 
-#include "containers.h"
+#include <dual/containers.h>
 
 /// @brief C string of a C string (identity), for generic code.
 inline char const* c_str(char const* c) {

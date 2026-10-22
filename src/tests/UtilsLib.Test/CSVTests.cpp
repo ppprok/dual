@@ -1,6 +1,6 @@
 #include <doctest.h>
 
-#include "CSVLoader.h"
+#include "common/csv_loader.h"
 
 TEST_CASE("load_CSV_and_create_columns") {
     CSVLoader csv;

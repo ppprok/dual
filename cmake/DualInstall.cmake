@@ -8,11 +8,13 @@ install(TARGETS common dual runc
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dual)
+        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-# Headers are flat for now (they include each other as "bit_matrix.h"); layout moves to include/ in #12.
-install(FILES ${DUAL_COMMON_HEADERS} ${DUAL_DUAL_HEADERS} ${DUAL_RUNC_HEADERS}
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dual)
+# Public headers: include/dual/*.h -> <prefix>/include/dual, used as #include <dual/runc.h>.
+# Internal headers stay in src/ and are not installed.
+install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/dual"
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        FILES_MATCHING PATTERN "*.h")
 
 install(EXPORT dualTargets
         NAMESPACE dual::

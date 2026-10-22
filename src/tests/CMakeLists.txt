@@ -23,7 +23,7 @@ add_custom_target(dual_test_data
 function(dual_add_test name)
     cmake_parse_arguments(ARG "" "" "SOURCES;LIBS" ${ARGN})
     add_executable(${name} ${ARG_SOURCES})
-    # Tests include headers as "common/bit_matrix.h", relative to src/.
+    # Public headers come as <dual/...> from the library targets; internal ones as "common/...", relative to src/.
     target_include_directories(${name} PRIVATE "${PROJECT_SOURCE_DIR}/src")
     target_link_libraries(${name} PRIVATE ${ARG_LIBS} doctest::doctest)
     set_target_properties(${name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${DUAL_TEST_WORKING_DIR}")

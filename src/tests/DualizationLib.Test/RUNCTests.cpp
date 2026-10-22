@@ -1,7 +1,7 @@
 #include <doctest.h>
 
-#include "Counters.h"
-#include "Runc.h"
+#include <dual/counters.h>
+#include <dual/runc.h>
 
 void DoTest(std::string const& filename, int count) {
     Runc::AlgorithmType algs[] = {Runc::RUNC, Runc::OPT, Runc::RUNCM};

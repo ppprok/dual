@@ -8,11 +8,11 @@
 #    include <malloc.h>
 #endif
 
-#include "bit_mask.h"
-#include "bit_matrix.h"
-#include "bit_vector.h"
-#include "blob.h"
-#include "chunk.h"
+#include <dual/bit_mask.h>
+#include <dual/bit_matrix.h>
+#include <dual/bit_vector.h>
+#include <dual/blob.h>
+#include <dual/chunk.h>
 
 namespace {
 

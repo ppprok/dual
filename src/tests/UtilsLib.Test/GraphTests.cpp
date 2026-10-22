@@ -1,7 +1,8 @@
 #include <doctest.h>
 
-#include "bit_matrix.h"
-#include "graph_algorithms.h"
+#include <dual/bit_matrix.h>
+
+#include "common/graph_algorithms.h"
 
 TEST_CASE("TopologicalOrderTest") {
     bit_matrix adj;
