@@ -20,6 +20,10 @@ void WeightBoundsPruningCallback::Call(DualizationNode& node) {
 
         case NodeType::CoverNode:
             PrunCoverNode(node);
+            break;
+
+        default:  // root and extra nodes do not change the weight
+            break;
     }
 }
 

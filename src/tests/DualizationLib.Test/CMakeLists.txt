@@ -8,10 +8,11 @@ dual_add_test(TestDual
         RuncTestUtils.h
         "${PROJECT_SOURCE_DIR}/src/dual/RuncExecutor.cpp"
         AOT1PUNCTests.cpp
+        PruningTests.cpp
         LIBS dual::dual)
 
 # RuncFixed.cpp compiled with -O2 into its own client, independently of the build type: the link
-# fails unless RuncFixed members are explicitly instantiated (#23).
+# fails unless RuncFixed members and RuncFixedDualize are explicitly instantiated (#23, #34).
 dual_add_test(TestRuncFixedO2
         SOURCES
         main.cpp

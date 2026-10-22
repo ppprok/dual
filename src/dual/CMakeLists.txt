@@ -31,6 +31,7 @@ add_library(dual
         PUNC.cpp
         Runc.cpp
         RuncFixed.cpp
+        WeightBoundsPruning.cpp
         Weighters.cpp
         ${DUAL_DUAL_HEADERS})
 add_library(dual::dual ALIAS dual)
