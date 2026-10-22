@@ -27,10 +27,8 @@ bit_vector make_bits(std::vector<int> const& bits, int n = 64) {
 
 }  // namespace
 
-// Audit finding 1: chunk::operator+=/-= truncated the pointer offset to int.
-// Uses real heap buffers: on 64-bit targets their addresses divided by sizeof(T) exceed INT_MAX, so the old
-// truncation is caught. The rebase in chunk itself still relies on flat pointer arithmetic (base - (T*)0),
-// which is formally UB; a cleaner rebase is a follow-up for #12.
+// Audit finding 1: the chunk rebase truncated the pointer offset to int, and later relied on flat
+// pointer arithmetic (base - (T*)0). Now offsets are taken from the live old buffer (#12).
 TEST_CASE("chunk_rebase_keeps_full_pointer_offset") {
     using T = unsigned int;
     std::vector<T> oldBuf(8), newBuf(8);
@@ -38,8 +36,7 @@ TEST_CASE("chunk_rebase_keeps_full_pointer_offset") {
     T* newBase = newBuf.data();
 
     chunk<T> c(oldBase + 3, oldBase + 5);
-    c -= oldBase;
-    c += newBase;
+    c.rebase(newBase, c.begin_offset(oldBase), c.end_offset(oldBase));
 
     CHECK(c.begin == newBase + 3);
     CHECK(c.end == newBase + 5);

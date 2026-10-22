@@ -60,23 +60,21 @@ struct chunk {
         return end - begin;
     }
 
-    /// @brief Rebase: treat `begin`/`end` as offsets from a null pointer and turn them into
-    ///        pointers into the memory starting at @p base.
-    chunk& operator+=(T* base) {
-        std::ptrdiff_t offset = (base - (T*) nullptr);
-        begin += offset;
-        end += offset;
-        assert(valid());
-        return *this;
+    /// @brief Offset of `begin` from @p base, which must point into the same buffer.
+    std::ptrdiff_t begin_offset(T const* base) const {
+        return begin - base;
     }
 
-    /// @brief Inverse of `operator+=`: turn pointers into the memory at @p base into offsets.
-    chunk& operator-=(T* base) {
-        assert(valid());
-        std::ptrdiff_t offset = (base - (T*) nullptr);
-        begin -= offset;
-        end -= offset;
-        return *this;
+    /// @brief Offset of `end` from @p base, which must point into the same buffer.
+    std::ptrdiff_t end_offset(T const* base) const {
+        return end - base;
+    }
+
+    /// @brief View `[base + begin_offset, base + end_offset)`: re-attach the chunk to a (new) buffer
+    ///        using offsets taken with `begin_offset` / `end_offset` while the old buffer was alive.
+    void rebase(T* base, std::ptrdiff_t begin_offset, std::ptrdiff_t end_offset) {
+        begin = base + begin_offset;
+        end = base + end_offset;
     }
 
     /// @brief Check that the chunk specifies a valid memory range (non-null `begin`, `begin <= end`).

@@ -5,7 +5,9 @@
 
 #include <algorithm>
 #include <climits>
+#include <cstddef>
 #include <stdexcept>
+#include <vector>
 
 #include <dual/bit_chunk.h>
 #include <dual/blob.h>
@@ -100,14 +102,22 @@ public:
         if (_data.size() >= blocks)
             return;
 
-        auto old = _data.begin();
-        _data.resize(blocks);
-        if (old == _data.begin())
-            return;
+        // Offsets are taken while the old buffer is alive: pointers into it are invalid after a move.
+        std::vector<std::ptrdiff_t> offsets;
+        offsets.reserve(2 * _rows.size());
+        auto const* old = _data.begin();
+        for (auto const& r : _rows) {
+            offsets.push_back(r.begin_offset(old));
+            offsets.push_back(r.end_offset(old));
+        }
 
+        _data.resize(blocks);
+
+        auto* base = _data.begin();
+        std::size_t k = 0;
         for (auto& r : _rows) {
-            r -= old;
-            r += _data.begin();
+            r.rebase(base, offsets[k], offsets[k + 1]);
+            k += 2;
         }
     }
 
