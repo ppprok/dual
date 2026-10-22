@@ -18,7 +18,7 @@ else()
 endif()
 
 option(DUAL_BUILD_TESTS "Build the doctest-based unit tests" ${DUAL_IS_TOP_LEVEL})
-option(DUAL_BUILD_PYTHON "Build Python bindings (placeholder, see #13; librunc.so is always built)" OFF)
+option(DUAL_BUILD_PYTHON "Build the pybind11 extension module dual._dual (needs pybind11; used by pip install .)" OFF)
 option(DUAL_ENABLE_SANITIZERS "Build own targets with AddressSanitizer and UndefinedBehaviorSanitizer" OFF)
 option(DUAL_WARNINGS_AS_ERRORS "Treat compiler warnings as errors for own targets" OFF)
 option(DUAL_INSTALL "Generate install rules and the dualConfig.cmake package" ${DUAL_IS_TOP_LEVEL})
@@ -31,15 +31,15 @@ if(DUAL_IS_TOP_LEVEL)
     endif()
 endif()
 
-if(DUAL_BUILD_PYTHON)
-    message(WARNING "DUAL_BUILD_PYTHON is a placeholder until #13; use the InstallRuncLib target for src/pyrunc.")
-endif()
-
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 include(GNUInstallDirs)
 include(DualTargetOptions)
 
 add_subdirectory(src)
+
+if(DUAL_BUILD_PYTHON)
+    add_subdirectory(python)
+endif()
 
 if(DUAL_BUILD_TESTS)
     enable_testing()
