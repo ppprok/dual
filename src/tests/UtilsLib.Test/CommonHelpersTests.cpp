@@ -9,6 +9,7 @@
 #include "bit_vector.h"
 #include "containers.h"
 #include "graph_algorithms.h"
+#include "raw_vector.h"
 #include "string_utils.h"
 
 TEST_CASE("remove_rows_returns_zero_when_no_row_matches") {
@@ -93,4 +94,31 @@ TEST_CASE("bit_mask_intersects_stops_at_the_end_of_the_second_chunk") {
     b1Blocks[0] = 1;
     CHECK(mask.intersects(b1, b2));
     CHECK(mask.intersects(b2, b1));
+}
+
+namespace {
+
+std::vector<int> to_std(raw_vector<int> const& v) {
+    return std::vector<int>(v.begin(), v.end());
+}
+
+}  // namespace
+
+// erase computed the count as b - e (negative): an assert fired in Debug, the end moved forward otherwise.
+TEST_CASE("raw_vector_erase_removes_elements") {
+    raw_vector<int> v;
+    for (int i = 0; i != 6; ++i)
+        v.push_back(i);
+
+    v.erase(1);
+    CHECK_EQ(std::vector<int>{0, 2, 3, 4, 5}, to_std(v));
+
+    v.erase(v.begin() + 1, v.begin() + 3);
+    CHECK_EQ(std::vector<int>{0, 4, 5}, to_std(v));
+
+    v.erase(v.end() - 1);
+    CHECK_EQ(std::vector<int>{0, 4}, to_std(v));
+
+    v.erase(v.begin(), v.begin());
+    CHECK_EQ(std::vector<int>{0, 4}, to_std(v));
 }

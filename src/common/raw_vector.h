@@ -277,7 +277,7 @@ public:
 
     /// @brief Remove several elements `[b, e)`, shifting the following ones.
     void erase(T* b, T* e) {
-        int s = b - e;
+        int s = e - b;
         if (s == 0)
             return;
         assert(_begin <= b && s > 0 && e <= _end);
