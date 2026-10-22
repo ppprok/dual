@@ -1,5 +1,7 @@
 # dual: dualization algorithms
 
+[![CI](https://github.com/ppprok/dual/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/ppprok/dual/actions/workflows/ci.yml)
+
 C++17 library that enumerates all **minimal covers of a Boolean matrix**. A set of columns *covers*
 the matrix when every row has a one in at least one of those columns, and a cover is *minimal* when
 no column can be dropped from it. Read the rows as hyperedges over the columns as vertices, and the
