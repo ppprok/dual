@@ -24,7 +24,7 @@ private:
         int column;
         Row row;
 
-        SupportRow(){};
+        SupportRow() {};
 
         SupportRow(int c, Row r) {
             column = c;

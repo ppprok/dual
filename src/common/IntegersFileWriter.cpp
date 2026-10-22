@@ -3,7 +3,6 @@
 #include <cmath>
 #include <stdio.h>
 
-
 void IntegersFileWriter::CreateOutputFile(std::string const& outputFileName) {
     _output = create_file_for_write(outputFileName);
 }

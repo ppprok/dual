@@ -49,7 +49,7 @@ struct LocalState {
     OrderByWeights columnsOrder;
 
     /// @brief Empty state.
-    LocalState() : topRow(-1){};
+    LocalState() : topRow(-1) {};
 };
 
 /// Stack of local states.

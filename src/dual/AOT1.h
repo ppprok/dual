@@ -65,7 +65,7 @@ private:
 
 public:
     /// @brief Empty state; call `Init` before use.
-    LocalState(){};
+    LocalState() {};
 
     /// @brief Move the rows of @p s; the remaining-columns view is copied.
     LocalState(LocalState&& s);

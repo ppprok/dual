@@ -14,7 +14,7 @@ protected:
 
 public:
     /// @brief Empty collector without a limit.
-    CoverCollector() : MaxCount(-1){};
+    CoverCollector() : MaxCount(-1) {};
 
     /// Stop the enumeration (`DualizationNode::stoped`) once this many covers are collected;
     /// no limit if not positive (default -1).

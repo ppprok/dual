@@ -221,7 +221,7 @@ Runc::RuncLocalState& Runc::RuncGlobalState::getLocalState(std::size_t state_num
         auto m = _matrix.height();
         auto n = _matrix.width();
         while (state_num >= _states.size())
-            _states.emplace_back(m ,n);
+            _states.emplace_back(m, n);
     }
     return _states[state_num];
 }
@@ -317,8 +317,7 @@ bool Runc::RuncGlobalState::doStep() {
         }
     } else if (state_depth_ > 0) {
         --state_depth_;
-    }
-    else{
+    } else {
         enumeration_ = Enumeration::Finished;
         return false;
     }
@@ -337,8 +336,8 @@ std::vector<Columns> Runc::RuncGlobalState::dualize(size_t max_count) {
 
     std::vector<Columns> result;
     result.reserve(std::min<size_t>(max_count, 1024));
-    auto callback = dualization_callback([&result](DualizationNode& node){
-        if (node.IsCover()){
+    auto callback = dualization_callback([&result](DualizationNode& node) {
+        if (node.IsCover()) {
             result.push_back(node.columns);
         }
     });
@@ -365,7 +364,7 @@ size_t Runc::RuncGlobalState::dualize(uint32_t buffer_size, uint32_t* buffer) {
     }
 
     size_t count = 0;
-    auto callback = dualization_callback([&buffer_size, &buffer, &count](DualizationNode& node){
+    auto callback = dualization_callback([&buffer_size, &buffer, &count](DualizationNode& node) {
         if (!node.IsCover())
             return;
 

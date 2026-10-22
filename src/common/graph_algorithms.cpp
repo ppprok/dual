@@ -1,5 +1,5 @@
-#include "bit_vector.h"
 #include "graph_algorithms.h"
+#include "bit_vector.h"
 
 void transitive_closure(bit_matrix& adj_mat) {
     int n = adj_mat.height();
