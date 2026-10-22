@@ -164,7 +164,7 @@ public:
 ///   finished. `dualize(buffer_size, buffer)` writes `[size, col...]` records and returns their
 ///   count; 0 means finished only if `isDualizeFinished()`, otherwise the buffer was smaller than
 ///   `width() + 1` (or null) and nothing was done. After the end every further call returns nothing.
-/// - `setMatrix()`, `loadMatrix()` and the non-const `get_matrix()` reset the enumeration: the next
+/// - `setMatrix()`, `loadMatrix()` and `mutable_matrix()` reset the enumeration: the next
 ///   portion starts from the first cover of the (new) matrix. So does `resetDualize()`.
 /// - If a callback throws, the exception propagates and the enumeration is reset.
 /// - If a callback stops the node (`DualizationNode::stoped`, e.g. `CoverCollector::MaxCount`), the

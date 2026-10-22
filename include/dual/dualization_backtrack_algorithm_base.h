@@ -198,10 +198,11 @@ public:
     DualizationBacktrackAlgorithmBase();
     /// @brief Replace the input matrix; resets the current node and calls `onMatrixChanged`.
     void setMatrix(bit_matrix matrix);
-    /// @brief Mutable access to the input matrix.
-    /// @note Mutable access counts as a matrix change (see `onMatrixChanged`), even if nothing is modified.
-    bit_matrix& get_matrix();
-    /// @brief The input matrix.
+    /// @brief Mutable access to the input matrix, for changing it in place.
+    /// @note Counts as a matrix change (see `onMatrixChanged`; RUNC restarts its enumeration), even
+    ///       if nothing is modified. Use `get_matrix()` to read the matrix.
+    bit_matrix& mutable_matrix();
+    /// @brief The input matrix (read-only; does not affect a running enumeration).
     bit_matrix const& get_matrix() const;
     /// @brief Load the input matrix from a hypergraph (`.hg`) file and set it with `setMatrix`.
     ///

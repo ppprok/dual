@@ -82,7 +82,7 @@ int32_t enumerate_covers(DualizerHandler dualizer, uint32_t buffer_size, uint32_
         if (d.matrix_dirty)
             d.buildMatrix();
 
-        auto const& matrix = static_cast<dual::Runc::RuncGlobalState const&>(d.state).get_matrix();
+        auto const& matrix = d.state.get_matrix();
         if (buffer_size < static_cast<uint64_t>(matrix.width()) + 1)
             return RUNC_ERROR_BUFFER_TOO_SMALL;
 
