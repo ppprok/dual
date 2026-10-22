@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <limits.h>
+#include <climits>
 
 namespace dual {
 

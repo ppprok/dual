@@ -165,7 +165,7 @@ struct ChainCallback : IDualizationCallback {
     C2 callback2;
 
     /// @brief Call `callback1`, then `callback2` if `node.stoped` is not set.
-    virtual void Call(DualizationNode& node) {
+    void Call(DualizationNode& node) override {
         callback1.Call(node);
         if (node.stoped)
             return;

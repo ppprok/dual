@@ -70,10 +70,10 @@ public:
     LocalState() {};
 
     /// @brief Move the rows of @p s; the remaining-columns view is copied.
-    LocalState(LocalState&& s);
+    LocalState(LocalState&& s) noexcept;
 
     /// @brief Move the rows of @p s; the remaining-columns view is copied.
-    LocalState& operator=(LocalState&& s);
+    LocalState& operator=(LocalState&& s) noexcept;
 
     /// @brief Initialize the local state: reserve rows and bind the remaining columns to the
     ///        buffer row of this state in @p g.

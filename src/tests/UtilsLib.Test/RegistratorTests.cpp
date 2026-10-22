@@ -13,12 +13,7 @@ TEST_CASE("register_instance") {
 
     CHECK_EQ(std::string("str1"), registrator.Get("s1"));
     CHECK_EQ(std::string("str2"), registrator.Get("s2"));
-    try {
-        registrator.Get("s3");
-        FAIL("");
-    }
-    catch (std::exception& e) {
-    }
+    CHECK_THROWS_AS(registrator.Get("s3"), std::exception);
 }
 
 TEST_CASE("register_factory") {
@@ -28,10 +23,5 @@ TEST_CASE("register_factory") {
 
     CHECK_EQ(std::string("str1"), registrator.Create("s1"));
     CHECK_EQ(std::string("str2"), registrator.Create("s2"));
-    try {
-        registrator.Create("s3");
-        FAIL("");
-    }
-    catch (std::exception& e) {
-    }
+    CHECK_THROWS_AS(registrator.Create("s3"), std::exception);
 }

@@ -18,12 +18,12 @@ void BoolMatrixPreparation::RemoveDependentRows(bit_chunks& rows) {
             int b = bit_chunk::subset_cmp(rows[i], rows[j]);
 
             if (b < 0) {
-                rows[j].begin = 0;
+                rows[j].begin = nullptr;
                 ++c;
             }
 
             if (b > 0) {
-                rows[i].begin = 0;
+                rows[i].begin = nullptr;
                 ++c;
                 break;
             }
@@ -48,12 +48,12 @@ void BoolMatrixPreparation::RemoveDependentRows(bit_chunks& rows, bit_mask const
             int b = mask.subset_cmp(rows[i], rows[j]);
 
             if (b < 0) {
-                rows[j].begin = 0;
+                rows[j].begin = nullptr;
                 ++c;
             }
 
             if (b > 0) {
-                rows[i].begin = 0;
+                rows[i].begin = nullptr;
                 ++c;
                 break;
             }

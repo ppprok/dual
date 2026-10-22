@@ -1,7 +1,7 @@
 #include <dual/integers_file_writer.h>
 
 #include <cmath>
-#include <stdio.h>
+#include <cstdio>
 
 namespace dual {
 

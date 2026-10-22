@@ -129,7 +129,7 @@ Runc::RuncLocalState::AddResult Runc::RuncLocalState::AddColumn(RuncLocalState c
 }
 
 void Runc::RuncLocalState::RemoveColumn(int j) {
-    restCols_.set(j, 0);
+    restCols_.set(j, false);
 }
 
 bit_chunk Runc::RuncLocalState::GetMinUncovered(int mc /*= 0*/) const {

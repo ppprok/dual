@@ -80,7 +80,7 @@ public:
     bool IsDefaultWeight(int j) const;
 
     /// @brief Recompute the weights and cut the branch if necessary.
-    virtual void Call(DualizationNode& node);
+    void Call(DualizationNode& node) override;
 
     /// @brief Remove weight @p w from the sums of remaining weights.
     void DecRestWeight(Weight w);

@@ -1,0 +1,64 @@
+---
+# clang-tidy configuration for live code (include/dual, src/). Run it through the compile database:
+#   run-clang-tidy.py -p build/dev -quiet 'src/(common|dual|tests)/'
+# or configure with -DDUAL_CLANG_TIDY=ON to run it as part of the build.
+#
+# Excluded checks and why:
+# - bugprone-easily-swappable-parameters: flags most (int, int) signatures of the bit containers.
+# - bugprone-narrowing-conversions: the code uses int sizes/indices throughout by design.
+# - bugprone-implicit-widening-of-multiplication-result: int block arithmetic, sizes stay far below 2^31.
+# - bugprone-assignment-in-if-condition: `if ((*d = x) != 0)` is the idiom of the bit_chunk loops.
+# - bugprone-branch-clone: switch cases that intentionally do the same thing for several node types.
+# - bugprone-macro-parentheses / bugprone-reserved-identifier: the C ABI macros and _leadingUnderscore
+#   members are part of the existing API.
+# - bugprone-signed-bitwise: bit indices are int by design (`i >> 5`, `i & 31` in the bit containers).
+# - bugprone-random-generator-seed: fixed / default seeds are intended, so shuffles and random tests are
+#   reproducible run to run.
+# - performance-enum-size: enums are not stored in bulk.
+# - performance-avoid-endl: only in debug printing.
+# - clang-analyzer: only the core, cplusplus, deadcode and unix groups (no optin/alpha/osx/...).
+Checks: >
+  -*,
+  bugprone-*,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-narrowing-conversions,
+  -bugprone-implicit-widening-of-multiplication-result,
+  -bugprone-assignment-in-if-condition,
+  -bugprone-branch-clone,
+  -bugprone-macro-parentheses,
+  -bugprone-reserved-identifier,
+  -bugprone-signed-bitwise,
+  -bugprone-random-generator-seed,
+  performance-*,
+  -performance-enum-size,
+  -performance-avoid-endl,
+  clang-analyzer-core.*,
+  clang-analyzer-cplusplus.*,
+  clang-analyzer-deadcode.*,
+  clang-analyzer-unix.*,
+  modernize-use-override,
+  modernize-use-nullptr,
+  modernize-use-bool-literals,
+  modernize-redundant-void-arg,
+  modernize-deprecated-headers,
+  modernize-use-equals-delete,
+  modernize-make-unique,
+  readability-container-size-empty,
+  readability-misleading-indentation,
+  readability-redundant-control-flow,
+  readability-redundant-smartptr-get,
+  readability-redundant-string-cstr,
+  readability-redundant-string-init,
+  readability-delete-null-pointer,
+  readability-static-definition-in-anonymous-namespace,
+  readability-uniqueptr-delete-release,
+  readability-non-const-parameter,
+  misc-redundant-expression,
+  misc-unused-using-decls
+WarningsAsErrors: ''
+HeaderFilterRegex: '(include/dual|src/(common|dual|tests))/'
+FormatStyle: file
+CheckOptions:
+  - key: modernize-deprecated-headers.CheckHeaderFile
+    value: true
+...

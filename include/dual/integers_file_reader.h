@@ -2,7 +2,7 @@
 /// @brief `IntegersFileReader`: reading integer lists and bit matrices (`.hg` files).
 
 #pragma once
-#include <stdio.h>
+#include <cstdio>
 
 #include <dual/bit_matrix.h>
 #include <dual/io_utils.h>

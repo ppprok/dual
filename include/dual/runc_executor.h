@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdint.h>
+#include <stdint.h>  // NOLINT(modernize-deprecated-headers): a C header, usable from C
 
 /// @file
 /// @brief C ABI of `librunc`: portion-wise enumeration of the minimal covers of a Boolean matrix

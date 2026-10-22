@@ -21,7 +21,7 @@ struct chunk {
     T* end;
 
     /// @brief View the range `[b, e)`; by default an empty view with null bounds (not `valid()`).
-    chunk(T* b = 0, T* e = 0) : begin(b), end(e) {}
+    chunk(T* b = nullptr, T* e = nullptr) : begin(b), end(e) {}
 
     /// @brief Set the size to @p s elements by moving `end`; no memory is allocated or initialised.
     void resize(int s) {
@@ -63,7 +63,7 @@ struct chunk {
     /// @brief Rebase: treat `begin`/`end` as offsets from a null pointer and turn them into
     ///        pointers into the memory starting at @p base.
     chunk& operator+=(T* base) {
-        std::ptrdiff_t offset = (base - (T*) 0);
+        std::ptrdiff_t offset = (base - (T*) nullptr);
         begin += offset;
         end += offset;
         assert(valid());
@@ -73,7 +73,7 @@ struct chunk {
     /// @brief Inverse of `operator+=`: turn pointers into the memory at @p base into offsets.
     chunk& operator-=(T* base) {
         assert(valid());
-        std::ptrdiff_t offset = (base - (T*) 0);
+        std::ptrdiff_t offset = (base - (T*) nullptr);
         begin -= offset;
         end -= offset;
         return *this;

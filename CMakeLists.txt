@@ -25,6 +25,7 @@ option(DUAL_ENABLE_SANITIZERS "Build own targets with AddressSanitizer and Undef
 option(DUAL_WARNINGS_AS_ERRORS "Treat compiler warnings as errors for own targets" OFF)
 option(DUAL_INSTALL "Generate install rules and the dualConfig.cmake package" ${DUAL_IS_TOP_LEVEL})
 option(DUAL_BUILD_DOCS "Add the dual_docs target that builds the API documentation with Doxygen" OFF)
+option(DUAL_CLANG_TIDY "Run clang-tidy (config .clang-tidy) on own sources as part of the build" OFF)
 
 if(DUAL_IS_TOP_LEVEL)
     if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
@@ -35,6 +36,19 @@ endif()
 
 if(DUAL_BUILD_PYTHON)
     message(WARNING "DUAL_BUILD_PYTHON is a placeholder until #13; use the InstallRuncLib target for src/pyrunc.")
+endif()
+
+if(DUAL_CLANG_TIDY)
+    find_program(DUAL_CLANG_TIDY_EXE NAMES clang-tidy)
+    if(NOT DUAL_CLANG_TIDY_EXE)
+        message(FATAL_ERROR "DUAL_CLANG_TIDY is ON, but clang-tidy was not found")
+    endif()
+    # Applies to the targets created below (own code only: doctest is header-only). With
+    # DUAL_WARNINGS_AS_ERRORS a clang-tidy finding fails the build too.
+    set(CMAKE_CXX_CLANG_TIDY "${DUAL_CLANG_TIDY_EXE}")
+    if(DUAL_WARNINGS_AS_ERRORS)
+        list(APPEND CMAKE_CXX_CLANG_TIDY "--warnings-as-errors=*")
+    endif()
 endif()
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")

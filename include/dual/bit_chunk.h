@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <assert.h>
+#include <cassert>
 #include <vector>
 
 #include <dual/bits.h>
@@ -105,13 +105,13 @@ struct bit_chunk : chunk<unsigned int> {
     }
 
 private:
-    inline void do_pad_zeros(Block* end1) {
+    inline void do_pad_zeros(const Block* end1) {
         assert(end < end1);
         for (; end < end1; ++end)
             *end = 0;
     }
 
-    inline void do_pad_ones(Block* end1) {
+    inline void do_pad_ones(const Block* end1) {
         assert(end < end1);
         for (; end < end1; ++end)
             *end = -1;
@@ -637,7 +637,7 @@ struct weighted_bit_chunk : bit_chunk {
     Weight weight;
 
     /// @brief View the blocks `[b, e)` with weight @p w.
-    weighted_bit_chunk(Block* b = 0, Block* e = 0, Weight w = 0) : bit_chunk(b, e), weight(w) {}
+    weighted_bit_chunk(Block* b = nullptr, Block* e = nullptr, Weight w = 0) : bit_chunk(b, e), weight(w) {}
 
     /// @brief View the same blocks as @p bits with weight @p w.
     weighted_bit_chunk(bit_chunk const& bits, Weight w = 0) : bit_chunk(bits), weight(w) {}

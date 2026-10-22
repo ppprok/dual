@@ -23,7 +23,7 @@ public:
     int MaxCount;
 
     /// @brief Store the columns and weight of @p node if `node.IsCover()`.
-    virtual void Call(DualizationNode& node);
+    void Call(DualizationNode& node) override;
 
     /// @brief The collected covers, in the order they were found.
     WeightedCovers const& GetCovers() const;

@@ -61,7 +61,7 @@ public:
     void SetOptions(Options options);
 
     /// @brief Recompute the weights and cut the branch if necessary.
-    virtual void Call(DualizationNode& node);
+    void Call(DualizationNode& node) override;
 
     /// @brief Set a fixed upper bound; nodes heavier than it are pruned.
     void FixMaxBound(Weight bound);

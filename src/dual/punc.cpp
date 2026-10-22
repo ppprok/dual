@@ -161,7 +161,6 @@ void GlobalState::SetOrder(Weights const& weights, int n, OrderByWeights& order)
     }
 
     Sort(order);
-    return;
 }
 
 void GlobalState::CollectColsOrder(bit_chunk bits, OrderByWeights& order) {

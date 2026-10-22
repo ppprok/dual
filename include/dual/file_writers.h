@@ -13,7 +13,7 @@ namespace dual {
 /// separated by spaces. Open the output file with `CreateOutputFile` before the enumeration.
 struct AllColumnsFileWriterCallback : public IDualizationCallback, public IntegersFileWriter {
     /// @brief Write a line for @p node if `node.IsCover()`.
-    virtual void Call(DualizationNode& node);
+    void Call(DualizationNode& node) override;
 };
 
 /// @brief Writes the columns in sorted order.
@@ -26,7 +26,7 @@ class OrderedColumnsFileWriterCallback : public IDualizationCallback, public Int
 
 public:
     /// @brief Write a line for @p node if `node.IsCover()`.
-    virtual void Call(DualizationNode& node);
+    void Call(DualizationNode& node) override;
 };
 
 /// @brief Writes the first column.
@@ -36,7 +36,7 @@ public:
 class FirstColumnFileWriterCallback : public IDualizationCallback, public IntegersFileWriter {
 public:
     /// @brief Write a line for @p node if `node.IsCover()`.
-    virtual void Call(DualizationNode& node);
+    void Call(DualizationNode& node) override;
 };
 
 /// @brief Writes the last column.
@@ -46,7 +46,7 @@ public:
 class LastColumnFileWriterCallback : public IDualizationCallback, public IntegersFileWriter {
 public:
     /// @brief Write a line for @p node if `node.IsCover()`.
-    virtual void Call(DualizationNode& node);
+    void Call(DualizationNode& node) override;
 };
 
 /// @brief Writes the number of columns.
@@ -56,7 +56,7 @@ public:
 class SizeFileWriterCallback : public IDualizationCallback, public IntegersFileWriter {
 public:
     /// @brief Write a line for @p node if `node.IsCover()`.
-    virtual void Call(DualizationNode& node);
+    void Call(DualizationNode& node) override;
 };
 
 /// @brief Writes the cover weight.
@@ -66,7 +66,7 @@ public:
 class WeightFileWriterCallback : public IDualizationCallback, public IntegersFileWriter {
 public:
     /// @brief Write a line for @p node if `node.IsCover()`.
-    virtual void Call(DualizationNode& node);
+    void Call(DualizationNode& node) override;
 };
 
 /// @brief Writes the smallest column.
@@ -76,7 +76,7 @@ public:
 class MinColumnFileWriterCallback : public IDualizationCallback, public IntegersFileWriter {
 public:
     /// @brief Write a line for @p node if `node.IsCover()`.
-    virtual void Call(DualizationNode& node);
+    void Call(DualizationNode& node) override;
 };
 
 /// @brief Writes the largest column.
@@ -86,7 +86,7 @@ public:
 class MaxColumnFileWriterCallback : public IDualizationCallback, public IntegersFileWriter {
 public:
     /// @brief Write a line for @p node if `node.IsCover()`.
-    virtual void Call(DualizationNode& node);
+    void Call(DualizationNode& node) override;
 };
 
 }  // namespace dual

@@ -106,17 +106,17 @@ public:
     virtual void WeightBacktrackNode(DualizationNode& node) = 0;
 
     /// @brief Same as `WeightInnerNode`.
-    void Call(DualizationNode& node);
+    void Call(DualizationNode& node) override;
 };
 
 /// @brief Weighs search tree nodes by the total weight of columns.
 class ColumnsWeighterCallback : public WeighterBase {
 
     // Compute the weight of a new search tree node
-    void WeightNewNode(DualizationNode& node);
+    void WeightNewNode(DualizationNode& node) override;
 
     // Recompute the weight when backtracking one level up
-    void WeightBacktrackNode(DualizationNode& node);
+    void WeightBacktrackNode(DualizationNode& node) override;
 };
 
 /// @brief Weighs search tree nodes by the total weight of the target rows covered by their columns.
@@ -143,17 +143,17 @@ public:
     CoveredRowWeighterCallback();
 
     /// @brief Reset the parameters to defaults.
-    void Reset();
+    void Reset();  // NOLINT(bugprone-derived-method-shadowing-base-method): extends WeighterBase::Reset
 
     /// @brief Set the rows to be covered (all uncovered); row weights come from `SetWeights`.
     void SetTargetRows(bit_chunks targetRows);
 
     /// @brief Compute the weight of a new search tree node: add the weights of the target rows
     ///        first covered by its last column.
-    void WeightNewNode(DualizationNode& node);
+    void WeightNewNode(DualizationNode& node) override;
 
     /// @brief Recompute the weight when backtracking one level up.
-    void WeightBacktrackNode(DualizationNode& node);
+    void WeightBacktrackNode(DualizationNode& node) override;
 };
 
 }  // namespace dual

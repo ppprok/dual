@@ -59,7 +59,7 @@ AOT1::LocalState::AddResult AOT1::LocalState::AddItem(GlobalState& /*g*/, LocalS
 
 // Remove a column
 void AOT1::LocalState::RemCol(int j) {
-    _restCols.set(j, 0);
+    _restCols.set(j, false);
 }
 
 // Find the minimal uncovered row
@@ -110,7 +110,7 @@ void AOT1::LocalState::RemoveDependentRows() {
     BoolMatrixPreparation::RemoveDependentRows(_uncovered, _restCols);
 }
 
-AOT1::LocalState& AOT1::LocalState::operator=(LocalState&& s) {
+AOT1::LocalState& AOT1::LocalState::operator=(LocalState&& s) noexcept {
     if (&s == this)
         return *this;
 
@@ -178,7 +178,7 @@ bool AOT1::LocalState::IsCover() const {
     return SetUncovered(g, col, parent._uncovered.begin(), parent._uncovered.end());
 }*/
 
-AOT1::LocalState::LocalState(LocalState&& s) {
+AOT1::LocalState::LocalState(LocalState&& s) noexcept {
     *this = std::move(s);
 }
 

@@ -40,12 +40,7 @@ TEST_CASE("TopologicalOrderNotAcyclicTest") {
 
     std::vector<int> order;
 
-    try {
-        topological_order(adj, order);
-        FAIL("");
-    }
-    catch (std::exception&) {
-    }
+    CHECK_THROWS_AS(topological_order(adj, order), std::exception);
 }
 
 TEST_CASE("TransitiveClosureTest") {

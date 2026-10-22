@@ -34,8 +34,8 @@ public:
 
     /// @brief Empty blob without memory.
     inline blob() :
-            _begin(0),
-            _end(0)  //, _capacity(0)
+            _begin(nullptr),
+            _end(nullptr)  //, _capacity(0)
     {}
 
     /// @brief Blob of @p n uninitialised elements (`n >= 0`).
@@ -47,7 +47,7 @@ public:
             _begin = (T*) malloc(n * sizeof(T));
             _end = _begin + n;
         } else {
-            _begin = _end = 0;
+            _begin = _end = nullptr;
         }
     }
 
@@ -60,22 +60,22 @@ public:
     inline void reset() {
         if (_begin) {
             free(_begin);
-            _begin = 0;
+            _begin = nullptr;
         }
-        _end = 0;
+        _end = nullptr;
     }
 
     /// @brief Take over the memory of @p b, leaving it empty.
-    inline blob(blob&& b) {
+    inline blob(blob&& b) noexcept {
         _begin = b._begin;
         _end = b._end;
 
-        b._begin = 0;
-        b._end = 0;
+        b._begin = nullptr;
+        b._end = nullptr;
     }
 
     /// @brief Free own memory and take over the memory of @p b, leaving it empty.
-    inline blob& operator=(blob&& b) {
+    inline blob& operator=(blob&& b) noexcept {
         if (this == &b)
             return *this;
 
@@ -84,8 +84,8 @@ public:
         _begin = b._begin;
         _end = b._end;
 
-        b._begin = 0;
-        b._end = 0;
+        b._begin = nullptr;
+        b._end = nullptr;
 
         return *this;
     }

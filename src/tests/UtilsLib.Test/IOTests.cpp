@@ -49,7 +49,7 @@ TEST_CASE("read_iris_test") {
     CHECK(hg.size() == 77);
     hg.pop_back();
 
-    for (auto v : hg) {
+    for (const auto& v : hg) {
         CHECK(v.size() == 5);
     }
 }

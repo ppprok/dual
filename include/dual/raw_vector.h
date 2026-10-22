@@ -3,9 +3,9 @@
 
 #pragma once
 
+#include <cstdlib>
 #include <cstring>
 #include <memory>
-#include <stdlib.h>
 
 namespace dual {
 
@@ -32,7 +32,7 @@ public:
     typedef T value_type;
 
     /// @brief Empty vector without memory.
-    raw_vector() : _begin(0), _end(0), _capacity(0) {}
+    raw_vector() : _begin(nullptr), _end(nullptr), _capacity(0) {}
 
     /// @brief Free the memory.
     ~raw_vector() {
@@ -48,14 +48,14 @@ public:
     void reset() {
         if (_begin) {
             free(_begin);
-            _begin = 0;
+            _begin = nullptr;
         }
         _capacity = 0;
-        _end = 0;
+        _end = nullptr;
     }
 
     /// @brief Take over the memory of @p b, leaving it empty.
-    raw_vector(raw_vector&& b) {
+    raw_vector(raw_vector&& b) noexcept {
         _begin = b._begin;
         _end = b._end;
         _capacity = b._capacity;
@@ -73,6 +73,9 @@ public:
 
     /// @brief Replace the contents with a byte copy of @p vec.
     raw_vector& operator=(raw_vector const& vec) {
+        if (this == &vec)
+            return *this;
+
         if (!vec.empty())
             assign(vec._begin, vec._end);
         else
@@ -82,7 +85,7 @@ public:
     }
 
     /// @brief Free own memory and take over the memory of @p b, leaving it empty.
-    raw_vector& operator=(raw_vector&& b) {
+    raw_vector& operator=(raw_vector&& b) noexcept {
         if (this == &b)
             return *this;
 

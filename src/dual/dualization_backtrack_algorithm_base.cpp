@@ -57,7 +57,8 @@ void DualizationBacktrackAlgorithmBase::setMatrix(bit_matrix matrix) {
     onMatrixChanged();
 }
 
-DualizationBacktrackAlgorithmBase::DualizationBacktrackAlgorithmBase() : InnerCallback(0), CoverCallback(0) {}
+DualizationBacktrackAlgorithmBase::DualizationBacktrackAlgorithmBase() :
+        InnerCallback(nullptr), CoverCallback(nullptr) {}
 DualizationBacktrackAlgorithmBase::~DualizationBacktrackAlgorithmBase() {}
 bit_matrix& DualizationBacktrackAlgorithmBase::get_matrix() {
     onMatrixChanged();

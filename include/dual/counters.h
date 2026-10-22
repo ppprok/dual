@@ -30,7 +30,7 @@ struct Counters : IDualizationCallback {
     }
 
     /// @brief Count @p node according to its type.
-    void Call(DualizationNode& node) {
+    void Call(DualizationNode& node) override {
         switch (node.type) {
             case NodeType::CoverNode:
                 length += node.columns.size();

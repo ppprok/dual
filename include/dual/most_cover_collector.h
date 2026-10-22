@@ -25,7 +25,7 @@ public:
     /// @brief Append @p node as a row if it is a cover node (`NodeType::CoverNode`).
     /// @note Rows of empty covers are not stored (a cover adds a row only through its columns),
     ///       while their weights are.
-    virtual void Call(DualizationNode& node);
+    void Call(DualizationNode& node) override;
 
     /// @brief The collected covers.
     bit_matrix const& GetCovers() const;
@@ -103,11 +103,11 @@ public:
     WeighterBase* Weighter;
 
     /// @brief Initialize with an object that weighs search tree nodes (optional, not owned).
-    MostCoverCollector(WeighterBase* weighter = 0);
+    MostCoverCollector(WeighterBase* weighter = nullptr);
 
     /// @brief Process a search tree node: store a cover that the weighter does not prune and
     ///        truncate the collection when it grows past `Options.TrimSize`.
-    virtual void Call(DualizationNode& node);
+    void Call(DualizationNode& node) override;
 
     /// @brief Truncate the collection of covers to `Options.MostCount`.
     void Trim();

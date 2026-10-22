@@ -24,7 +24,7 @@ private:
             ::free(begin);
 
         _capacity = 0;
-        begin = end = 0;
+        begin = end = nullptr;
     }
 
 public:
@@ -49,7 +49,7 @@ public:
     }*/
 
     /// @brief Free own memory and take over the memory of @p v, leaving @p v empty.
-    inline bit_vector& operator=(bit_vector&& v) {
+    inline bit_vector& operator=(bit_vector&& v) noexcept {
         free();
 
         bit_chunk::begin = v.begin;
@@ -63,7 +63,7 @@ public:
     }
 
     /// @brief Take over the memory of @p v, leaving @p v empty.
-    inline bit_vector(bit_vector&& v) : _capacity(0) {
+    inline bit_vector(bit_vector&& v) noexcept : _capacity(0) {
         bit_chunk::begin = v.begin;
         bit_chunk::end = v.end;
         _capacity = v._capacity;
