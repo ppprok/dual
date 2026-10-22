@@ -102,3 +102,6 @@ CTestTestfile.cmake
 
 # Git worktrees created by Claude Code subagents
 .claude/worktrees/
+
+# Python bytecode caches (src/pyrunc)
+__pycache__/

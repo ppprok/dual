@@ -30,7 +30,7 @@ All of them are in [`src/dual`](src/dual/README.md).
 | Algorithm | Where | What it is |
 |---|---|---|
 | **RUNC**, **RUNCM**, **OPT** | `Runc::RuncGlobalState`, chosen by `Runc::AlgorithmType` (default `RUNCM`) | The RUNC family of asymptotically optimal algorithms (see [references](docs/references.md)). They differ only in how the next columns to branch on are chosen: `RUNC` takes the first uncovered row, `RUNCM` an uncovered row with the fewest remaining ones, `OPT` all columns left after removing dependent rows. All three must produce the same set of covers; the tests check this. This is the maintained part of the library. |
-| **RuncFixed** | `RuncFixed<bits32>`, `RuncFixed<bits64>`, `RuncFixedDualize()` | Recursive RUNC-M for matrices of at most 32 or 64 columns, each row stored in one machine word. Also has `DualizeIntervals()`. Not covered by the built tests. |
+| **RuncFixed** | `RuncFixed<bits32>`, `RuncFixed<bits64>`, `RuncFixedDualize()` | Recursive RUNC-M for matrices of at most 32 or 64 columns, each row stored in one machine word. Also has `DualizeIntervals()`. Only `bits32` and `bits64` are instantiated. |
 | **AOT1** | `AOT1::GlobalState`, variants `AO1`, `AO2`, `AO1K`, `AO2K`, `AO1M`, `AO2M` | Older asymptotically optimal algorithms of the AO family. Built, but not tested; see the status note below. |
 | **PUNC** | `PUNC::GlobalState` | Algorithm with configurable row and column order (`SetRowsOrder`, `SetColsOrder` by weights). Built, but not tested; see the status note below. |
 
@@ -92,7 +92,9 @@ cmake --build build -j
 ctest --test-dir build
 ```
 
-All tests pass under the `dev`, `release` and `asan` presets. More on running single tests in
+All tests pass under the `dev`, `release` and `asan` presets. Besides the doctest cases, the
+`dual_consumer` test installs the build into a scratch prefix and builds a `find_package(dual)`
+project against it. More on running single tests in
 [`src/tests/README.md`](src/tests/README.md).
 
 CMake options: `DUAL_BUILD_TESTS` (ON when this is the top-level project), `DUAL_INSTALL` (ON when
