@@ -6,6 +6,8 @@
 #include <dual/bit_matrix.h>
 #include <dual/raw_vector.h>
 
+namespace dual {
+
 /// Set of column indices (0-based), e.g. a cover.
 typedef std::vector<int> Columns;
 
@@ -241,3 +243,5 @@ protected:
     /// @brief Called after the input matrix was replaced or handed out for modification.
     virtual void onMatrixChanged() {}
 };
+
+}  // namespace dual

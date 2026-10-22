@@ -3,6 +3,8 @@
 
 #include <dual/integers_file_reader.h>
 
+namespace dual {
+
 void DualizationBacktrackAlgorithmBase::loadMatrix(std::string const& filename) {
     setMatrix(IntegersFileReader(filename).ReadBitMatrix());
 }
@@ -64,3 +66,5 @@ bit_matrix& DualizationBacktrackAlgorithmBase::get_matrix() {
 bit_matrix const& DualizationBacktrackAlgorithmBase::get_matrix() const {
     return _matrix;
 }
+
+}  // namespace dual

@@ -4,6 +4,8 @@
 
 #include "common/graph_algorithms.h"
 
+using namespace dual;
+
 TEST_CASE("TopologicalOrderTest") {
     bit_matrix adj;
     adj.zero(7, 7);

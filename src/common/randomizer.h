@@ -7,6 +7,8 @@
 
 #include <dual/blob.h>
 
+namespace dual {
+
 /// Random number generator (non-deterministic `std::random_device`).
 typedef std::random_device rand_engine;
 
@@ -165,3 +167,5 @@ struct RandomChoicer {
             std::random_shuffle(output.begin() + s, output.end());
     }
 };
+
+}  // namespace dual

@@ -5,6 +5,8 @@
 #include <dual/dualization_backtrack_algorithm_base.h>
 #include <dual/integers_file_writer.h>
 
+namespace dual {
+
 /// @brief Writes all columns.
 ///
 /// As `CoverCallback`, writes one line per cover with the columns of the cover, in the order they were added,
@@ -86,3 +88,5 @@ public:
     /// @brief Write a line for @p node if `node.IsCover()`.
     virtual void Call(DualizationNode& node);
 };
+
+}  // namespace dual

@@ -3,6 +3,8 @@
 #include <cmath>
 #include <stdio.h>
 
+namespace dual {
+
 void IntegersFileWriter::CreateOutputFile(std::string const& outputFileName) {
     _output = create_file_for_write(outputFileName);
 }
@@ -100,3 +102,5 @@ void IntegersFileWriter::WriteNumber(double v, int precision /*= 3*/, int pad /*
         WriteInteger((int) ((v - f) * pow(10, precision)), precision);
     }
 }
+
+}  // namespace dual

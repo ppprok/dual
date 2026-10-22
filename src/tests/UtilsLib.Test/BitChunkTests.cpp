@@ -4,6 +4,8 @@
 #include <dual/bit_vector.h>
 #include <dual/containers.h>
 
+using namespace dual;
+
 TEST_CASE("get_set_bits_test") {
     bit_vector bits(1000);
 

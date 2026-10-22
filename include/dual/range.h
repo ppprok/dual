@@ -3,6 +3,8 @@
 
 #pragma once
 
+namespace dual {
+
 /// @brief Range of elements in a container, as indices `[begin, end)`.
 struct range {
     /// Index of the first element.
@@ -71,3 +73,5 @@ struct range {
         return c.begin() + end;
     }
 };
+
+}  // namespace dual

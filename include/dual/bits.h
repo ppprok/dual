@@ -5,6 +5,12 @@
 
 #include <cstdint>
 
+/// @brief Everything in the library: bit containers, matrix IO, dualization callbacks and the
+///        algorithms. Algorithm-specific state lives in nested namespaces named after the
+///        algorithm: `dual::Runc` (RUNC, RUNC-M, OPT), `dual::AOT1` and `dual::PUNC`. The C ABI of
+///        `librunc` (`<dual/runc_executor.h>`) is the only part outside the namespace.
+namespace dual {
+
 /// 32-bit word of bits.
 typedef uint32_t bits32;
 
@@ -113,3 +119,5 @@ low_bit<T> find_first(T const& bits) {
 //    csv.Load(filename);
 //    //TODO:
 //}
+
+}  // namespace dual

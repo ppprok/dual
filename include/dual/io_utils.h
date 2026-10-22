@@ -8,6 +8,8 @@
 
 #include <dual/blob.h>
 
+namespace dual {
+
 /// `FILE` handle that is closed with `fclose` when the last owner releases it.
 typedef std::shared_ptr<FILE> FILE_ptr;
 
@@ -71,3 +73,5 @@ void write_all(std::string const& filename, Cont container) {
     if (!container.empty())
         write(file.get(), &container.front(), (&container.back()) + 1);
 }
+
+}  // namespace dual

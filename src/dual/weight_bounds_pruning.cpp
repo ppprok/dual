@@ -2,6 +2,8 @@
 
 #include <limits>
 
+namespace dual {
+
 void WeightBoundsPruningCallback::Call(DualizationNode& node) {
     switch (node.type) {
         case NodeType::BacktrackNode: {
@@ -125,3 +127,5 @@ void WeightBoundsPruningCallback::DecRestWeight(Weight w) {
     else if (w > 0)
         _restPositive -= w;
 }
+
+}  // namespace dual

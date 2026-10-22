@@ -5,6 +5,8 @@
 
 #include <limits.h>
 
+namespace dual {
+
 /// @brief Integer mark attached to an object of the base type.
 /// @tparam base Type to derive from.
 template<typename base>
@@ -39,3 +41,5 @@ public:
         return _value;
     }
 };
+
+}  // namespace dual

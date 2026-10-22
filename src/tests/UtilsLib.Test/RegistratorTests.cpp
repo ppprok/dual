@@ -4,6 +4,8 @@
 
 #include "common/registrator.h"
 
+using namespace dual;
+
 TEST_CASE("register_instance") {
     auto& registrator = Registrator<std::string>::Instance();
     registrator.Register("s1", "str1");

@@ -2,6 +2,8 @@
 
 #include <random>
 
+namespace dual {
+
 void MostCoverCollector::Call(DualizationNode& node) {
     if (!node.IsCover())
         return;
@@ -99,3 +101,5 @@ Weights const& BitCoverCollectorCallback::GetWeights() const {
 Weights BitCoverCollectorCallback::MoveWeights() {
     return std::move(_weights);
 }
+
+}  // namespace dual

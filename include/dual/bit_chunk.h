@@ -10,6 +10,8 @@
 #include <dual/chunk.h>
 #include <dual/raw_vector.h>
 
+namespace dual {
+
 /// @cond INTERNAL
 namespace details {
 
@@ -646,3 +648,5 @@ struct weighted_bit_chunk : bit_chunk {
         weight = r.weight;
     }
 };
+
+}  // namespace dual

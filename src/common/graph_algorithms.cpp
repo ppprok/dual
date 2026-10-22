@@ -2,6 +2,8 @@
 
 #include <dual/bit_vector.h>
 
+namespace dual {
+
 void transitive_closure(bit_matrix& adj_mat) {
     int n = adj_mat.height();
 
@@ -122,3 +124,5 @@ void redirect_graph(bit_matrix const& adj_mat, bit_matrix& redirected) {
 bool is_vertex(bit_matrix& adj_mat, int i) {
     return inside(adj_mat.get_rows(), i);
 }
+
+}  // namespace dual

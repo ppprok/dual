@@ -5,6 +5,8 @@
 #include <stdexcept>
 #include <string>
 
+namespace dual {
+
 template<typename T>
 class Registrator {
     typedef std::map<std::string, T> InstanceMap;
@@ -62,3 +64,5 @@ public:
         return instance;
     }
 };
+
+}  // namespace dual

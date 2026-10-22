@@ -12,7 +12,7 @@ namespace {
 // Object behind a DualizerHandler. The input is kept as plain rows and the bit matrix is rebuilt
 // before the next enumeration, so rows may come in any order and grow in any way.
 struct RuncDualizer {
-    Runc::RuncGlobalState state;
+    dual::Runc::RuncGlobalState state;
     std::vector<std::vector<int32_t>> rows;
     bool matrix_dirty = true;
 
@@ -23,11 +23,11 @@ struct RuncDualizer {
                 n = std::max(n, j + 1);
 
         // bit_matrix counts blocks in int
-        if (static_cast<uint64_t>(rows.size()) * bit_chunk::block_for_bits(n) > INT32_MAX)
+        if (static_cast<uint64_t>(rows.size()) * dual::bit_chunk::block_for_bits(n) > INT32_MAX)
             throw std::bad_alloc();
 
         // Fixed row stride, bits are set inside it: no reallocation while filling
-        bit_matrix matrix;
+        dual::bit_matrix matrix;
         matrix.zero(static_cast<int>(rows.size()), n);
         for (size_t i = 0; i < rows.size(); ++i)
             for (auto j : rows[i])
@@ -82,7 +82,7 @@ int32_t enumerate_covers(DualizerHandler dualizer, uint32_t buffer_size, uint32_
         if (d.matrix_dirty)
             d.buildMatrix();
 
-        auto const& matrix = static_cast<Runc::RuncGlobalState const&>(d.state).get_matrix();
+        auto const& matrix = static_cast<dual::Runc::RuncGlobalState const&>(d.state).get_matrix();
         if (buffer_size < static_cast<uint64_t>(matrix.width()) + 1)
             return RUNC_ERROR_BUFFER_TOO_SMALL;
 

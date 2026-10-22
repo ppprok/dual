@@ -3,6 +3,8 @@
 #include <dual/counters.h>
 #include <dual/runc.h>
 
+using namespace dual;
+
 void DoTest(std::string const& filename, int count) {
     Runc::AlgorithmType algs[] = {Runc::RUNC, Runc::OPT, Runc::RUNCM};
 

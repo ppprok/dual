@@ -7,6 +7,8 @@
 
 #include <dual/bit_chunk.h>
 
+namespace dual {
+
 /// @brief Concatenate two containers.
 template<typename C>
 inline C join(C const& c1, C const& c2) {
@@ -240,3 +242,5 @@ inline void most(Objects& objects, int count, Cmp cmp, bool order = true, bool r
         objects.resize(count);
     }
 }
+
+}  // namespace dual

@@ -6,6 +6,8 @@
 
 #include <dual/dualization_backtrack_algorithm_base.h>
 
+namespace dual {
+
 /// @brief Callback that counts search tree nodes by type.
 ///
 /// Install it as both `InnerCallback` (to count inner nodes) and `CoverCallback` (to count covers).
@@ -51,3 +53,5 @@ struct Counters : IDualizationCallback {
         std::cout << "avgl: " << (cover > 0 ? (length / cover) : 0) << '\n';
     }
 };
+
+}  // namespace dual

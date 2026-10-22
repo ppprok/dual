@@ -4,6 +4,8 @@
 #include <climits>
 #include <stdexcept>
 
+namespace dual {
+
 bit_matrix IntegersFileReader::ReadBitMatrix() {
     assert(_input);
     int i = 0;
@@ -138,3 +140,5 @@ std::vector<bits64> IntegersFileReader::ReadBitMatrix64(int first) {
 
     return std::move(bm);
 }
+
+}  // namespace dual

@@ -10,6 +10,8 @@
 #include <dual/weighted_cover.h>
 #include <dual/weighters.h>
 
+namespace dual {
+
 /// @brief Collects the enumerated covers as rows of a bit matrix; install it as `CoverCallback`.
 class BitCoverCollectorCallback : public IDualizationCallback {
 protected:
@@ -114,3 +116,5 @@ public:
     ///        `Options.TrimOrder`).
     void Trim(int trimSize);
 };
+
+}  // namespace dual

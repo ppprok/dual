@@ -13,6 +13,8 @@
 #include <dual/marked.h>
 #include <dual/range.h>
 
+namespace dual {
+
 /// @brief RUNC family of dualization algorithms (Djukova, Prokofjev, see `docs/references.md`).
 namespace Runc {
 
@@ -243,3 +245,5 @@ private:
 };
 
 }  // namespace Runc
+
+}  // namespace dual

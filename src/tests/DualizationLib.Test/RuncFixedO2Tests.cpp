@@ -9,6 +9,8 @@
 #include <dual/integers_file_reader.h>
 #include <dual/runc_fixed.h>
 
+using namespace dual;
+
 TEST_CASE("RuncFixed client built with -O2 links and dualizes") {
     struct {
         const char* file;

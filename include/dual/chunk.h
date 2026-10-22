@@ -6,6 +6,8 @@
 #include <cassert>
 #include <cstddef>
 
+namespace dual {
+
 /// @brief Chunk defined by bounds: a non-owning view of the memory range `[begin, end)`.
 /// @tparam T Element type.
 template<typename T>
@@ -82,3 +84,5 @@ struct chunk {
         return begin && begin <= end;
     }
 };
+
+}  // namespace dual

@@ -2,6 +2,8 @@
 
 #include <cassert>
 
+namespace dual {
+
 template<typename Row>
 bool RuncFixed<Row>::Output(LocalState const& result) {
     ++resultsCount;
@@ -288,3 +290,5 @@ template bits32 RuncFixedDualize<bits32>(std::vector<bits32> input, std::vector<
 template bits64 RuncFixedDualize<bits64>(std::vector<bits64> input, std::vector<bits64> input1);
 template RuncFixed<bits32>::Rows RuncFixedDualize<bits32>(RuncFixed<bits32>::Rows input);
 template RuncFixed<bits64>::Rows RuncFixedDualize<bits64>(RuncFixed<bits64>::Rows input);
+
+}  // namespace dual

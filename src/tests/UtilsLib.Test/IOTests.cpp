@@ -5,6 +5,8 @@
 #include <dual/integers_file_reader.h>
 #include <dual/integers_file_writer.h>
 
+using namespace dual;
+
 TEST_CASE("write_interger_test") {
     IntegersFileWriter writer("data/integers.txt");
     std::vector<int> integers = {100, 100000500, 190051001};

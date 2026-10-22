@@ -7,6 +7,8 @@
 
 #include "bool_matrix_preparation.h"
 
+namespace dual {
+
 // Initialize from the global state
 void AOT1::LocalState::Init(GlobalState& g) {
     int m = g._matrix.height();
@@ -275,3 +277,5 @@ void AOT1::GlobalState::dualize() {
     resetCurrentNode(q);
     DoDualize(0);
 }
+
+}  // namespace dual

@@ -7,6 +7,8 @@
 
 #include <dual/bit_chunk.h>
 
+namespace dual {
+
 /// @brief Bit array that allocates memory for its blocks.
 ///
 /// An owning `bit_chunk`: the blocks are allocated with `malloc`/`realloc` and freed in the
@@ -114,3 +116,5 @@ public:
         }
     }
 };
+
+}  // namespace dual

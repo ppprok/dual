@@ -10,6 +10,8 @@
 // Helpers shared by the RUNC API and differential tests
 namespace runc_test {
 
+using namespace dual;
+
 typedef std::vector<std::vector<int>> Rows;
 typedef std::vector<int> Cover;
 

@@ -7,6 +7,8 @@
 
 #include <dual/most_cover_collector.h>
 
+using namespace dual;
+
 namespace {
 
 // Feeds covers with the given weights; the cover of weight w has w + 1 columns unless

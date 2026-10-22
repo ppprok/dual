@@ -6,6 +6,8 @@
 #include <dual/dualization_backtrack_algorithm_base.h>
 #include <dual/weighted_cover.h>
 
+namespace dual {
+
 /// @brief Collects the enumerated covers; install it as `CoverCallback`.
 class CoverCollector : public IDualizationCallback {
 protected:
@@ -36,3 +38,5 @@ public:
     /// @brief Reserve memory for @p size covers.
     void Reserve(int size);
 };
+
+}  // namespace dual

@@ -5,6 +5,8 @@
 #include <dual/bit_chunk.h>
 #include <dual/bit_mask.h>
 
+namespace dual {
+
 /// @brief Preprocessing of Boolean matrices given as lists of row views.
 class BoolMatrixPreparation {
 public:
@@ -20,3 +22,5 @@ public:
     /// The rows themselves are not changed; the order of the remaining rows is not preserved.
     static void RemoveDependentRows(bit_chunks& rows, bit_mask const& mask);
 };
+
+}  // namespace dual

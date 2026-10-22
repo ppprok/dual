@@ -7,6 +7,8 @@
 
 #include <dual/containers.h>
 
+namespace dual {
+
 /// @brief C string of a C string (identity), for generic code.
 inline char const* c_str(char const* c) {
     return c;
@@ -76,3 +78,5 @@ inline bool streq(char const* begin1, char const* end1, char const* begin2, char
 inline bool streq(char const* begin1, char const* begin2) {
     return strcmp(begin1, begin2) == 0;
 }
+
+}  // namespace dual

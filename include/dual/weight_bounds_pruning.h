@@ -5,6 +5,8 @@
 
 #include <dual/dualization_backtrack_algorithm_base.h>
 
+namespace dual {
+
 /// @brief Pruning of search tree branches by bounds on the total weight of columns.
 ///
 /// The weight of a node is the total weight of its columns. A new node is pruned when even the
@@ -87,3 +89,5 @@ public:
     /// @brief Prune an inner node that cannot reach the allowed interval with the remaining weights.
     void PrunInnerNode(DualizationNode& node);
 };
+
+}  // namespace dual

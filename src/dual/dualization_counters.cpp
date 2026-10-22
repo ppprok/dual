@@ -2,6 +2,8 @@
 
 #include <sstream>
 
+namespace dual {
+
 std::string DualizationCounters::ToString() const {
     std::stringstream ss;
     ss << "inner:" << inners << "extra: " << extras << "count " << results << "max delay: " << maxDelay;
@@ -19,3 +21,5 @@ void DualizationCounters::Reset() {
     maxDelay = 0;
     currentDelay = 0;
 }
+
+}  // namespace dual

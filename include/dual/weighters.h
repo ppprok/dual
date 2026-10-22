@@ -8,6 +8,8 @@
 #include <dual/bit_matrix.h>
 #include <dual/dualization_backtrack_algorithm_base.h>
 
+namespace dual {
+
 /// @brief Base class for weighing search tree nodes and pruning them by weight bounds.
 ///
 /// Install a weighter as `InnerCallback`: it maintains `DualizationNode::weight` for new and
@@ -153,3 +155,5 @@ public:
     /// @brief Recompute the weight when backtracking one level up.
     void WeightBacktrackNode(DualizationNode& node);
 };
+
+}  // namespace dual

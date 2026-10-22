@@ -2,6 +2,8 @@
 
 #include <limits>
 
+namespace dual {
+
 CoveredRowWeighterCallback::CoveredRowWeighterCallback() {
     Reset();
 }
@@ -219,3 +221,5 @@ void WeighterBase::DecRestWeight(Weight w) {
     if (w < 0)
         _restNegative -= w;
 }
+
+}  // namespace dual

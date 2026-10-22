@@ -3,6 +3,8 @@
 
 #include <dual/dualization_backtrack_algorithm_base.h>
 
+namespace dual {
+
 void AllColumnsFileWriterCallback::Call(DualizationNode& node) {
     if (node.IsCover()) {
         WriteIntegers(node.columns.begin(), node.columns.end());
@@ -67,3 +69,5 @@ void WeightFileWriterCallback::Call(DualizationNode& node) {
         WriteEOL();
     }
 }
+
+}  // namespace dual

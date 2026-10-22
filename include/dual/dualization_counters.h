@@ -4,6 +4,8 @@
 #pragma once
 #include <string>
 
+namespace dual {
+
 /// @brief Counters of dualization results, including the delay (number of steps) between results.
 struct DualizationCounters {
     /// Counter type.
@@ -47,3 +49,5 @@ struct DualizationCounters {
         ++currentDelay;
     }
 };
+
+}  // namespace dual

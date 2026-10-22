@@ -16,6 +16,8 @@
 #include <dual/punc.h>
 #include <dual/runc.h>
 
+using namespace dual;
+
 namespace {
 
 typedef std::vector<int> Cover;

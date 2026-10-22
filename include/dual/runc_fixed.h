@@ -7,6 +7,8 @@
 
 #include <dual/bits.h>
 
+namespace dual {
+
 /// @brief Dualization algorithm RUNC-M for a fixed width of the input matrix: 32 or 64 columns.
 ///
 /// Rows and results are bit masks of type @p Row (bit `j` is column `j`). Results are collected in
@@ -128,3 +130,5 @@ T RuncFixedDualize(std::vector<T> input, std::vector<T> input1);
 /// @return The minimal covers of @p input as bit masks.
 template<typename T>
 typename RuncFixed<T>::Rows RuncFixedDualize(typename RuncFixed<T>::Rows input);
+
+}  // namespace dual

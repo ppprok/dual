@@ -3,6 +3,8 @@
 
 #pragma once
 
+namespace dual {
+
 /// @brief Pair of iterators `[_begin, _end)` usable in range-based `for`.
 /// @tparam IteratorT Random-access iterator type.
 template<typename IteratorT>
@@ -96,3 +98,5 @@ IteratorRange join_ranges(IteratorRange const& r1, IteratorRange const& r2, Buff
 
     return IteratorRange(buffer);
 }
+
+}  // namespace dual

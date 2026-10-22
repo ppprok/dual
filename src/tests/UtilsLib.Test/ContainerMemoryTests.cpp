@@ -14,6 +14,8 @@
 #include <dual/blob.h>
 #include <dual/chunk.h>
 
+using namespace dual;
+
 namespace {
 
 bit_vector make_bits(std::vector<int> const& bits, int n = 64) {

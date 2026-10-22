@@ -7,6 +7,8 @@
 #include <dual/bit_matrix.h>
 #include <dual/io_utils.h>
 
+namespace dual {
+
 /// @brief Reading integer data from a text file.
 ///
 /// Numbers are runs of decimal digits; every other character (space, comma, ...) is a separator,
@@ -104,3 +106,5 @@ public:
             integersList.pop_back();
     }
 };
+
+}  // namespace dual

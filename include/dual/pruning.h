@@ -6,6 +6,8 @@
 #include <dual/dualization_backtrack_algorithm_base.h>
 #include <dual/weight_bounds_pruning.h>
 
+namespace dual {
+
 /// @brief Pruning of search tree branches by bounds on the total weight of covered rows.
 ///
 /// The weight of a node is the total weight of the target rows covered by its columns. Install it
@@ -83,3 +85,5 @@ private:
     // Recompute the weight when backtracking one level up
     void WeightBacktrackNode(DualizationNode& node);
 };
+
+}  // namespace dual

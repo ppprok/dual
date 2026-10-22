@@ -4,6 +4,8 @@
 #include <fstream>
 #include <stdexcept>
 
+namespace dual {
+
 std::shared_ptr<FILE> open_file_for_read(std::string const& filename) {
     FILE* f = fopen(filename.c_str(), "rb");
 
@@ -61,3 +63,5 @@ void write(FILE* file, char const* begin) {
         throw std::runtime_error("Write to file error");
     }
 }
+
+}  // namespace dual

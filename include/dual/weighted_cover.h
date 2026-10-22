@@ -4,6 +4,8 @@
 #pragma once
 #include <dual/dualization_backtrack_algorithm_base.h>
 
+namespace dual {
+
 /// @brief Cover with a weight.
 struct WeightedCover {
     /// Columns of the cover.
@@ -33,3 +35,5 @@ struct WeightedCover {
 
 /// List of weighted covers.
 typedef std::vector<WeightedCover> WeightedCovers;
+
+}  // namespace dual

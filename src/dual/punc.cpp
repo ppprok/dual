@@ -3,6 +3,8 @@
 
 #include <dual/containers.h>
 
+namespace dual {
+
 namespace PUNC {
 
 bool GlobalState::DoDualize(int level) {
@@ -184,3 +186,5 @@ int GlobalState::GetRowOrder(int i) const {
 }
 
 }  // namespace PUNC
+
+}  // namespace dual

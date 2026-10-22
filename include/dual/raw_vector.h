@@ -7,6 +7,8 @@
 #include <memory>
 #include <stdlib.h>
 
+namespace dual {
+
 /// @brief Growable vector that does not call constructors of its elements.
 ///
 /// Memory is managed with `malloc`/`realloc`/`free`, so `T` must be trivially copyable and
@@ -318,3 +320,5 @@ public:
         assign(b, e);
     }
 };
+
+}  // namespace dual

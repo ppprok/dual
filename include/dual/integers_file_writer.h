@@ -6,6 +6,8 @@
 #include <dual/bit_matrix.h>
 #include <dual/io_utils.h>
 
+namespace dual {
+
 /// List of positions (e.g. column indices).
 typedef std::vector<int> Positions;
 
@@ -111,3 +113,5 @@ public:
     /// @brief Write rows in hypergraph (`.hg`) format (see `WriteBitMatrix(bit_matrix const&)`).
     void WriteBitMatrix(bit_chunks const& rows);
 };
+
+}  // namespace dual

@@ -17,6 +17,8 @@
 #include "common/graph_algorithms.h"
 #include "common/string_utils.h"
 
+using namespace dual;
+
 TEST_CASE("remove_rows_returns_zero_when_no_row_matches") {
     bit_matrix m;
     m.zero(3, 4);

@@ -14,6 +14,8 @@
 #include <dual/bit_matrix.h>
 #include <dual/integers_file_reader.h>
 
+using namespace dual;
+
 namespace {
 
 // Temporary file with the given text, unique per process and test run, removed in the destructor

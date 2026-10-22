@@ -10,6 +10,8 @@
 #include <dual/bit_vector.h>
 #include <dual/dualization_backtrack_algorithm_base.h>
 
+namespace dual {
+
 /// @brief Assignment of a weight to an ordinal number (of a row or a column).
 struct OrderByWeight {
     /// Row or column index.
@@ -123,3 +125,5 @@ private:
 };
 
 }  // namespace PUNC
+
+}  // namespace dual

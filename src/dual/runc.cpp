@@ -6,6 +6,8 @@
 
 #include "bool_matrix_preparation.h"
 
+namespace dual {
+
 namespace {
 
 // Installs a temporary CoverCallback and restores the caller's one on scope exit
@@ -394,3 +396,5 @@ size_t Runc::RuncGlobalState::dualize(uint32_t buffer_size, uint32_t* buffer) {
     }
     return count;
 }
+
+}  // namespace dual

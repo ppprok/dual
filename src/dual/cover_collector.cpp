@@ -1,6 +1,8 @@
 
 #include <dual/cover_collector.h>
 
+namespace dual {
+
 void CoverCollector::Call(DualizationNode& node) {
     if (!node.IsCover())
         return;
@@ -25,3 +27,5 @@ WeightedCovers CoverCollector::MoveCovers() {
 WeightedCovers const& CoverCollector::GetCovers() const {
     return _covers;
 }
+
+}  // namespace dual

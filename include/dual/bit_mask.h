@@ -5,6 +5,8 @@
 
 #include <dual/bit_chunk.h>
 
+namespace dual {
+
 /// @brief Mask applied to bit arrays when performing operations on them.
 ///
 /// Unless stated otherwise, every operation works on `bits & mask` without materialising it,
@@ -376,3 +378,5 @@ struct bit_mask : bit_chunk {
         return -1;
     }
 };
+
+}  // namespace dual

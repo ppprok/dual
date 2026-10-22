@@ -1,5 +1,7 @@
 #include <dual/pruning.h>
 
+namespace dual {
+
 CoveredRowsWeighter::CoveredRowsWeighter() {
     Reset();
 }
@@ -100,3 +102,5 @@ void CoveredRowsWeighter::TargetToMax() {
 void CoveredRowsWeighter::SetEpsilon(Weight eps) {
     _pruner.SetEpsilon(eps);
 }
+
+}  // namespace dual

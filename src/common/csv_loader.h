@@ -12,6 +12,8 @@
 #include <dual/containers.h>
 #include <dual/io_utils.h>
 
+namespace dual {
+
 typedef chunk<char> value_chunk;
 
 typedef std::vector<value_chunk> value_chunks;
@@ -274,3 +276,5 @@ public:
             _arrays.pop_back();
     }
 };
+
+}  // namespace dual

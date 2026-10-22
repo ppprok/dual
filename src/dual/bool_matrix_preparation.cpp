@@ -2,6 +2,8 @@
 
 #include <dual/containers.h>
 
+namespace dual {
+
 void BoolMatrixPreparation::RemoveDependentRows(bit_chunks& rows) {
     int c = 0;
 
@@ -61,3 +63,5 @@ void BoolMatrixPreparation::RemoveDependentRows(bit_chunks& rows, bit_mask const
     if (c > 0)
         pop_if(rows, [](bit_chunk r) { return !r.begin; });
 }
+
+}  // namespace dual

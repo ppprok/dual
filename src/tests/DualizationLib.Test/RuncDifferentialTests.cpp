@@ -11,6 +11,8 @@
 
 #include "RuncTestUtils.h"
 
+using namespace dual;
+
 using namespace runc_test;
 
 namespace {

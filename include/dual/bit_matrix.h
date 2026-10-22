@@ -11,6 +11,8 @@
 #include <dual/blob.h>
 #include <dual/containers.h>
 
+namespace dual {
+
 /// @brief Bit matrix: rows are `bit_chunk` views into one contiguous block buffer.
 ///
 /// Every row occupies a slot of whole blocks in a shared buffer; a row added with `n` columns gets
@@ -396,3 +398,5 @@ public:
 
 /// Bit matrix with rows stored as `std::vector<bit_chunk>`.
 typedef bit_matrix_<bit_chunks> bit_matrix;
+
+}  // namespace dual

@@ -24,42 +24,42 @@ void Check(bool ok, char const* what) {
 
 int main() {
     // Rows {0,1}, {1,2}, {0,2} of a 3-column matrix: the minimal covers are the three pairs
-    std::vector<bits64> rows64 = {0b011, 0b110, 0b101};
-    Check(RuncFixedDualize<bits64>(rows64).size() == 3, "RuncFixedDualize<bits64>");
-    std::vector<bits32> rows32 = {0b011, 0b110, 0b101};
-    Check(RuncFixedDualize<bits32>(rows32).size() == 3, "RuncFixedDualize<bits32>");
+    std::vector<dual::bits64> rows64 = {0b011, 0b110, 0b101};
+    Check(dual::RuncFixedDualize<dual::bits64>(rows64).size() == 3, "RuncFixedDualize<dual::bits64>");
+    std::vector<dual::bits32> rows32 = {0b011, 0b110, 0b101};
+    Check(dual::RuncFixedDualize<dual::bits32>(rows32).size() == 3, "RuncFixedDualize<dual::bits32>");
     // Disjoint pairs (X, Y), X a minimal cover of rows64 and Y of {2}: only ({0,1}, {2})
-    Check(RuncFixedDualize<bits64>(rows64, {0b100}) == 1, "RuncFixedDualize<bits64> on intervals");
+    Check(dual::RuncFixedDualize<dual::bits64>(rows64, {0b100}) == 1, "RuncFixedDualize<dual::bits64> on intervals");
 
     // The same matrix through RUNC-M with CoveredRowsWeighter: target row {0} weighs 1, so a cover
     // weighs 1 if it contains column 0; with the upper bound 0 only the cover {1,2} remains.
-    bit_matrix matrix;
+    dual::bit_matrix matrix;
     matrix.zero(3, 3);
     int ones[][2] = {{0, 0}, {0, 1}, {1, 1}, {1, 2}, {2, 0}, {2, 2}};
     for (auto const& one : ones)
         matrix.set(one[0], one[1]);
-    bit_matrix target;  // the weighter keeps views of its rows
+    dual::bit_matrix target;  // the weighter keeps views of its rows
     target.zero(1, 3);
     target.set(0, 0);
 
-    CoveredRowsWeighter weighter;
-    CoveredRowsWeighter::Options options;
+    dual::CoveredRowsWeighter weighter;
+    dual::CoveredRowsWeighter::Options options;
     options.TargetRows = target.get_rows();
     options.DefaultWeight = 1;
     weighter.SetOptions(options);
     weighter.FixMaxBound(0);
 
-    struct Chain : IDualizationCallback {
-        CoveredRowsWeighter* weighter = nullptr;
-        CoverCollector collector;
-        void Call(DualizationNode& node) override {
+    struct Chain : dual::IDualizationCallback {
+        dual::CoveredRowsWeighter* weighter = nullptr;
+        dual::CoverCollector collector;
+        void Call(dual::DualizationNode& node) override {
             weighter->Call(node);
             collector.Call(node);
         }
     } chain;
     chain.weighter = &weighter;
 
-    Runc::RuncGlobalState runc(Runc::RUNCM);
+    dual::Runc::RuncGlobalState runc(dual::Runc::RUNCM);
     runc.setMatrix(std::move(matrix));
     runc.InnerCallback = &weighter;
     runc.CoverCallback = &chain;

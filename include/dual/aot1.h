@@ -9,6 +9,8 @@
 #include <dual/dualization_backtrack_algorithm_base.h>
 #include <dual/marked.h>
 
+namespace dual {
+
 /// @brief Asymptotically optimal dualization algorithms of type AO1/AO2 (Djukova).
 ///
 /// The search adds pairs (uncovered row, column of that row); rows of earlier pairs that the new
@@ -149,3 +151,5 @@ private:
 };
 
 }  // namespace AOT1
+
+}  // namespace dual

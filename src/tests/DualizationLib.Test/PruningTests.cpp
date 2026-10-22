@@ -12,6 +12,8 @@
 #include <dual/runc.h>
 #include <dual/weight_bounds_pruning.h>
 
+using namespace dual;
+
 namespace {
 
 typedef std::vector<int> Cover;
