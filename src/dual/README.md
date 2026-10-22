@@ -19,8 +19,8 @@ listed in [`CMakeLists.txt`](CMakeLists.txt) are built. Two targets:
 | `MostCoverCollector.h/.cpp` | `MostCoverCollector` keeps the N best covers by weight; `BitCoverCollectorCallback` stores covers as a `bit_matrix`. |
 | `FileWriters.h/.cpp` | Callbacks that write covers (all columns, sorted, first/last/min/max column, size, weight) to a file. |
 | `Weighters.h/.cpp` | `WeighterBase` and weighters of search tree nodes by column weights or by covered row weights, with pruning by weight bounds. |
-| `Pruning.h/.cpp` | `CoveredRowsWeighter`: pruning by bounds on the total weight of covered rows. |
-| `WeightBoundsPruning.h` | `WeightBoundsPruningCallback`: pruning by bounds on the total column weight. Its `WeightBoundsPruning.cpp` is **not compiled**, so code that calls these methods (including `CoveredRowsWeighter`) fails to link. |
+| `Pruning.h/.cpp` | `CoveredRowsWeighter`: pruning by bounds on the total weight of covered rows. Tested together with `WeightBoundsPruningCallback` on RUNC-M (`PruningTests.cpp`). |
+| `WeightBoundsPruning.h/.cpp` | `WeightBoundsPruningCallback`: pruning by bounds on the total column weight (fixed bounds, or dynamic ones that search for the lightest / heaviest covers). |
 | `BoolMatrixPreparation.h/.cpp` | Removal of dependent rows (rows that contain another row). |
 
 ## Algorithms
@@ -28,7 +28,7 @@ listed in [`CMakeLists.txt`](CMakeLists.txt) are built. Two targets:
 | File | Contents |
 |---|---|
 | `Runc.h/.cpp` | `Runc::RuncGlobalState`, the RUNC family; `Runc::AlgorithmType` = `OPT`, `RUNC`, `RUNCM` (default). Iterative: a stack of `RuncLocalState` (uncovered rows, support rows, remaining columns), `startDualize()` + `doStep()`. Public entry points: `dualize()` runs to the end reporting through the callbacks; `dualize(max_count)` returns the next at most `max_count` covers as `std::vector<Columns>`; `dualize(buffer_size, buffer)` writes `[size, col...]` records into a `uint32_t` buffer while at least `width + 1` entries are free and returns how many covers it wrote. Repeated calls of the last two resume the enumeration; `isDualizeFinished()` tells a finished enumeration from a too small buffer, `resetDualize()` restarts it, and changing the matrix resets it. An empty matrix has one (empty) cover, a zero row none; a callback that stops the search finishes the enumeration. Tested. |
-| `RuncFixed.h/.cpp` | `RuncFixed<Row>`: recursive RUNC-M for at most 32 / 64 columns (`Row` = `bits32` / `bits64`), plus `DualizeIntervals`; helpers `RuncFixedDualize<T>()`. `RuncFixed<bits32>` and `RuncFixed<bits64>` are explicitly instantiated; `RuncFixedDualize<T>()` still needs an `extern template` declaration in the caller to link (#34). Tested by `TestRuncFixedO2`. |
+| `RuncFixed.h/.cpp` | `RuncFixed<Row>`: recursive RUNC-M for at most 32 / 64 columns (`Row` = `bits32` / `bits64`), plus `DualizeIntervals`; helpers `RuncFixedDualize<T>()`. `RuncFixed<bits32>`, `RuncFixed<bits64>` and `RuncFixedDualize<bits32/bits64>()` are explicitly instantiated in `RuncFixed.cpp` (the header only declares `RuncFixedDualize`), so only these two row types link. Tested by `TestRuncFixedO2` and the `dual_consumer` install test. |
 | `AOT1.h/.cpp` | `AOT1::GlobalState`, variants `AO1`, `AO2`, `AO1K`, `AO2K`, `AO1M` (default), `AO2M`; entry point `dualize()`. Tested against RUNCM. |
 | `PUNC.h/.cpp` | `PUNC::GlobalState`: enumeration with row/column order set by weights (`SetRowsOrder`, `SetColsOrder`); entry point `dualize()`. Tested against RUNCM. |
 
@@ -56,11 +56,6 @@ continue the enumeration and 0 means it is finished. Errors are negative codes: 
 argument, a buffer with fewer than `width + 1` entries (nothing is written, the enumeration does
 not advance) or an internal error. No exception crosses the ABI. An empty matrix has one empty
 cover, a matrix with a zero row has none. The full contract is in `RuncExecutor.h`.
-
-## Not built
-
-`GeneticDualizer.h` and `FrequentInfrequentEnumerator.h` are dead leftovers of the poset code
-(see [`legacy/`](../../legacy/README.md)); nothing includes them and CMake does not list them.
 
 ## Use
 
