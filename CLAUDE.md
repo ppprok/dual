@@ -28,6 +28,7 @@ cmake -S . -B build && cmake --build build -j && ctest --test-dir build
 - All tests pass under the `dev` and `asan` presets (since #21); keep it that way.
 
 CI (`.github/workflows/ci.yml`, on PRs and pushes to `master`): `dev` + `release` presets (configure, build, `ctest`, so also `dual_consumer`) on ubuntu gcc, ubuntu clang, macOS and Windows MSVC; `asan` preset on ubuntu gcc; Doxygen with `WARN_AS_ERROR = FAIL_ON_WARNINGS`; `clang-format` 23.1.3 on the lines changed by the PR only (`legacy/` excluded); a Python job (`pip install ".[test]"`, `pytest python/tests`, Python 3.10/3.12) that is a no-op until `pyproject.toml` exists. Reproduce locally with the commands in the CI section of the `build-and-test` skill. No clang-tidy job yet (follow-up once #12 adds `.clang-tidy`).
+`.github/workflows/docs.yml` (push to `master`, manual) builds the Doxygen HTML and deploys it to GitHub Pages (https://ppprok.github.io/dual/; Pages source must be "GitHub Actions").
 
 Python wrapper: `cmake --build build --target InstallRuncLib` builds `librunc.so` and copies it into `src/pyrunc/`, where `src/pyrunc/runc.py` loads it via `ctypes` (requires numpy). `runc.py` contains example `test_*` functions; `test_enumerate_from_file` has a hardcoded absolute path.
 
@@ -54,6 +55,7 @@ Re-enabling an excluded file usually means adding it (and its dependencies) to t
 ## Workflow
 
 Changes go through GitHub issues and pull requests (issue first, branch `type/N_description`, commits `[#N] type: Description` without trailers, draft PR with `Closes #N`, the owner merges). Details are in the `github`, `issue-template` and `build-and-test` skills under `.claude/skills/`; the PR body follows `.github/pull_request_template.md`.
+Human-facing versions: `CONTRIBUTING.md` (build, style, workflow, CI) and `.github/ISSUE_TEMPLATE/`; record user-visible changes in `CHANGELOG.md` under `[Unreleased]`; citation metadata is in `CITATION.cff`.
 
 ## Conventions
 
