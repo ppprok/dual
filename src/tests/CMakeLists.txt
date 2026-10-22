@@ -36,3 +36,23 @@ endfunction()
 
 add_subdirectory(UtilsLib.Test)
 add_subdirectory(DualizationLib.Test)
+
+# dual_consumer: install this build into a scratch prefix and build consumer/ against it with
+# find_package(dual), so symbols that only fail to link outside the build tree are caught (#34).
+# Runs after the build, needs no network (the consumer has no dependencies besides dual).
+if(DUAL_INSTALL)
+    set(_consumer_link_flags "")
+    if(DUAL_ENABLE_SANITIZERS AND NOT MSVC)
+        set(_consumer_link_flags "-fsanitize=address,undefined")
+    endif()
+    add_test(NAME dual_consumer
+            COMMAND "${CMAKE_COMMAND}"
+            "-DDUAL_BUILD_DIR=${PROJECT_BINARY_DIR}"
+            "-DDUAL_CONFIG=$<CONFIG>"
+            "-DWORK_DIR=${CMAKE_CURRENT_BINARY_DIR}/consumer"
+            "-DGENERATOR=${CMAKE_GENERATOR}"
+            "-DMAKE_PROGRAM=${CMAKE_MAKE_PROGRAM}"
+            "-DCXX_COMPILER=${CMAKE_CXX_COMPILER}"
+            "-DLINK_FLAGS=${_consumer_link_flags}"
+            -P "${CMAKE_CURRENT_SOURCE_DIR}/consumer/RunConsumerTest.cmake")
+endif()
