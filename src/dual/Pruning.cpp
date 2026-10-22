@@ -24,6 +24,10 @@ void CoveredRowsWeighter::Call(DualizationNode& node) {
 
         case NodeType::CoverNode:
             _pruner.PrunCoverNode(node);
+            break;
+
+        default:  // root and extra nodes do not change the weight
+            break;
     }
 }
 

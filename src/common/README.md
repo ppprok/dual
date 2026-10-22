@@ -39,8 +39,6 @@ Only the files listed in [`CMakeLists.txt`](CMakeLists.txt) are built and instal
   installed; the header is only used by `TestUtils` (`CSVTests.cpp`).
 - `Registrator.h`: a name-to-instance / name-to-factory registry. Header-only, not installed; only
   used by `TestUtils` (`RegistratorTests.cpp`).
-- `errors.h`: Boost.Exception error tags. Not included anywhere and needs Boost; a leftover of the
-  code moved to `legacy/`.
 
 ## Use
 

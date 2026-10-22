@@ -265,14 +265,26 @@ bool RuncFixed<Row>::DoCallback() {
     return true;
 }
 
-template bits32 RuncFixedDualize<bits32>(std::vector<bits32> input, std::vector<bits32> input1);
-template bits64 RuncFixedDualize<bits64>(std::vector<bits64> input, std::vector<bits64> input1);
+template<typename T>
+T RuncFixedDualize(std::vector<T> input, std::vector<T> input1) {
+    RuncFixed<T> runc;
+    runc.DualizeIntervals(std::move(input), std::move(input1));
+    return runc.resultsCount;
+}
 
-template typename RuncFixed<bits32>::Rows RuncFixedDualize<bits32>(typename RuncFixed<bits32>::Rows input);
+template<typename T>
+typename RuncFixed<T>::Rows RuncFixedDualize(typename RuncFixed<T>::Rows input) {
+    RuncFixed<T> runc;
+    runc.Dualize(std::move(input));
+    return std::move(runc.idealIndep);
+}
 
-template typename RuncFixed<bits64>::Rows RuncFixedDualize<bits64>(typename RuncFixed<bits64>::Rows input);
-
-// RuncFixedDualize is defined in the header and instantiated by clients, so the members it calls
-// must be emitted here even when the optimizer inlines them into the instantiations above.
+// The class and the RuncFixedDualize helpers are defined only here, so every member and helper
+// a client can call must be emitted for both row types, even when the optimizer inlines it.
 template class RuncFixed<bits32>;
 template class RuncFixed<bits64>;
+
+template bits32 RuncFixedDualize<bits32>(std::vector<bits32> input, std::vector<bits32> input1);
+template bits64 RuncFixedDualize<bits64>(std::vector<bits64> input, std::vector<bits64> input1);
+template RuncFixed<bits32>::Rows RuncFixedDualize<bits32>(RuncFixed<bits32>::Rows input);
+template RuncFixed<bits64>::Rows RuncFixedDualize<bits64>(RuncFixed<bits64>::Rows input);
