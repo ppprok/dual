@@ -57,6 +57,21 @@ Compare against this list: a new failure is yours; an old one is not to be fixed
 6. If you touched `python/`, `pyproject.toml` or the algorithms — `pip install ".[test]" && pytest` in a venv
    (see the `python-bindings` skill).
 
+## CI
+
+`.github/workflows/ci.yml` runs on every PR and push to `master`; a red job blocks the review. It runs:
+
+| Job | What | Reproduce locally |
+|---|---|---|
+| `linux-gcc` / `linux-clang` / `macos` / `windows-msvc` × `dev`, `release` | `cmake --preset P`, `cmake --build --preset P`, `ctest --preset P` (incl. `dual_consumer`) | the same three commands (only gcc is available here; clang, macOS and MSVC run only in CI) |
+| `linux-gcc asan` | the `asan` preset | `cmake --preset asan && cmake --build --preset asan && ctest --preset asan` |
+| `docs` | Doxygen with `WARN_AS_ERROR = FAIL_ON_WARNINGS` | `mkdir -p build && printf '@INCLUDE = docs/Doxyfile\nWARN_AS_ERROR = FAIL_ON_WARNINGS\n' > build/Doxyfile.ci && doxygen build/Doxyfile.ci` |
+| `clang-format` | clang-format 23.1.3 on the lines changed since the PR base, `legacy/` excluded | `git diff -U0 origin/master -- '*.cpp' '*.h' ':(exclude)legacy' \| clang-format-diff.py -p1` (no output = clean; fix with `git clang-format origin/master`) |
+| `python 3.10` / `3.12` | `pip install ".[test]"`, `pytest python/tests`; skipped while there is no `pyproject.toml` | `pip install ".[test]" && pytest python/tests` |
+
+Run status and logs through the API (see the `github` skill for `$API`/`$H`):
+`GET $API/actions/runs?branch=<branch>`, `GET $API/actions/runs/<id>/jobs`, `GET $API/actions/jobs/<job id>/logs`.
+
 ## Algorithm correctness
 
 The expected number of minimal covers is encoded in the file name `src/tests/data/<rows>_<cols>_<count>.hg`.

@@ -27,6 +27,8 @@ cmake -S . -B build && cmake --build build -j && ctest --test-dir build
 - clangd: `compile_commands.json` is generated in every build dir; `.clangd` points at `build/dev`, so configure the `dev` preset once.
 - All tests pass under the `dev` and `asan` presets (since #21); keep it that way.
 
+CI (`.github/workflows/ci.yml`, on PRs and pushes to `master`): `dev` + `release` presets (configure, build, `ctest`, so also `dual_consumer`) on ubuntu gcc, ubuntu clang, macOS and Windows MSVC; `asan` preset on ubuntu gcc; Doxygen with `WARN_AS_ERROR = FAIL_ON_WARNINGS`; `clang-format` 23.1.3 on the lines changed by the PR only (`legacy/` excluded); a Python job (`pip install ".[test]"`, `pytest python/tests`, Python 3.10/3.12). Reproduce locally with the commands in the CI section of the `build-and-test` skill. No clang-tidy job yet (follow-up once #12 adds `.clang-tidy`).
+
 Python package `dual` (see the `python-bindings` skill and `python/README.md`): `pyproject.toml` (scikit-build-core + pybind11) builds `python/src/_dual.cpp` into `dual._dual`; the API is `python/dual/__init__.py` (`enumerate_covers`, `iter_batches`, `minimal_covers`, `count_covers`, `Dualizer`). Check with `pip install ".[test]" && pytest` (tests in `python/tests`, they read `src/tests/data`). All C++ includes of the bindings are in `_dual.cpp`. The old `ctypes` wrapper `src/pyrunc/runc.py` (over `librunc.so`, copied there by the `InstallRuncLib` target) is deprecated but kept as a C ABI example.
 
 Formatting: `.clang-format` (LLVM-based, 4-space indent, 120 columns).

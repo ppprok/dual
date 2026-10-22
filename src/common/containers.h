@@ -5,6 +5,7 @@
 
 #include "bit_chunk.h"
 #include <algorithm>
+#include <random>
 
 /// @brief Concatenate two containers.
 template<typename C>
@@ -134,10 +135,14 @@ inline void unique(C& c, bool ordered = false) {
     c.resize(std::unique(c.begin(), c.end()) - c.begin());
 }
 
-/// @brief Shuffle the elements of the collection (`std::random_shuffle`).
+/// @brief Shuffle the elements of the collection.
+///
+/// Uses `std::shuffle` with a process-wide `std::mt19937` with the default seed, so the sequence of
+/// shuffles is reproducible from run to run (`std::random_shuffle` was removed in C++17).
 template<typename C>
 inline void random_shuffle(C& c) {
-    std::random_shuffle(std::begin(c), std::end(c));
+    static std::mt19937 engine;
+    std::shuffle(std::begin(c), std::end(c), engine);
 }
 
 /// @brief Shuffle, then sort: equal elements end up in random order.
