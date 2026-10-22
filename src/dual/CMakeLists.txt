@@ -48,7 +48,9 @@ target_include_directories(runc PUBLIC
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_link_libraries(runc PRIVATE dual::dual Threads::Threads)
-set_target_properties(runc PROPERTIES EXPORT_NAME runc)
+# The C functions carry no __declspec(dllexport); on Windows export everything so that runc.dll gets
+# an import library (runc.lib), which the installed dual::runc target refers to.
+set_target_properties(runc PROPERTIES EXPORT_NAME runc WINDOWS_EXPORT_ALL_SYMBOLS ON)
 dual_target_options(runc)
 
 # Copies librunc.so next to src/pyrunc/runc.py (to be replaced by DUAL_BUILD_PYTHON in #13).

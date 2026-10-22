@@ -80,12 +80,12 @@ TabWidth: 4
 UseTab: Never
 AlignTrailingComments: true
 SortIncludes: CaseSensitive
-# Include groups: the main header first, then <doctest.h> in tests, then <system/std>, then public <dual/...>, then internal "...".
+# Include groups: the main header first, then <doctest.h> / <pybind11/...>, then <system/std>, then public <dual/...>, then internal "...".
 IncludeBlocks: Regroup
 MainIncludeChar: Any
 IncludeIsMainRegex: '$'
 IncludeCategories:
-  - Regex: '^<doctest'
+  - Regex: '^<(doctest|pybind11)'
     Priority: 1
   - Regex: '^<dual/'
     Priority: 3

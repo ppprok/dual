@@ -18,7 +18,7 @@ else()
 endif()
 
 option(DUAL_BUILD_TESTS "Build the doctest-based unit tests" ${DUAL_IS_TOP_LEVEL})
-option(DUAL_BUILD_PYTHON "Build Python bindings (placeholder, see #13; librunc.so is always built)" OFF)
+option(DUAL_BUILD_PYTHON "Build the pybind11 extension module dual._dual (needs pybind11; used by pip install .)" OFF)
 option(DUAL_ENABLE_SANITIZERS "Build own targets with AddressSanitizer and UndefinedBehaviorSanitizer" OFF)
 # OFF by default so a newer compiler cannot break a consumer's or packager's build; the CMake presets
 # (dev, release, asan) turn it ON, so the warning-free state of live code is kept in development.
@@ -32,10 +32,6 @@ if(DUAL_IS_TOP_LEVEL)
         set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
         set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS Debug Release RelWithDebInfo MinSizeRel)
     endif()
-endif()
-
-if(DUAL_BUILD_PYTHON)
-    message(WARNING "DUAL_BUILD_PYTHON is a placeholder until #13; use the InstallRuncLib target for src/pyrunc.")
 endif()
 
 if(DUAL_CLANG_TIDY)
@@ -56,6 +52,10 @@ include(GNUInstallDirs)
 include(DualTargetOptions)
 
 add_subdirectory(src)
+
+if(DUAL_BUILD_PYTHON)
+    add_subdirectory(python)
+endif()
 
 if(DUAL_BUILD_TESTS)
     enable_testing()

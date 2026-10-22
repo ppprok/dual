@@ -1,0 +1,51 @@
+# Python package `dual`: pybind11 bindings built with scikit-build-core (see python/README.md).
+[build-system]
+requires = ["scikit-build-core>=0.10", "pybind11>=2.12"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "dual"
+dynamic = ["version"]
+description = "Enumeration of minimal covers of Boolean matrices (minimal hypergraph transversals): RUNC family of dualization algorithms"
+readme = "python/README.md"
+license = { text = "MIT" }
+authors = [{ name = "Petr Prokofyev" }]
+requires-python = ">=3.8"
+dependencies = []
+keywords = ["dualization", "minimal covers", "hypergraph transversals", "hitting sets", "boolean matrix"]
+classifiers = [
+    "Programming Language :: C++",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Scientific/Engineering :: Mathematics",
+]
+
+[project.optional-dependencies]
+numpy = ["numpy"]
+test = ["pytest>=7", "numpy"]
+
+[project.urls]
+Homepage = "https://github.com/ppprok/dual"
+
+[tool.scikit-build]
+minimum-version = "build-system.requires"
+cmake.version = ">=3.16"
+cmake.build-type = "Release"
+# Only the extension module: no doctest download, no C++ install rules in the wheel.
+build.targets = ["_dual"]
+install.components = ["python"]
+wheel.packages = ["python/dual"]
+sdist.exclude = ["legacy/", "docs/references/", "datasets/", "build/", ".claude/", ".github/"]
+
+[tool.scikit-build.cmake.define]
+DUAL_BUILD_PYTHON = "ON"
+DUAL_BUILD_TESTS = "OFF"
+DUAL_INSTALL = "OFF"
+
+[tool.scikit-build.metadata.version]
+provider = "scikit_build_core.metadata.regex"
+input = "CMakeLists.txt"
+regex = 'project\(dual\s+VERSION\s+(?P<value>[0-9.]+)'
+
+[tool.pytest.ini_options]
+testpaths = ["python/tests"]

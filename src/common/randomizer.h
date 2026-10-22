@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <random>
 
 #include <dual/blob.h>
@@ -164,7 +165,7 @@ struct RandomChoicer {
         }
 
         if (count > 1)
-            std::random_shuffle(output.begin() + s, output.end());
+            std::shuffle(output.begin() + s, output.end(), GetEngine());
     }
 };
 
