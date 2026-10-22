@@ -2,11 +2,15 @@
 
 #include <doctest.h>
 
+#include <cstring>
+#include <new>
+#include <utility>
 #include <vector>
 
 #include "bit_mask.h"
 #include "bit_matrix.h"
 #include "bit_vector.h"
+#include "blob.h"
 #include "containers.h"
 #include "graph_algorithms.h"
 #include "raw_vector.h"
@@ -121,4 +125,86 @@ TEST_CASE("raw_vector_erase_removes_elements") {
 
     v.erase(v.begin(), v.begin());
     CHECK_EQ(std::vector<int>{0, 4}, to_std(v));
+}
+
+namespace {
+
+// Constructs T in storage filled with a garbage pattern, so a constructor that leaves members
+// uninitialised is caught deterministically (they keep the pattern instead of happening to be 0).
+template<typename T>
+struct dirty_storage {
+    alignas(T) unsigned char bytes[sizeof(T)];
+
+    dirty_storage() {
+        std::memset(bytes, 0xAB, sizeof(bytes));
+    }
+
+    template<typename... Args>
+    T& construct(Args&&... args) {
+        return *new (bytes) T(std::forward<Args>(args)...);
+    }
+};
+
+}  // namespace
+
+// The copy constructor initialised nothing for an empty source and grew a non-empty copy from
+// uninitialised members.
+TEST_CASE("raw_vector_copy_constructor_initialises_members") {
+    raw_vector<int> empty;
+    dirty_storage<raw_vector<int>> s1;
+    auto& c1 = s1.construct(empty);
+    CHECK(c1.empty());
+    CHECK_EQ(0, c1.capacity());
+    CHECK_EQ(nullptr, c1.begin());
+    c1.~raw_vector();
+
+    raw_vector<int> full;
+    for (int i = 0; i != 3; ++i)
+        full.push_back(i * 10);
+    dirty_storage<raw_vector<int>> s2;
+    auto& c2 = s2.construct(full);
+    CHECK_EQ(std::vector<int>{0, 10, 20}, to_std(c2));
+    c2.push_back(30);
+    CHECK_EQ(std::vector<int>{0, 10, 20, 30}, to_std(c2));
+    c2.~raw_vector();
+}
+
+TEST_CASE("raw_vector_range_constructors_initialise_members") {
+    std::vector<int> const src{1, 2, 3};
+
+    dirty_storage<raw_vector<int>> s1;
+    auto& v1 = s1.construct(src.begin(), src.end());
+    CHECK_EQ(src, to_std(v1));
+    v1.~raw_vector();
+
+    dirty_storage<raw_vector<int>> s2;
+    auto& v2 = s2.construct(src.data(), src.data() + src.size());
+    CHECK_EQ(src, to_std(v2));
+    v2.~raw_vector();
+
+    dirty_storage<raw_vector<int>> s3;
+    auto& v3 = s3.construct(src.data(), src.data());
+    CHECK(v3.empty());
+    v3.~raw_vector();
+}
+
+// blob(Iter, Iter) and blob(T const*, T const*) resized from uninitialised _begin/_end.
+TEST_CASE("blob_range_constructors_initialise_members") {
+    std::vector<int> const src{4, 5, 6};
+
+    dirty_storage<blob<int>> s1;
+    auto& b1 = s1.construct(src.begin(), src.end());
+    CHECK_EQ(src, std::vector<int>(b1.begin(), b1.end()));
+    b1.~blob();
+
+    dirty_storage<blob<int>> s2;
+    auto& b2 = s2.construct(src.data(), src.data() + src.size());
+    CHECK_EQ(src, std::vector<int>(b2.begin(), b2.end()));
+    b2.~blob();
+
+    dirty_storage<blob<int>> s3;
+    auto& b3 = s3.construct(src.data(), src.data());
+    CHECK(b3.empty());
+    CHECK_EQ(nullptr, b3.begin());
+    b3.~blob();
 }

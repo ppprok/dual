@@ -16,8 +16,9 @@
 template<typename T>
 class blob {
 
-    T* _begin;
-    T* _end;
+    // Initialised here, so that every constructor starts from an empty blob without memory.
+    T* _begin = nullptr;
+    T* _end = nullptr;
     //int _capacity;
 
 public:

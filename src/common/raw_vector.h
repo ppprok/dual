@@ -16,9 +16,10 @@
 template<typename T>
 class raw_vector {
 
-    T* _begin;
-    T* _end;
-    int _capacity;
+    // Initialised here, so that every constructor starts from an empty vector without memory.
+    T* _begin = nullptr;
+    T* _end = nullptr;
+    int _capacity = 0;
 
 public:
     /// Iterator type.
