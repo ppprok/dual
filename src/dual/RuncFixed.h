@@ -117,19 +117,14 @@ private:
 };
 
 /// @brief Run `RuncFixed<T>::DualizeIntervals(input, input1)`.
+/// @tparam T `bits32` or `bits64` (explicitly instantiated in `RuncFixed.cpp`).
 /// @return The number of results.
 template<typename T>
-T RuncFixedDualize(std::vector<T> input, std::vector<T> input1) {
-    RuncFixed<T> runc;
-    runc.DualizeIntervals(std::move(input), std::move(input1));
-    return runc.resultsCount;
-}
+T RuncFixedDualize(std::vector<T> input, std::vector<T> input1);
 
 /// @brief Run `RuncFixed<T>::Dualize(input)`.
+/// @tparam T `bits32` or `bits64` (explicitly instantiated in `RuncFixed.cpp`); not deduced, so
+///         call it as `RuncFixedDualize<bits64>(rows)`.
 /// @return The minimal covers of @p input as bit masks.
 template<typename T>
-typename RuncFixed<T>::Rows RuncFixedDualize(typename RuncFixed<T>::Rows input) {
-    RuncFixed<T> runc;
-    runc.Dualize(std::move(input));
-    return std::move(runc.idealIndep);
-}
+typename RuncFixed<T>::Rows RuncFixedDualize(typename RuncFixed<T>::Rows input);

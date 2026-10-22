@@ -1,6 +1,7 @@
 // Client of RuncFixed built together with its own -O2 copy of RuncFixed.cpp (see CMakeLists.txt):
 // with optimization the RuncFixed members are inlined into RuncFixedDualize and are emitted only
-// if they are instantiated explicitly, so this executable links only when they are.
+// if they are instantiated explicitly, and RuncFixedDualize itself is only declared in the header,
+// so this executable links only when both are.
 #include <doctest.h>
 
 #include <string>

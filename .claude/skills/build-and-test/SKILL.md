@@ -19,7 +19,10 @@ ctest --preset dev --output-on-failure -R 'TestUtils\.read_bit_matrix'   # one t
 ```
 
 Presets: `dev` (Debug), `release`, `asan` (RelWithDebInfo + ASan/UBSan, `DUAL_ENABLE_SANITIZERS=ON`).
-Each doctest case is a separate CTest test `TestDual.<case>` / `TestUtils.<case>`.
+Each doctest case is a separate CTest test `TestDual.<case>` / `TestUtils.<case>`. One more CTest test,
+`dual_consumer`, installs the build into `<build>/src/tests/consumer/prefix` and builds/runs the
+`find_package(dual)` project in `src/tests/consumer/` against it (no network needed); it catches symbols that
+link inside the build tree but not for an installed consumer.
 
 By hand, with doctest options (`-tc`, `-s`, `-d`): **only from the tests directory** — the binaries open
 `data/...` by relative path, and the `dual_test_data` target copies the data there:
@@ -46,9 +49,9 @@ Compare against this list: a new failure is yours; an old one is not to be fixed
 2. If you touched the algorithms or the bit containers — also `cmake --preset asan && cmake --build --preset asan && ctest --preset asan`
    and compare the number of failures with `master`.
 3. `clang-format -i` on the changed `.cpp/.h` (config `.clang-format`; do not format `legacy/`).
-4. If you changed the CMake export or public headers — check a consumer:
-   `cmake --install build/release --prefix /tmp/<scratch>/prefix`, then a mini project with
-   `find_package(dual REQUIRED)` + `target_link_libraries(app PRIVATE dual::dual)` and `-DCMAKE_PREFIX_PATH=<prefix>`.
+4. If you changed the CMake export or public headers — `ctest --preset dev -R dual_consumer` checks an installed
+   consumer (it is part of the full `ctest` run too). A new public symbol that consumers need should be used in
+   `src/tests/consumer/main.cpp`.
 5. If you added a `.cpp/.h` — add it to the source list of its `CMakeLists.txt`, otherwise the file is not built
    and clangd does not see it.
 

@@ -8,9 +8,10 @@ and in all presets. Each doctest case is registered as a separate CTest test nam
 | Path | Contents |
 |---|---|
 | `CMakeLists.txt` | Fetches doctest, defines `dual_add_test()` and the `dual_test_data` target that copies `data/` next to the test executables. |
-| `DualizationLib.Test/` | `TestDual` (links `dual::dual`): `RUNCTests.cpp` (`OPT`, `RUNC` and `RUNCM` on `data/*.hg` find the number of covers given in the file name; portions and buffers find all covers), `RuncApiTests.cpp` (resumable API and C ABI contract; `RuncExecutor.cpp` is compiled in), `RuncDifferentialTests.cpp` (RUNC variants vs brute force on random matrices, including empty matrices and zero rows), `AOT1PUNCTests.cpp` (all `AOT1` variants and `PUNC` vs RUNCM). `TestRuncFixedO2`: `RuncFixedO2Tests.cpp` with its own `-O2` copy of `RuncFixed.cpp`, linked against `dual::common` only, to check the explicit instantiations. |
+| `DualizationLib.Test/` | `TestDual` (links `dual::dual`): `RUNCTests.cpp` (`OPT`, `RUNC` and `RUNCM` on `data/*.hg` find the number of covers given in the file name; portions and buffers find all covers), `RuncApiTests.cpp` (resumable API and C ABI contract; `RuncExecutor.cpp` is compiled in), `RuncDifferentialTests.cpp` (RUNC variants vs brute force on random matrices, including empty matrices and zero rows), `AOT1PUNCTests.cpp` (all `AOT1` variants and `PUNC` vs RUNCM), `PruningTests.cpp` (`WeightBoundsPruningCallback` and `CoveredRowsWeighter` on RUNC-M: the covers kept under fixed or dynamic weight bounds equal the full enumeration filtered by weight). `TestRuncFixedO2`: `RuncFixedO2Tests.cpp` with its own `-O2` copy of `RuncFixed.cpp`, linked against `dual::common` only, to check the explicit instantiations. |
 | `UtilsLib.Test/` | `TestUtils` (links `dual::common`): bit operations, `bit_chunk`, container memory regressions (`ContainerMemoryTests.cpp`), input matrix reading and `bit_matrix` growth (`InputMatrixTests.cpp`), graph algorithms, integer file IO, `Registrator`, CSV loading. |
-| `data/` | Test inputs: `rows_cols_count.hg` matrices, `6_6_6.hg`, `integers.txt`, `iris.txt`, `winequality-red.csv`, `write_bm_test.hg`. The `*.json`, `*.info` and poset `*.csv` files are inputs of the poset tests in `legacy/` and are not used by the built tests. |
+| `consumer/` | `dual_consumer` CTest test (registered when `DUAL_INSTALL` is ON): `RunConsumerTest.cmake` installs the current build into `<build>/src/tests/consumer/prefix`, then configures, builds and runs the stand-alone `find_package(dual)` project in this directory (`main.cpp` uses `RuncFixedDualize` and `CoveredRowsWeighter`), so symbols that only fail to link outside the build tree are caught. Needs no network; under `DUAL_ENABLE_SANITIZERS` the consumer is linked with `-fsanitize=address,undefined`. |
+| `data/` | Test inputs: `rows_cols_count.hg` matrices, `6_6_6.hg`, `integers.txt`, `iris.txt`, `winequality-red.csv`, `write_bm_test.hg`. The poset inputs (`*.json`, `*.info`, poset `*.csv`) moved to `legacy/src/tests/data/`. |
 
 ## Run
 
@@ -20,6 +21,7 @@ cmake --build --preset dev
 ctest --preset dev                                         # all tests
 ctest --preset dev -R DualizeRUNC                          # by regex
 ctest --preset dev -R 'TestUtils\.read_bit_matrix'         # one test (presets print output on failure)
+ctest --preset dev -R dual_consumer                        # install + find_package(dual) consumer build
 ```
 
 The executables open `data/...` by relative path, so to run them by hand with doctest options
