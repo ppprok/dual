@@ -99,6 +99,12 @@ All tests pass under the `dev`, `release` and `asan` presets. Besides the doctes
 project against it. More on running single tests in
 [`src/tests/README.md`](src/tests/README.md).
 
+CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs on every pull request and push to
+`master`: build and `ctest` with the `dev` and `release` presets on Linux (gcc and clang), macOS
+(Apple clang) and Windows (MSVC), the `asan` preset on Linux, Doxygen with warnings as errors, a
+`clang-format` check of the changed lines and, once the Python package exists, `pip install` +
+`pytest` on two Python versions.
+
 CMake options: `DUAL_BUILD_TESTS` (ON when this is the top-level project), `DUAL_INSTALL` (ON when
 top-level), `DUAL_ENABLE_SANITIZERS` (OFF), `DUAL_WARNINGS_AS_ERRORS` (OFF; the code still has many
 `-Wall -Wextra` warnings), `DUAL_BUILD_PYTHON` (a placeholder, does nothing yet).
