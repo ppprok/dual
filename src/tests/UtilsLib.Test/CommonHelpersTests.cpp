@@ -2,8 +2,11 @@
 
 #include <doctest.h>
 
+#include <vector>
+
 #include "bit_matrix.h"
 #include "bit_vector.h"
+#include "containers.h"
 #include "graph_algorithms.h"
 #include "string_utils.h"
 
@@ -56,4 +59,15 @@ TEST_CASE("streq_compares_two_ranges_by_length_and_content") {
     CHECK_FALSE(streq(a, a + 2, a + 3, a + 6));
     CHECK_FALSE(streq(a, a + 3, a + 3, a + 5));
     CHECK(streq(a, a, a + 3, a + 3));
+}
+
+// exclude called an undefined remove(), so instantiating it failed to compile.
+TEST_CASE("exclude_removes_listed_elements_keeping_order") {
+    std::vector<int> c{5, 1, 4, 2, 3, 4};
+    std::vector<int> const excl{4, 1, 7};
+    exclude(c, excl);
+    CHECK_EQ(std::vector<int>{5, 2, 3}, c);
+
+    exclude(c, std::vector<int>{});
+    CHECK_EQ(std::vector<int>{5, 2, 3}, c);
 }
