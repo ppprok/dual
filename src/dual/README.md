@@ -1,12 +1,13 @@
 # src/dual
 
-The dualization algorithms, the callbacks they report to, and the C ABI for Python. Only the files
+The dualization algorithms, the callbacks they report to, and the C ABI. The Python package `dual`
+([`../../python`](../../python/README.md)) binds these classes directly with pybind11. Only the files
 listed in [`CMakeLists.txt`](CMakeLists.txt) are built. Two targets:
 
 - `dual::dual`: static library `libdual.a` with everything below except `RuncExecutor.cpp`. Links
   `dual::common`.
 - `dual::runc`: shared library `librunc.so` built from `RuncExecutor.cpp`, the `extern "C"` API.
-  The `InstallRuncLib` target copies it into [`../pyrunc`](../pyrunc/README.md).
+  The `InstallRuncLib` target copies it into the deprecated [`../pyrunc`](../pyrunc/README.md).
 
 ## Framework
 

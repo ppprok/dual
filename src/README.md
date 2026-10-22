@@ -8,7 +8,7 @@ header lists up to the install rules in [`../cmake/DualInstall.cmake`](../cmake/
 |---|---|---|
 | [`common/`](common/README.md) | Bit containers, integer file IO, graph and container utilities. | `dual::common` (`libdual_common.a`) |
 | [`dual/`](dual/README.md) | Dualization algorithms (RUNC family, RuncFixed, AOT1, PUNC), callbacks, the C ABI. | `dual::dual` (`libdual.a`), `dual::runc` (`librunc.so`) |
-| [`pyrunc/`](pyrunc/README.md) | Python `ctypes` wrapper over `librunc.so`. | filled by `InstallRuncLib` |
+| [`pyrunc/`](pyrunc/README.md) | Deprecated Python `ctypes` wrapper over `librunc.so` (use the `dual` package in [`../python`](../python/README.md)). | filled by `InstallRuncLib` |
 | [`tests/`](tests/README.md) | doctest unit tests and test data. | `TestDual`, `TestUtils` |
 
 `dual::dual` links `dual::common`; `librunc.so` links `dual::dual` statically. Only the files listed

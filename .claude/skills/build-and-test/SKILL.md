@@ -54,6 +54,8 @@ Compare against this list: a new failure is yours; an old one is not to be fixed
    `src/tests/consumer/main.cpp`.
 5. If you added a `.cpp/.h` — add it to the source list of its `CMakeLists.txt`, otherwise the file is not built
    and clangd does not see it.
+6. If you touched `python/`, `pyproject.toml` or the algorithms — `pip install ".[test]" && pytest` in a venv
+   (see the `python-bindings` skill).
 
 ## CI
 

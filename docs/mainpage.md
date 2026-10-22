@@ -11,7 +11,7 @@ The algorithms are described in the papers listed in `docs/references.md`.
 |---|---|
 | `dual::common` (`libdual_common.a`) | Bit containers and utilities: bit_chunk (non-owning bit set view), bit_vector (owning bit array), bit_mask (operations under a mask), bit_matrix (growable bit matrix), raw_vector / blob, IntegersFileReader / IntegersFileWriter (text I/O, `.hg` files), graph algorithms on adjacency matrices. |
 | `dual::dual` (`libdual.a`) | Dualization algorithms and callbacks: Runc::RuncGlobalState (RUNC, RUNCM, OPT; resumable), AOT1::GlobalState (AO1/AO2 variants), PUNC::GlobalState, RuncFixed (32/64 columns); cover collectors (CoverCollector, MostCoverCollector, BitCoverCollectorCallback), file writers, Counters, weighters and pruning callbacks. |
-| `dual::runc` (`librunc.so`) | C ABI over RUNCM for `ctypes` (`src/pyrunc/runc.py`): see RuncExecutor.h. |
+| `dual::runc` (`librunc.so`) | C ABI over RUNCM (used by the deprecated `ctypes` wrapper `src/pyrunc/runc.py`): see RuncExecutor.h. The Python package `dual` (`python/`) uses pybind11 instead. |
 
 ## Input format (`.hg`)
 

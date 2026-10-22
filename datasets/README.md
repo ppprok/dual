@@ -30,4 +30,4 @@ is the 3x3 matrix with rows `110`, `011`, `101`; its minimal covers are `{0,1}`,
 | `extra.hg`, `cmp-submatrix-test.hg`, `write_bm_test.hg`, `integers.txt` | Small inputs used by old tests. |
 
 Try one with the C++ quickstart from the [top-level README](../README.md#use-from-c) via
-`runc.loadMatrix("datasets/15_20_275.hg")`, or from Python as in [`../src/pyrunc`](../src/pyrunc/README.md).
+`runc.loadMatrix("datasets/15_20_275.hg")`, or from Python with `dual.count_covers("datasets/15_20_275.hg")` (see [`../python`](../python/README.md)).

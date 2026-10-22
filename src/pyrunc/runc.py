@@ -1,8 +1,14 @@
+"""Deprecated ctypes wrapper over librunc.so; use the `dual` package (python/, `pip install .`)."""
+
 import ctypes
 import os
+import warnings
 from typing import List
 
 import numpy
+
+warnings.warn("src/pyrunc/runc.py is deprecated; use the `dual` package (pip install . from the "
+              "repository root, see python/README.md)", DeprecationWarning, stacklevel=2)
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 librunc = ctypes.CDLL(script_dir + "/librunc.so")
