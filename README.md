@@ -66,6 +66,7 @@ All of them are in [`src/dual`](src/dual/README.md) (headers in `include/dual/`)
 | [`python/`](python/README.md) | Python package `dual` (pybind11 bindings, pytest tests); built by `pyproject.toml`. |
 | [`src/pyrunc/`](src/pyrunc/README.md) | Deprecated Python `ctypes` wrapper over `librunc.so`. |
 | [`src/tests/`](src/tests/README.md) | doctest unit tests (`TestDual`, `TestUtils`) and their data. |
+| [`benchmarks/`](benchmarks/README.md) | `dual_bench` and a driver that times the algorithms on random matrices (bootstrap estimates), with committed reports. |
 | [`cmake/`](cmake/README.md) | CMake helpers: compile options, install rules, package config, docs. |
 | [`datasets/`](datasets/README.md) | Input matrices in `.hg` format. |
 | [`docs/`](docs/README.md) | Literature, the author's papers, the Doxygen config and main page. |
@@ -118,12 +119,19 @@ presets; `-Werror` for GCC/Clang, where live code builds without `-Wall -Wextra`
 applied to MSVC), `DUAL_CLANG_TIDY` (OFF; runs clang-tidy
 with [`.clang-tidy`](.clang-tidy) during the build), `DUAL_BUILD_DOCS` (OFF; the `dual_docs` Doxygen
 target), `DUAL_BUILD_PYTHON` (OFF; builds the Python extension module, see
-[`python/`](python/README.md)).
+[`python/`](python/README.md)), `DUAL_BUILD_BENCHMARKS` (OFF by default, ON in all presets; the
+`dual_bench` executable, see [`benchmarks/`](benchmarks/README.md)).
 
 Code style: [`.clang-format`](.clang-format) for all of `include/` and `src/` (the pure formatting
 commit is listed in [`.git-blame-ignore-revs`](.git-blame-ignore-revs)) and
 [`.clang-tidy`](.clang-tidy), which runs clean on live code:
-`run-clang-tidy.py -p build/dev -quiet 'src/(common|dual|tests)/'`.
+`run-clang-tidy.py -p build/dev -quiet '(src/(common|dual|tests)|benchmarks)/'`.
+
+Benchmarks: `python3 benchmarks/run_benchmarks.py` (after `cmake --preset release && cmake --build
+--preset release`) times every algorithm on random matrices of three shapes (m >> n, m << n, m ~ n)
+and writes a report with bootstrap confidence intervals to `benchmarks/results/`; see
+[`benchmarks/README.md`](benchmarks/README.md) and the committed
+[reports](benchmarks/results/).
 
 ## Use from C++
 

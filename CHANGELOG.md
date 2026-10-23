@@ -13,6 +13,12 @@ The first release is planned as **0.1.0** (the version in `project(dual VERSION 
 
 ### Added
 
+- Benchmarks ([#48](https://github.com/ppprok/dual/issues/48)): the `dual_bench` executable
+  (option `DUAL_BUILD_BENCHMARKS`, ON in the presets and built in CI) runs any algorithm on a `.hg`
+  file or a seeded random matrix with a time limit and prints JSON; `benchmarks/run_benchmarks.py`
+  times all algorithms on random matrices with m >> n, m << n and m ~ n, computes bootstrap CIs of
+  the median and mean time and time per cover, and writes a Markdown report and plots. A first
+  report is in `benchmarks/results/`.
 - Khachiyan's incremental dualization `FK::GlobalState` (`<dual/fk.h>`): the Fredman–Khachiyan
   duality test (algorithm B) `FK::isDual` with a witness of non-duality, `next()` for one more
   cover and `dualize()` for all of them ([#43](https://github.com/ppprok/dual/issues/43)).
