@@ -27,7 +27,7 @@ does, and dropping a column from a pair breaks it. So the minimal covers are `{c
 
 ## Algorithms
 
-All of them are in [`src/dual`](src/dual/README.md).
+All of them are in [`src/dual`](src/dual/README.md) (headers in `include/dual/`), in namespace `dual`.
 
 | Algorithm | Where | What it is |
 |---|---|---|
@@ -45,24 +45,25 @@ All of them are in [`src/dual`](src/dual/README.md).
 - **Callbacks.** Every algorithm derives from `DualizationBacktrackAlgorithmBase` and reports search
   tree nodes through two hooks, `InnerCallback` and `CoverCallback` (`IDualizationCallback`).
   Ready-made callbacks count nodes (`Counters`), collect covers (`CoverCollector`,
-  `MostCoverCollector`), write them to files (`FileWriters.h`), weigh them and prune branches by
-  weight (`Weighters.h`, `Pruning.h`). `dualization_callback(lambda)` wraps a lambda.
+  `MostCoverCollector`), write them to files (`<dual/file_writers.h>`), weigh them and prune branches by
+  weight (`<dual/weighters.h>`, `<dual/pruning.h>`). `dualization_callback(lambda)` wraps a lambda.
 - **C ABI.** The shared library `librunc.so` exports `init_dualizer`, `set_input_row`,
   `enumerate_covers` and `release_dualizer` as `extern "C"` functions over RUNCM, for use from C
   or through `ctypes`. Rows may be given in any order; errors are reported as negative return codes
-  (`RUNC_ERROR_*` in `RuncExecutor.h`) and no exception crosses the ABI.
+  (`RUNC_ERROR_*` in `<dual/runc_executor.h>`) and no exception crosses the ABI.
 
 ## Repository layout
 
 | Path | Contents |
 |---|---|
-| [`src/`](src/README.md) | All maintained sources. |
+| [`include/dual/`](include/dual) | Public headers (installed), included as `<dual/...>`. |
+| [`src/`](src/README.md) | Implementation sources and internal headers. |
 | [`src/common/`](src/common/README.md) | `dual::common`: bit containers (`bit_chunk`, `bit_vector`, `bit_matrix`), integer file IO, graph utilities. |
 | [`src/dual/`](src/dual/README.md) | `dual::dual` (the algorithms and callbacks) and `dual::runc` (`librunc.so`, the C ABI). |
 | [`python/`](python/README.md) | Python package `dual` (pybind11 bindings, pytest tests); built by `pyproject.toml`. |
 | [`src/pyrunc/`](src/pyrunc/README.md) | Deprecated Python `ctypes` wrapper over `librunc.so`. |
 | [`src/tests/`](src/tests/README.md) | doctest unit tests (`TestDual`, `TestUtils`) and their data. |
-| [`cmake/`](cmake/README.md) | CMake helpers: compile options, install rules, package config. |
+| [`cmake/`](cmake/README.md) | CMake helpers: compile options, install rules, package config, docs. |
 | [`datasets/`](datasets/README.md) | Input matrices in `.hg` format. |
 | [`docs/`](docs/README.md) | Literature and the author's papers. |
 | [`legacy/`](legacy/README.md) | Unmaintained, unbuilt code and data kept for reference. |
@@ -103,12 +104,21 @@ project against it. More on running single tests in
 CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs on every pull request and push to
 `master`: build and `ctest` with the `dev` and `release` presets on Linux (gcc and clang), macOS
 (Apple clang) and Windows (MSVC), the `asan` preset on Linux, Doxygen with warnings as errors, a
-`clang-format` check of the changed lines and, once the Python package exists, `pip install` +
-`pytest` on two Python versions.
+`clang-format` check of the changed lines, clang-tidy on all live code (any finding fails) and
+`pip install` + `pytest` on two Python versions.
 
 CMake options: `DUAL_BUILD_TESTS` (ON when this is the top-level project), `DUAL_INSTALL` (ON when
-top-level), `DUAL_ENABLE_SANITIZERS` (OFF), `DUAL_WARNINGS_AS_ERRORS` (OFF; the code still has many
-`-Wall -Wextra` warnings), `DUAL_BUILD_PYTHON` (OFF; builds the Python extension module, see [`python/`](python/README.md)).
+top-level), `DUAL_ENABLE_SANITIZERS` (OFF), `DUAL_WARNINGS_AS_ERRORS` (OFF by default, ON in all
+presets; `-Werror` for GCC/Clang, where live code builds without `-Wall -Wextra` warnings; not
+applied to MSVC), `DUAL_CLANG_TIDY` (OFF; runs clang-tidy
+with [`.clang-tidy`](.clang-tidy) during the build), `DUAL_BUILD_DOCS` (OFF; the `dual_docs` Doxygen
+target), `DUAL_BUILD_PYTHON` (OFF; builds the Python extension module, see
+[`python/`](python/README.md)).
+
+Code style: [`.clang-format`](.clang-format) for all of `include/` and `src/` (the pure formatting
+commit is listed in [`.git-blame-ignore-revs`](.git-blame-ignore-revs)) and
+[`.clang-tidy`](.clang-tidy), which runs clean on live code:
+`run-clang-tidy.py -p build/dev -quiet 'src/(common|dual|tests)/'`.
 
 ## Use from C++
 
@@ -120,7 +130,7 @@ cmake --build --preset release
 cmake --install build/release --prefix /path/to/prefix
 ```
 
-This installs `lib/libdual.a`, `lib/libdual_common.a`, `lib/librunc.so`, the headers flat under
+This installs `lib/libdual.a`, `lib/libdual_common.a`, `lib/librunc.so`, the public headers under
 `include/dual/` and `lib/cmake/dual/dualConfig.cmake`. The package exports `dual::dual` (algorithms,
 links `dual::common`), `dual::common` and `dual::runc`. A consumer project:
 
@@ -137,15 +147,15 @@ target_link_libraries(app PRIVATE dual::dual)
 ```cpp
 #include <iostream>
 
-#include "Counters.h"
-#include "Runc.h"
+#include <dual/counters.h>
+#include <dual/runc.h>
 
 // The 3x3 example matrix. bit_matrix is move-only; set() grows it as needed, in any order.
 //   1 1 0
 //   0 1 1
 //   1 0 1
-bit_matrix example_matrix() {
-    bit_matrix m;
+dual::bit_matrix example_matrix() {
+    dual::bit_matrix m;
     m.set(0, 0);
     m.set(0, 1);
     m.set(1, 1);
@@ -156,6 +166,8 @@ bit_matrix example_matrix() {
 }
 
 int main() {
+    using namespace dual;
+
     // 1. Portions: each call returns at most 2 covers and resumes where the previous call stopped.
     Runc::RuncGlobalState runc(Runc::RUNCM);  // or Runc::RUNC, Runc::OPT
     runc.setMatrix(example_matrix());         // or runc.loadMatrix("matrix.hg")
@@ -196,8 +208,8 @@ covers: 3
 ```
 
 A cover is a `std::vector<int>` of column indices (`Columns`) in the order the search added them,
-not necessarily sorted. Headers are included by bare name (`"Runc.h"`) for now; a namespaced
-`include/` layout is planned in #12.
+not necessarily sorted. Headers are included as `<dual/...>`, and all names are in namespace `dual`
+(the algorithms' state in `dual::Runc`, `dual::AOT1`, `dual::PUNC`).
 
 ## Use from Python
 
@@ -256,4 +268,4 @@ MIT, see [`LICENSE`](LICENSE). Third-party code under `legacy/3rd-party/` keeps 
 This is research code being turned into a reusable library (epic #7). The RUNC family
 (`Runc::RuncGlobalState`), the Python package `dual` and the C ABI are the main maintained part. `AOT1`, `PUNC` and
 `RuncFixed` are tested against RUNCM on the test matrices and on random ones, but are less used.
-The API and the header layout are expected to change (#12).
+The API may still change before a first release.

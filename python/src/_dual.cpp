@@ -3,8 +3,8 @@
 // The user-facing API (`dual.enumerate_covers` and friends) is the Python package in
 // `python/dual/__init__.py`; this module exposes one class, `Dualizer`, and a debug counter.
 //
-// All includes of the C++ library and all references to its API are kept in this file, so that
-// changes of the public headers (#12: `<dual/...>` paths, namespace `dual`) are a local edit.
+// All includes of the C++ library and all references to its API are kept in this file. The library
+// is used through its public headers `<dual/...>`; its names are in namespace `dual` (#12).
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -20,11 +20,11 @@
 #include <utility>
 #include <vector>
 
-#include "AOT1.h"
-#include "DualizationBacktrackAlgorithmBase.h"
-#include "PUNC.h"
-#include "Runc.h"
-#include "bit_matrix.h"
+#include <dual/aot1.h>
+#include <dual/bit_matrix.h>
+#include <dual/dualization_backtrack_algorithm_base.h>
+#include <dual/punc.h>
+#include <dual/runc.h>
 
 namespace py = pybind11;
 
@@ -32,6 +32,8 @@ namespace {
 
 // ---------------------------------------------------------------------------------------------
 // Library API used by the bindings (the part to adapt when the public headers change)
+
+using namespace dual;
 
 using Algorithm = DualizationBacktrackAlgorithmBase;
 using Matrix = bit_matrix;

@@ -3,8 +3,11 @@
 
 #pragma once
 
-#include "bit_matrix.h"
 #include <stdexcept>
+
+#include <dual/bit_matrix.h>
+
+namespace dual {
 
 /// @brief Number of edges (set bits) of a graph given by its adjacency matrix.
 int edges_number(bit_matrix& adj_mat);
@@ -49,3 +52,5 @@ void topological_order(bit_matrix const& adj_mat, std::vector<int>& order);
 ///        topological order of the graph.
 /// @throws std::invalid_argument If `order.size()` differs from the number of vertices.
 bool is_topological_order(bit_matrix const& adj_mat, std::vector<int> const& order);
+
+}  // namespace dual

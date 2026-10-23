@@ -4,9 +4,12 @@
 
 #include <stdexcept>
 
-#include "Counters.h"
-#include "CoverCollector.h"
+#include <dual/counters.h>
+#include <dual/cover_collector.h>
+
 #include "RuncTestUtils.h"
+
+using namespace dual;
 
 using namespace runc_test;
 
@@ -157,15 +160,33 @@ TEST_CASE("RuncApi: setMatrix restarts the enumeration") {
     CHECK(g.isDualizeFinished());
 }
 
-TEST_CASE("RuncApi: mutable get_matrix restarts the enumeration") {
+TEST_CASE("RuncApi: mutable_matrix restarts the enumeration") {
     auto rows = pathRows();
     Runc::RuncGlobalState g(Runc::RUNCM);
     g.setMatrix(makeMatrix(rows));
     auto first = g.dualize(size_t(2));
     REQUIRE(first.size() == 2);
 
-    g.get_matrix();  // may modify the matrix
+    g.mutable_matrix();  // may modify the matrix
     CoverSet s;
+    for (auto v = g.dualize(size_t(100)); !v.empty(); v = g.dualize(size_t(100)))
+        for (auto& c : v)
+            s.add(rows, c);
+    CHECK(s.covers == fullEnumeration(rows));
+    CHECK(s.duplicates == 0);
+}
+
+TEST_CASE("RuncApi: get_matrix does not restart the enumeration") {
+    auto rows = pathRows();
+    Runc::RuncGlobalState g(Runc::RUNCM);
+    g.setMatrix(makeMatrix(rows));
+    CoverSet s;
+    auto first = g.dualize(size_t(2));
+    REQUIRE(first.size() == 2);
+    for (auto& c : first)
+        s.add(rows, c);
+
+    CHECK(g.get_matrix().height() == (int) rows.size());  // read-only access on a non-const object
     for (auto v = g.dualize(size_t(100)); !v.empty(); v = g.dualize(size_t(100)))
         for (auto& c : v)
             s.add(rows, c);

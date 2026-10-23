@@ -7,10 +7,12 @@
 #include <string>
 #include <vector>
 
-#include "CoverCollector.h"
-#include "Pruning.h"
-#include "Runc.h"
-#include "WeightBoundsPruning.h"
+#include <dual/cover_collector.h>
+#include <dual/pruning.h>
+#include <dual/runc.h>
+#include <dual/weight_bounds_pruning.h>
+
+using namespace dual;
 
 namespace {
 

@@ -1,8 +1,10 @@
-#include "io_utils.h"
+#include <dual/io_utils.h>
 
 #include <filesystem>
 #include <fstream>
 #include <stdexcept>
+
+namespace dual {
 
 std::shared_ptr<FILE> open_file_for_read(std::string const& filename) {
     FILE* f = fopen(filename.c_str(), "rb");
@@ -32,7 +34,7 @@ std::string read_all(std::string const& filename) {
 
 void write(FILE* file, char const* begin, char const* end) {
     assert(file);
-    auto count = end - begin;
+    auto count = static_cast<size_t>(end - begin);
     if (count == 0)
         return;
 
@@ -61,3 +63,5 @@ void write(FILE* file, char const* begin) {
         throw std::runtime_error("Write to file error");
     }
 }
+
+}  // namespace dual

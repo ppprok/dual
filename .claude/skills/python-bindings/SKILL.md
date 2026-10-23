@@ -9,7 +9,7 @@ description: The Python package `dual` (pybind11 + scikit-build-core, `python/`,
 |---|---|
 | `pyproject.toml` (root) | scikit-build-core build: sets `DUAL_BUILD_PYTHON=ON`, `DUAL_BUILD_TESTS=OFF`, `DUAL_INSTALL=OFF`, builds only the `_dual` target and installs only the `python` component. Version is read from `project(dual VERSION ...)` in `CMakeLists.txt`. |
 | `python/CMakeLists.txt` | `find_package(Python ... Development.Module)` + `find_package(pybind11 CONFIG)`, `pybind11_add_module(_dual ...)` linking `dual::dual`. Under pip (`SKBUILD`) installs into `dual/`; a plain CMake build assembles the package in `<build>/python/dual`. |
-| `python/src/_dual.cpp` | The whole binding: class `Dualizer`, `ALGORITHMS`, `_live_dualizers()`. **All C++ library includes and API uses are in this file** (top block "Library API used by the bindings") — the only place to adapt when the public headers change (#12: `<dual/...>` paths, namespace `dual`). |
+| `python/src/_dual.cpp` | The whole binding: class `Dualizer`, `ALGORITHMS`, `_live_dualizers()`. **All C++ library includes and API uses are in this file** (top block "Library API used by the bindings") — the only place to adapt when the public headers change; it includes `<dual/...>` and says `using namespace dual;` there (#12). |
 | `python/dual/__init__.py` | Public API: `enumerate_covers`, `iter_batches`, `minimal_covers`, `count_covers`, `make_dualizer`; input dispatch (rows / array / `.hg` path). |
 | `python/dual/_dual.pyi`, `py.typed` | Stubs of the extension module. Keep them in sync with `_dual.cpp` by hand. |
 | `python/tests/test_dual.py` | pytest: `.hg` counts from `src/tests/data`, brute force on random matrices for every algorithm, edge cases, batches == full, generator leak check, threads. |

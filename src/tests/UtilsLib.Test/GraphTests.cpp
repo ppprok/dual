@@ -1,7 +1,10 @@
 #include <doctest.h>
 
-#include "bit_matrix.h"
-#include "graph_algorithms.h"
+#include <dual/bit_matrix.h>
+
+#include "common/graph_algorithms.h"
+
+using namespace dual;
 
 TEST_CASE("TopologicalOrderTest") {
     bit_matrix adj;
@@ -37,12 +40,7 @@ TEST_CASE("TopologicalOrderNotAcyclicTest") {
 
     std::vector<int> order;
 
-    try {
-        topological_order(adj, order);
-        FAIL("");
-    }
-    catch (std::exception&) {
-    }
+    CHECK_THROWS_AS(topological_order(adj, order), std::exception);
 }
 
 TEST_CASE("TransitiveClosureTest") {

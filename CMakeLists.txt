@@ -20,14 +20,30 @@ endif()
 option(DUAL_BUILD_TESTS "Build the doctest-based unit tests" ${DUAL_IS_TOP_LEVEL})
 option(DUAL_BUILD_PYTHON "Build the pybind11 extension module dual._dual (needs pybind11; used by pip install .)" OFF)
 option(DUAL_ENABLE_SANITIZERS "Build own targets with AddressSanitizer and UndefinedBehaviorSanitizer" OFF)
+# OFF by default so a newer compiler cannot break a consumer's or packager's build; the CMake presets
+# (dev, release, asan) turn it ON, so the warning-free state of live code is kept in development.
 option(DUAL_WARNINGS_AS_ERRORS "Treat compiler warnings as errors for own targets" OFF)
 option(DUAL_INSTALL "Generate install rules and the dualConfig.cmake package" ${DUAL_IS_TOP_LEVEL})
 option(DUAL_BUILD_DOCS "Add the dual_docs target that builds the API documentation with Doxygen" OFF)
+option(DUAL_CLANG_TIDY "Run clang-tidy (config .clang-tidy) on own sources as part of the build" OFF)
 
 if(DUAL_IS_TOP_LEVEL)
     if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
         set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
         set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS Debug Release RelWithDebInfo MinSizeRel)
+    endif()
+endif()
+
+if(DUAL_CLANG_TIDY)
+    find_program(DUAL_CLANG_TIDY_EXE NAMES clang-tidy)
+    if(NOT DUAL_CLANG_TIDY_EXE)
+        message(FATAL_ERROR "DUAL_CLANG_TIDY is ON, but clang-tidy was not found")
+    endif()
+    # Applies to the targets created below (own code only: doctest is header-only). With
+    # DUAL_WARNINGS_AS_ERRORS a clang-tidy finding fails the build too.
+    set(CMAKE_CXX_CLANG_TIDY "${DUAL_CLANG_TIDY_EXE}")
+    if(DUAL_WARNINGS_AS_ERRORS)
+        list(APPEND CMAKE_CXX_CLANG_TIDY "--warnings-as-errors=*")
     endif()
 endif()
 

@@ -1,8 +1,11 @@
 #include <doctest.h>
+
 #include <filesystem>
 
-#include "IntegersFileReader.h"
-#include "common/IntegersFileWriter.h"
+#include <dual/integers_file_reader.h>
+#include <dual/integers_file_writer.h>
+
+using namespace dual;
 
 TEST_CASE("write_interger_test") {
     IntegersFileWriter writer("data/integers.txt");
@@ -46,7 +49,7 @@ TEST_CASE("read_iris_test") {
     CHECK(hg.size() == 77);
     hg.pop_back();
 
-    for (auto v : hg) {
+    for (const auto& v : hg) {
         CHECK(v.size() == 5);
     }
 }

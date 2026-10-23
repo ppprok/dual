@@ -5,7 +5,9 @@
 #include <algorithm>
 #include <vector>
 
-#include "MostCoverCollector.h"
+#include <dual/most_cover_collector.h>
+
+using namespace dual;
 
 namespace {
 
