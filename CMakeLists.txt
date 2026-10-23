@@ -26,6 +26,7 @@ option(DUAL_WARNINGS_AS_ERRORS "Treat compiler warnings as errors for own target
 option(DUAL_INSTALL "Generate install rules and the dualConfig.cmake package" ${DUAL_IS_TOP_LEVEL})
 option(DUAL_BUILD_DOCS "Add the dual_docs target that builds the API documentation with Doxygen" OFF)
 option(DUAL_CLANG_TIDY "Run clang-tidy (config .clang-tidy) on own sources as part of the build" OFF)
+option(DUAL_BUILD_BENCHMARKS "Build the dual_bench executable used by benchmarks/run_benchmarks.py" OFF)
 
 if(DUAL_IS_TOP_LEVEL)
     if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
@@ -55,6 +56,10 @@ add_subdirectory(src)
 
 if(DUAL_BUILD_PYTHON)
     add_subdirectory(python)
+endif()
+
+if(DUAL_BUILD_BENCHMARKS)
+    add_subdirectory(benchmarks)
 endif()
 
 if(DUAL_BUILD_TESTS)

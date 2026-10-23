@@ -1,6 +1,6 @@
 ---
-# clang-tidy configuration for live code (include/dual, src/). Run it through the compile database:
-#   run-clang-tidy.py -p build/dev -quiet 'src/(common|dual|tests)/'
+# clang-tidy configuration for live code (include/dual, src/, benchmarks/). Run it through the compile database:
+#   run-clang-tidy.py -p build/dev -quiet '(src/(common|dual|tests)|benchmarks)/'
 # or configure with -DDUAL_CLANG_TIDY=ON to run it as part of the build.
 #
 # Excluded checks and why:

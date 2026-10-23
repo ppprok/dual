@@ -54,7 +54,7 @@ Compare against this list: a new failure is yours; an old one is not to be fixed
    and compare the number of failures with `master`.
 3. `clang-format -i` on the changed `.cpp/.h` under `include/` and `src/` (config `.clang-format`; do not format
    `legacy/`). A pure mass-reformatting commit goes into `.git-blame-ignore-revs`.
-4. clang-tidy on the changed code: `run-clang-tidy.py -p build/dev -quiet 'src/(common|dual|tests)/'` (uses
+4. clang-tidy on the changed code: `run-clang-tidy.py -p build/dev -quiet '(src/(common|dual|tests)|benchmarks)/'` (uses
    `build/dev/compile_commands.json`; headers in `include/dual` are checked through the sources), or configure a
    separate build dir with `-DDUAL_CLANG_TIDY=ON`. It must stay clean; suppress a single finding only with
    `// NOLINT(check): reason`.
@@ -79,7 +79,7 @@ Compare against this list: a new failure is yours; an old one is not to be fixed
 | `linux-gcc asan` | the `asan` preset | `cmake --preset asan && cmake --build --preset asan && ctest --preset asan` |
 | `docs` | Doxygen with `WARN_AS_ERROR = FAIL_ON_WARNINGS` | `mkdir -p build && printf '@INCLUDE = docs/Doxyfile\nWARN_AS_ERROR = FAIL_ON_WARNINGS\n' > build/Doxyfile.ci && doxygen build/Doxyfile.ci` |
 | `clang-format` | clang-format 23.1.3 on the lines changed since the PR base, `legacy/` excluded | `git diff -U0 origin/master -- '*.cpp' '*.h' ':(exclude)legacy' \| clang-format-diff.py -p1` (no output = clean; fix with `git clang-format origin/master`) |
-| `clang-tidy` | clang-tidy 23.1.3 (pip wheel) with `.clang-tidy` over `src/(common\|dual\|tests)/` after `cmake --preset dev`; any finding fails | `run-clang-tidy.py -p build/dev -quiet -warnings-as-errors='*' 'src/(common\|dual\|tests)/'` |
+| `clang-tidy` | clang-tidy 23.1.3 (pip wheel) with `.clang-tidy` over `src/(common\|dual\|tests)/` and `benchmarks/` after `cmake --preset dev`; any finding fails | `run-clang-tidy.py -p build/dev -quiet -warnings-as-errors='*' '(src/(common\|dual\|tests)\|benchmarks)/'` |
 | `python 3.10` / `3.12` | `pip install ".[test]"`, `pytest python/tests`; skipped while there is no `pyproject.toml` | `pip install ".[test]" && pytest python/tests` |
 
 Run status and logs through the API (see the `github` skill for `$API`/`$H`):
