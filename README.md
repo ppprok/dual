@@ -1,6 +1,8 @@
 # dual: dualization algorithms
 
 [![CI](https://github.com/ppprok/dual/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/ppprok/dual/actions/workflows/ci.yml)
+[![Docs](https://github.com/ppprok/dual/actions/workflows/docs.yml/badge.svg?branch=master)](https://ppprok.github.io/dual/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 C++17 library that enumerates all **minimal covers of a Boolean matrix**. A set of columns *covers*
 the matrix when every row has a one in at least one of those columns, and a cover is *minimal* when
@@ -65,8 +67,10 @@ All of them are in [`src/dual`](src/dual/README.md) (headers in `include/dual/`)
 | [`src/tests/`](src/tests/README.md) | doctest unit tests (`TestDual`, `TestUtils`) and their data. |
 | [`cmake/`](cmake/README.md) | CMake helpers: compile options, install rules, package config, docs. |
 | [`datasets/`](datasets/README.md) | Input matrices in `.hg` format. |
-| [`docs/`](docs/README.md) | Literature and the author's papers. |
+| [`docs/`](docs/README.md) | Literature, the author's papers, the Doxygen config and main page. |
+| [`.github/`](.github/) | CI and docs workflows, issue and pull request templates. |
 | [`legacy/`](legacy/README.md) | Unmaintained, unbuilt code and data kept for reference. |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md), [`CHANGELOG.md`](CHANGELOG.md), [`CITATION.cff`](CITATION.cff) | How to contribute, the change log, citation metadata. |
 
 ## Requirements
 
@@ -258,6 +262,21 @@ count.
 The algorithms and related literature are listed in [`docs/references.md`](docs/references.md); the
 RUNC family is described in E. V. Djukova, P. A. Prokofjev, *Construction and investigation of new
 asymptotically optimal algorithms for dualization* (2014), included in `docs/references/`.
+
+## Documentation
+
+The API reference, generated with Doxygen from the comments in the public headers, is published at
+<https://ppprok.github.io/dual/> on every push to `master`
+([`.github/workflows/docs.yml`](.github/workflows/docs.yml)). Build it locally with
+`cmake --preset dev -DDUAL_BUILD_DOCS=ON && cmake --build --preset dev --target dual_docs`
+(HTML in `build/dev/docs/html`).
+
+## Contributing and citing
+
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for building, testing, code style and the issue → pull
+request workflow, and [`CHANGELOG.md`](CHANGELOG.md) for the changes. To cite `dual`, use
+[`CITATION.cff`](CITATION.cff) (GitHub's "Cite this repository" button); it points at the paper
+that describes the RUNC family.
 
 ## License
 

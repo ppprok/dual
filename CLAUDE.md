@@ -28,6 +28,7 @@ cmake -S . -B build && cmake --build build -j && ctest --test-dir build
 - All tests pass under the `dev`, `release` and `asan` presets; keep it that way. `doxygen docs/Doxyfile` (run from the root after `mkdir -p build`) must stay at 0 warnings.
 
 CI (`.github/workflows/ci.yml`, on PRs and pushes to `master`): `dev` + `release` presets (configure, build, `ctest`, so also `dual_consumer`) on ubuntu gcc, ubuntu clang, macOS and Windows MSVC; `asan` preset on ubuntu gcc; Doxygen with `WARN_AS_ERROR = FAIL_ON_WARNINGS`; `clang-format` 23.1.3 on the lines changed by the PR only (`legacy/` excluded); `clang-tidy` 23.1.3 with `.clang-tidy` on all live code via `build/dev/compile_commands.json` (blocking: any finding fails); a Python job (`pip install ".[test]"`, `pytest python/tests`, Python 3.10/3.12). Reproduce locally with the commands in the CI section of the `build-and-test` skill.
+`.github/workflows/docs.yml` (push to `master`, manual) builds the Doxygen HTML and deploys it to GitHub Pages (https://ppprok.github.io/dual/; Pages source must be "GitHub Actions").
 
 Python package `dual` (see the `python-bindings` skill and `python/README.md`): `pyproject.toml` (scikit-build-core + pybind11) builds `python/src/_dual.cpp` into `dual._dual`; the API is `python/dual/__init__.py` (`enumerate_covers`, `iter_batches`, `minimal_covers`, `count_covers`, `Dualizer`). Check with `pip install ".[test]" && pytest` (tests in `python/tests`, they read `src/tests/data`). All C++ includes of the bindings are in `_dual.cpp`. The old `ctypes` wrapper `src/pyrunc/runc.py` (over `librunc.so`, copied there by the `InstallRuncLib` target) is deprecated but kept as a C ABI example.
 
@@ -60,6 +61,7 @@ All C++ code (library and its public headers) is in namespace `dual`. The algori
 ## Workflow
 
 Changes go through GitHub issues and pull requests (issue first, branch `type/N_description`, commits `[#N] type: Description` without trailers, draft PR with `Closes #N`, the owner merges). Details are in the `github`, `issue-template` and `build-and-test` skills under `.claude/skills/`; the PR body follows `.github/pull_request_template.md`.
+Human-facing versions: `CONTRIBUTING.md` (build, style, workflow, CI) and `.github/ISSUE_TEMPLATE/`; record user-visible changes in `CHANGELOG.md` under `[Unreleased]`; citation metadata is in `CITATION.cff`.
 
 ## Conventions
 
