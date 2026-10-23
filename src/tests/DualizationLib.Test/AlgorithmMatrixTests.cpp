@@ -28,19 +28,13 @@ using namespace dual_test;
 
 namespace {
 
-#ifdef NDEBUG
-constexpr bool debugBuild = false;
-#else
-constexpr bool debugBuild = true;
-#endif
-
 typedef std::unique_ptr<DualizationBacktrackAlgorithmBase> AlgorithmPtr;
 
 // An algorithm derived from DualizationBacktrackAlgorithmBase with one choice of its options
 struct BacktrackAlgorithm {
     std::string name;
     std::function<AlgorithmPtr(int n)> create;  // n: number of columns, for the order weights
-    bool slowOnLargeFiles = false;              // FK: the two largest data files take minutes in Debug
+    bool slowOnLargeFiles = false;              // FK: see Enumerator::slowOnLargeFiles
 };
 
 // PUNC with a row and a column order given by weights; ties are broken at random inside PUNC
@@ -89,8 +83,11 @@ std::vector<BacktrackAlgorithm> backtrackAlgorithms() {
 struct Enumerator {
     std::string name;
     std::function<Covers(Rows const& rows, int n)> run;
-    int maxWidth = 1 << 30;         // RuncFixed: the width of its row type
-    bool slowOnLargeFiles = false;  // skipped on the two largest data files in Debug builds
+    int maxWidth = 1 << 30;  // RuncFixed: the width of its row type
+    // Skipped on the data files with more than 5000 covers: FK takes seconds there in Release and
+    // minutes in Debug, and next() restarts the duality test for every cover; FKTests.cpp runs
+    // FK dualize() on those files in optimized builds
+    bool slowOnLargeFiles = false;
 };
 
 Covers runcPortions(Rows const& rows, int n, Runc::AlgorithmType type, size_t portion) {
@@ -238,7 +235,7 @@ TEST_CASE("AlgorithmMatrix: every algorithm finds the covers of every data file"
         bool large = expected.size() > 5000;
 
         for (auto const& e : all) {
-            if (n > e.maxWidth || (large && e.slowOnLargeFiles && debugBuild))
+            if (n > e.maxWidth || (large && e.slowOnLargeFiles))
                 continue;
             CAPTURE(e.name);
             CHECK(e.run(rows, n) == expected);
