@@ -63,6 +63,11 @@ The first release is planned as **0.1.0** (the version in `project(dual VERSION 
 
 ### Changed
 
+- `FK::GlobalState` is 20–40x faster (`10_50_7187.hg`: 2.1 s → 0.06 s, `15_35_12226.hg`: 13 s →
+  0.7 s in Release): the recursion runs on an explicit stack, so `next()` continues the run of the
+  duality test instead of restarting it from the root and getting the covers one by one costs about
+  as much as `dualize()`; sets are rows of 64-bit words, and new covers reach the families of the
+  frames above the leaf lazily ([#45](https://github.com/ppprok/dual/issues/45)).
 - Library layout: public headers moved to `include/dual/` with snake_case names (included as
   `<dual/name.h>`), internal headers stay in `src/`; all C++ code is in namespace `dual`, with
   algorithm state in `dual::Runc`, `dual::AOT1` and `dual::PUNC`; `DUAL_WARNINGS_AS_ERRORS` applies
