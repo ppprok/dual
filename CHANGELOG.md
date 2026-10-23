@@ -13,6 +13,10 @@ The first release is planned as **0.1.0** (the version in `project(dual VERSION 
 
 ### Added
 
+- Python bindings for FK: `algorithm="fk"` in every function of the `dual` package and in
+  `Dualizer` (resumable, one `FK::GlobalState::next()` per cover), `Dualizer.next_cover()` and
+  `Dualizer.all_covers()`, and the duality test `dual.is_dual(h, g)` returning `None` or a
+  `DualityWitness(kind, columns)` ([#46](https://github.com/ppprok/dual/issues/46)).
 - Khachiyan's incremental dualization `FK::GlobalState` (`<dual/fk.h>`): the Fredman–Khachiyan
   duality test (algorithm B) `FK::isDual` with a witness of non-duality, `next()` for one more
   cover and `dualize()` for all of them ([#43](https://github.com/ppprok/dual/issues/43)).

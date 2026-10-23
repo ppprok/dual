@@ -9,10 +9,10 @@ description: The Python package `dual` (pybind11 + scikit-build-core, `python/`,
 |---|---|
 | `pyproject.toml` (root) | scikit-build-core build: sets `DUAL_BUILD_PYTHON=ON`, `DUAL_BUILD_TESTS=OFF`, `DUAL_INSTALL=OFF`, builds only the `_dual` target and installs only the `python` component. Version is read from `project(dual VERSION ...)` in `CMakeLists.txt`. |
 | `python/CMakeLists.txt` | `find_package(Python ... Development.Module)` + `find_package(pybind11 CONFIG)`, `pybind11_add_module(_dual ...)` linking `dual::dual`. Under pip (`SKBUILD`) installs into `dual/`; a plain CMake build assembles the package in `<build>/python/dual`. |
-| `python/src/_dual.cpp` | The whole binding: class `Dualizer`, `ALGORITHMS`, `_live_dualizers()`. **All C++ library includes and API uses are in this file** (top block "Library API used by the bindings") — the only place to adapt when the public headers change; it includes `<dual/...>` and says `using namespace dual;` there (#12). |
-| `python/dual/__init__.py` | Public API: `enumerate_covers`, `iter_batches`, `minimal_covers`, `count_covers`, `make_dualizer`; input dispatch (rows / array / `.hg` path). |
+| `python/src/_dual.cpp` | The whole binding: class `Dualizer`, `is_dual`, `ALGORITHMS`, `_live_dualizers()`. **All C++ library includes and API uses are in this file** (top block "Library API used by the bindings") — the only place to adapt when the public headers change; it includes `<dual/...>` and says `using namespace dual;` there (#12). |
+| `python/dual/__init__.py` | Public API: `enumerate_covers`, `iter_batches`, `minimal_covers`, `count_covers`, `make_dualizer`, `is_dual` + `DualityWitness`; input dispatch (rows / array / `.hg` path). |
 | `python/dual/_dual.pyi`, `py.typed` | Stubs of the extension module. Keep them in sync with `_dual.cpp` by hand. |
-| `python/tests/test_dual.py` | pytest: `.hg` counts from `src/tests/data`, brute force on random matrices for every algorithm, edge cases, batches == full, generator leak check, threads. |
+| `python/tests/test_dual.py` | pytest: `.hg` counts from `src/tests/data`, brute force on random matrices for every algorithm, edge cases, batches == full, generator leak check, threads; FK vs RUNCM and `is_dual` witnesses checked by brute force. |
 
 ## Build, install, test
 
@@ -53,8 +53,15 @@ brute force.
 - `Dualizer` owns the algorithm through `std::unique_ptr` (algorithms are non-copyable,
   non-movable); the Python object is held by pybind11's default `unique_ptr` holder.
 - RUNC family (`runcm`, `runc`, `opt`) is resumable: `next_batch` calls
-  `RuncGlobalState::dualize(max_count)`. AOT1/PUNC have no resumable mode: the first `next_batch`
+  `RuncGlobalState::dualize(max_count)`. FK (`fk`) is resumable too: `next_batch` calls
+  `FK::GlobalState::next()` once per cover, and each call reruns the duality test from the root
+  (about 70x slower than one `dualize()` on a whole enumeration), so `all_covers()` (used by
+  `minimal_covers`) and `count()` run the full `dualize()` instead; their order may differ from
+  the portions'. AOT1/PUNC have no resumable mode: the first `next_batch`
   runs the full `dualize()` with a collecting `CoverCallback` and then hands covers out.
+- `is_dual(h, g)` takes two `Dualizer`s only as matrix holders (the Python side builds them with
+  `make_dualizer`, so all input forms work), locks both (once if it is the same object) and runs
+  `FK::isDual` without the GIL; the kind is a string, `"new_transversal"` / `"not_transversal"`.
 - Long C++ calls run under `py::gil_scoped_release`; never touch Python objects inside that
   scope (convert after it). A per-object mutex is taken with `try_lock` *before* releasing the GIL:
   concurrent use of one `Dualizer` raises `RuntimeError` instead of deadlocking or corrupting state.
@@ -62,7 +69,9 @@ brute force.
   contract: no rows → `[[]]`, a zero row → `[]`.
 - numpy is optional: arrays are converted in Python (`asarray(m) != 0`, C-contiguous bool) and
   passed through the buffer protocol (`set_dense`), so the extension never imports numpy.
-- `count()` runs a full enumeration with a counting callback and restarts the portion state.
+- `count()` and `all_covers()` run a full enumeration with a callback and restart the portion state.
+- FK tests: generators only on the small `.hg` files (`SMALL_HG_FILES`); the full FK run on
+  `15_35_12226.hg` takes tens of seconds and dominates the pytest time.
 
 ## Pitfalls
 
