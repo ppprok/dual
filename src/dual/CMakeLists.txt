@@ -8,6 +8,7 @@ set(DUAL_DUAL_PUBLIC_HEADERS
         file_writers.h
         fk.h
         most_cover_collector.h
+        optimal_covers.h
         pruning.h
         punc.h
         runc.h
@@ -27,6 +28,7 @@ add_library(dual
         file_writers.cpp
         fk.cpp
         most_cover_collector.cpp
+        optimal_covers.cpp
         pruning.cpp
         punc.cpp
         runc.cpp
