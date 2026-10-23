@@ -12,7 +12,7 @@ listed in [`CMakeLists.txt`](CMakeLists.txt) are built. Two targets:
 The public headers are in [`../../include/dual/`](../../include/dual) (included as `<dual/...>`,
 installed); this directory holds the sources and one internal header,
 `bool_matrix_preparation.h`. All C++ code is in namespace `dual`; the algorithms keep their state in
-nested namespaces named after them: `dual::Runc`, `dual::AOT1`, `dual::PUNC`. The C ABI is the only
+nested namespaces named after them: `dual::Runc`, `dual::AOT1`, `dual::PUNC`, `dual::FK`. The C ABI is the only
 part outside the namespace.
 
 ## Framework
@@ -38,6 +38,7 @@ part outside the namespace.
 | `<dual/runc_fixed.h>`, `runc_fixed.cpp` | `RuncFixed<Row>`: recursive RUNC-M for at most 32 / 64 columns (`Row` = `bits32` / `bits64`), plus `DualizeIntervals`; helpers `RuncFixedDualize<T>()`. `RuncFixed<bits32>`, `RuncFixed<bits64>` and `RuncFixedDualize<bits32/bits64>()` are explicitly instantiated in `runc_fixed.cpp` (the header only declares `RuncFixedDualize`), so only these two row types link. Tested by `TestRuncFixedO2` and the `dual_consumer` install test. |
 | `<dual/aot1.h>`, `aot1.cpp` | `AOT1::GlobalState`, variants `AO1`, `AO2`, `AO1K`, `AO2K`, `AO1M` (default), `AO2M`; entry point `dualize()`. Tested against RUNCM. |
 | `<dual/punc.h>`, `punc.cpp` | `PUNC::GlobalState`: enumeration with row/column order set by weights (`SetRowsOrder`, `SetColsOrder`); entry point `dualize()`. Tested against RUNCM. |
+| `<dual/fk.h>`, `fk.cpp` | Khachiyan's incremental dualization. `FK::isDual(h, g)`: Fredman–Khachiyan duality test (algorithm B) of two families given as matrix rows; returns `Duality::Dual` or a witness (`NewTransversal`: a transversal of `h` with no set of `g` in it; `NotTransversal`: a set of `g` misses a set of `h`). `FK::GlobalState`: `next()` adds one minimal cover to `getCovers()` (one duality test from the root per call) or returns `false` when the list is complete; `dualize()` finds all covers in one run of the test, adding each new cover to the families on the recursion path and continuing there (Boros, Elbassioni, Gurvich, Khachiyan). Covers go to `CoverCallback` in increasing column order; no inner nodes, no restrictions. Same corner cases as RUNC. Tested against the file names, RUNCM and brute force. |
 
 ## C ABI
 

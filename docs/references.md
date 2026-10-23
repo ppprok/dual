@@ -33,10 +33,15 @@ here; follow the DOI or URL to the publisher or preprint server.
   transversals and its application in mining emerging patterns.* Third IEEE International
   Conference on Data Mining (ICDM 2003), pp. 485–488.
   DOI: [10.1109/ICDM.2003.1250958](https://doi.org/10.1109/ICDM.2003.1250958).
+- M. L. Fredman, L. Khachiyan. *On the complexity of dualization of monotone disjunctive normal
+  forms.* Journal of Algorithms 21(3) (1996) 618–628.
+  DOI: [10.1006/jagm.1996.0062](https://doi.org/10.1006/jagm.1996.0062).
+  The quasi-polynomial duality test (algorithms A and B) behind `FK::isDual` in `src/dual`.
 - E. Boros, K. Elbassioni, V. Gurvich, L. Khachiyan. *An efficient implementation of a
   quasi-polynomial algorithm for generating hypergraph transversals and its application in joint
   generation.* Discrete Applied Mathematics 154(16) (2006) 2350–2372.
   DOI: [10.1016/j.dam.2006.04.012](https://doi.org/10.1016/j.dam.2006.04.012).
+  The incremental generation implemented by `FK::GlobalState` in `src/dual`.
 - K. Makino. *Efficient dualization of O(log n)-term monotone disjunctive normal forms.*
   Discrete Applied Mathematics 126(2–3) (2003) 305–312.
   DOI: [10.1016/S0166-218X(02)00204-4](https://doi.org/10.1016/S0166-218X(02)00204-4).
