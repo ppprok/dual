@@ -45,6 +45,9 @@ if(DUAL_INSTALL)
     if(DUAL_ENABLE_SANITIZERS AND NOT MSVC)
         set(_consumer_link_flags "-fsanitize=address,undefined")
     endif()
+    if(DUAL_ENABLE_COVERAGE)
+        string(STRIP "${_consumer_link_flags} --coverage" _consumer_link_flags)
+    endif()
     add_test(NAME dual_consumer
             COMMAND "${CMAKE_COMMAND}"
             "-DDUAL_BUILD_DIR=${PROJECT_BINARY_DIR}"
