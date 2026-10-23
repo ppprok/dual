@@ -37,6 +37,7 @@ All of them are in [`src/dual`](src/dual/README.md) (headers in `include/dual/`)
 | **RuncFixed** | `RuncFixed<bits32>`, `RuncFixed<bits64>`, `RuncFixedDualize()` | Recursive RUNC-M for matrices of at most 32 or 64 columns, each row stored in one machine word. Also has `DualizeIntervals()`. Only `bits32` and `bits64` are instantiated. |
 | **AOT1** | `AOT1::GlobalState`, variants `AO1`, `AO2`, `AO1K`, `AO2K`, `AO1M`, `AO2M` | Older asymptotically optimal algorithms of the AO family. Built, but not tested; see the status note below. |
 | **PUNC** | `PUNC::GlobalState` | Algorithm with configurable row and column order (`SetRowsOrder`, `SetColsOrder` by weights). Built, but not tested; see the status note below. |
+| **FK** | `FK::GlobalState`, `FK::isDual()` | Khachiyan's incremental generation (Boros, Elbassioni, Gurvich, Khachiyan) on top of the Fredman–Khachiyan duality test (algorithm B): each next cover takes time quasi-polynomial in the input and the covers found so far. `next()` finds one more cover or proves there are none, `dualize()` finds all of them in one run; `FK::isDual(h, g)` tests two families for duality and returns a witness if they are not dual. Much slower than RUNC in practice (about 2 s vs 0.1 s for the 7187 covers of `10_50_7187.hg`); tested against RUNCM. |
 
 ## Features
 
@@ -213,7 +214,7 @@ covers: 3
 
 A cover is a `std::vector<int>` of column indices (`Columns`) in the order the search added them,
 not necessarily sorted. Headers are included as `<dual/...>`, and all names are in namespace `dual`
-(the algorithms' state in `dual::Runc`, `dual::AOT1`, `dual::PUNC`).
+(the algorithms' state in `dual::Runc`, `dual::AOT1`, `dual::PUNC`, `dual::FK`).
 
 ## Use from Python
 
@@ -287,4 +288,5 @@ MIT, see [`LICENSE`](LICENSE). Third-party code under `legacy/3rd-party/` keeps 
 This is research code being turned into a reusable library (epic #7). The RUNC family
 (`Runc::RuncGlobalState`), the Python package `dual` and the C ABI are the main maintained part. `AOT1`, `PUNC` and
 `RuncFixed` are tested against RUNCM on the test matrices and on random ones, but are less used.
+The Khachiyan algorithm `FK` is new and not yet in the Python package.
 The API may still change before a first release.

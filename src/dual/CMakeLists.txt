@@ -6,6 +6,7 @@ set(DUAL_DUAL_PUBLIC_HEADERS
         dualization_backtrack_algorithm_base.h
         dualization_counters.h
         file_writers.h
+        fk.h
         most_cover_collector.h
         pruning.h
         punc.h
@@ -24,6 +25,7 @@ add_library(dual
         dualization_backtrack_algorithm_base.cpp
         dualization_counters.cpp
         file_writers.cpp
+        fk.cpp
         most_cover_collector.cpp
         pruning.cpp
         punc.cpp

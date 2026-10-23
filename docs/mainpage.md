@@ -10,12 +10,12 @@ The algorithms are described in the papers listed in `docs/references.md`.
 | CMake target | Contents |
 |---|---|
 | `dual::common` (`libdual_common.a`) | Bit containers and IO: bit_chunk (non-owning bit set view), bit_vector (owning bit array), bit_mask (operations under a mask), bit_matrix (growable bit matrix), raw_vector / blob, IntegersFileReader / IntegersFileWriter (text I/O, `.hg` files). |
-| `dual::dual` (`libdual.a`) | Dualization algorithms and callbacks: Runc::RuncGlobalState (RUNC, RUNCM, OPT; resumable), AOT1::GlobalState (AO1/AO2 variants), PUNC::GlobalState, RuncFixed (32/64 columns); cover collectors (CoverCollector, MostCoverCollector, BitCoverCollectorCallback), file writers, Counters, weighters and pruning callbacks. |
+| `dual::dual` (`libdual.a`) | Dualization algorithms and callbacks: Runc::RuncGlobalState (RUNC, RUNCM, OPT; resumable), AOT1::GlobalState (AO1/AO2 variants), PUNC::GlobalState, RuncFixed (32/64 columns), FK::GlobalState and FK::isDual (Khachiyan's incremental dualization, Fredman–Khachiyan duality test); cover collectors (CoverCollector, MostCoverCollector, BitCoverCollectorCallback), file writers, Counters, weighters and pruning callbacks. |
 | `dual::runc` (`librunc.so`) | C ABI over RUNCM (used by the deprecated `ctypes` wrapper `src/pyrunc/runc.py`): see runc_executor.h. The Python package `dual` (`python/`) uses pybind11 instead. |
 
 All headers are under `include/dual/` and are included as `#include <dual/runc.h>`. Everything
 except the C ABI is in namespace `dual`; the algorithms keep their state in the nested namespaces
-`dual::Runc`, `dual::AOT1` and `dual::PUNC`.
+`dual::Runc`, `dual::AOT1`, `dual::PUNC` and `dual::FK`.
 
 ## Input format (`.hg`)
 

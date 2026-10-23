@@ -10,6 +10,7 @@ dual_add_test(TestDual
         AOT1PUNCTests.cpp
         PruningTests.cpp
         CoverCollectorTests.cpp
+        FKTests.cpp
         LIBS dual::dual)
 
 # runc_fixed.cpp compiled with -O2 into its own client, independently of the build type: the link

@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <dual/cover_collector.h>
+#include <dual/fk.h>
 #include <dual/pruning.h>
 #include <dual/runc.h>
 #include <dual/runc_fixed.h>
@@ -69,6 +70,21 @@ int main() {
     Check(covers.size() == 1, "CoveredRowsWeighter keeps one cover");
     if (covers.size() == 1)
         Check(covers[0].columns.size() == 2 && covers[0].weight == 0, "CoveredRowsWeighter keeps the cover {1,2}");
+
+    // Khachiyan's incremental dualization of the triangle {0,1}, {1,2}, {0,2}: the three pairs, one by
+    // one, and the duality test of the triangle with itself (it is self-dual)
+    dual::bit_matrix triangle(3, 3);
+    int edges[][2] = {{0, 1}, {1, 2}, {0, 2}};
+    for (int i = 0; i < 3; ++i)
+        for (int j : edges[i])
+            triangle.set(i, j);
+    Check(dual::FK::isDual(triangle, triangle).dual(), "FK::isDual on the self-dual triangle");
+    dual::FK::GlobalState fk;
+    fk.setMatrix(std::move(triangle));
+    int found = 0;
+    while (fk.next())
+        ++found;
+    Check(found == 3 && fk.getCovers().height() == 3, "FK::GlobalState::next finds three covers");
 
     if (failures == 0)
         std::printf("dual consumer: OK\n");

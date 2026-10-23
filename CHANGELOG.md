@@ -13,6 +13,9 @@ The first release is planned as **0.1.0** (the version in `project(dual VERSION 
 
 ### Added
 
+- Khachiyan's incremental dualization `FK::GlobalState` (`<dual/fk.h>`): the Fredman–Khachiyan
+  duality test (algorithm B) `FK::isDual` with a witness of non-duality, `next()` for one more
+  cover and `dualize()` for all of them ([#43](https://github.com/ppprok/dual/issues/43)).
 - `.clang-tidy` with a curated check set, a blocking clang-tidy CI job and the `DUAL_CLANG_TIDY`
   option; `.git-blame-ignore-revs` for the mass-formatting commit
   ([#42](https://github.com/ppprok/dual/pull/42)).
