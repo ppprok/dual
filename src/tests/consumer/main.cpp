@@ -6,6 +6,7 @@
 
 #include <dual/cover_collector.h>
 #include <dual/fk.h>
+#include <dual/optimal_covers.h>
 #include <dual/pruning.h>
 #include <dual/runc.h>
 #include <dual/runc_fixed.h>
@@ -85,6 +86,15 @@ int main() {
     while (fk.next())
         ++found;
     Check(found == 3 && fk.getCovers().height() == 3, "FK::GlobalState::next finds three covers");
+
+    // Optimal covers of the triangle with column weights 1, 2, 3: the lightest is {0,1} (weight 3)
+    dual::bit_matrix triangle2(3, 3);
+    for (int i = 0; i < 3; ++i)
+        for (int j : edges[i])
+            triangle2.set(i, j);
+    auto best = dual::optimalCovers(triangle2, {1, 2, 3});
+    Check(best.covers.size() == 1 && best.weight == 3 && best.covers[0].columns == dual::Columns{0, 1},
+          "optimalCovers finds the lightest cover");
 
     if (failures == 0)
         std::printf("dual consumer: OK\n");

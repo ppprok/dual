@@ -39,6 +39,12 @@ two callback pointers (IDualizationCallback):
 A callback may stop the enumeration (DualizationNode::stoped) or prune a branch
 (DualizationNode::pruned). Use dualization_callback() to wrap a lambda.
 
+Weighting callbacks (WeightBoundsPruningCallback, CoveredRowsWeighter, ColumnsWeighterCallback,
+CoveredRowWeighterCallback) maintain DualizationNode::weight and prune branches by weight bounds;
+with OptimalCoverCollector they give all optimal minimal covers. optimalCovers() and
+optimalCoversByCoveredRows() wrap this for column weights, the length and the weight of hit target
+rows (see `docs/optimal-covers.md`).
+
 ```cpp
 #include <dual/cover_collector.h>
 #include <dual/runc.h>
