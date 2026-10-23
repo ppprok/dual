@@ -1,7 +1,8 @@
 // pybind11 extension module `dual._dual`: low-level bindings of the dualization algorithms.
 //
 // The user-facing API (`dual.enumerate_covers` and friends) is the Python package in
-// `python/dual/__init__.py`; this module exposes one class, `Dualizer`, and a debug counter.
+// `python/dual/__init__.py`; this module exposes the class `Dualizer`, the duality test `is_dual`
+// and a debug counter.
 //
 // All includes of the C++ library and all references to its API are kept in this file. The library
 // is used through its public headers `<dual/...>`; its names are in namespace `dual` (#12).
@@ -15,6 +16,7 @@
 #include <cstdint>
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -23,6 +25,7 @@
 #include <dual/aot1.h>
 #include <dual/bit_matrix.h>
 #include <dual/dualization_backtrack_algorithm_base.h>
+#include <dual/fk.h>
 #include <dual/punc.h>
 #include <dual/runc.h>
 
@@ -42,7 +45,8 @@ using Cover = Columns;  // std::vector<int>
 enum class Family {
     Runc,
     AOT1,
-    PUNC
+    PUNC,
+    FK
 };
 
 struct AlgorithmInfo {
@@ -62,6 +66,7 @@ const AlgorithmInfo kAlgorithms[] = {
         {"ao1m", Family::AOT1, AOT1::AO1M},
         {"ao2m", Family::AOT1, AOT1::AO2M},
         {"punc", Family::PUNC, 0},
+        {"fk", Family::FK, 0},
 };
 
 std::unique_ptr<Algorithm> makeAlgorithm(AlgorithmInfo const& info) {
@@ -72,6 +77,8 @@ std::unique_ptr<Algorithm> makeAlgorithm(AlgorithmInfo const& info) {
             return std::make_unique<AOT1::GlobalState>(static_cast<AOT1::AlgorithmType>(info.type));
         case Family::PUNC:
             return std::make_unique<PUNC::GlobalState>();
+        case Family::FK:
+            return std::make_unique<FK::GlobalState>();
     }
     throw std::logic_error("unknown algorithm family");
 }
@@ -91,6 +98,20 @@ void setBit(Matrix& matrix, size_t i, size_t j) {
     matrix.get_row(static_cast<int>(i)).set(static_cast<int>(j));
 }
 
+// Fredman-Khachiyan duality test: nullopt if dual, otherwise the kind of the witness and its columns.
+std::optional<std::pair<std::string, Cover>> dualityTest(Matrix const& h, Matrix const& g) {
+    FK::DualityResult result = FK::isDual(h, g);
+    switch (result.result) {
+        case FK::Duality::Dual:
+            return std::nullopt;
+        case FK::Duality::NewTransversal:
+            return std::make_pair(std::string("new_transversal"), std::move(result.witness));
+        case FK::Duality::NotTransversal:
+            return std::make_pair(std::string("not_transversal"), std::move(result.witness));
+    }
+    throw std::logic_error("unknown duality test result");
+}
+
 // ---------------------------------------------------------------------------------------------
 
 std::atomic<long> g_live_dualizers{0};
@@ -106,8 +127,9 @@ const AlgorithmInfo& findAlgorithm(std::string const& name) {
 }
 
 // Holds a dualization algorithm and its input matrix, and returns the minimal covers portion by
-// portion. RUNC-family algorithms resume the search between portions; AOT1 and PUNC have no
-// resumable mode, so their covers are computed in full on the first portion and then handed out.
+// portion. RUNC-family algorithms resume the search between portions; FK finds one cover more per
+// call of FK::GlobalState::next(); AOT1 and PUNC have no resumable mode, so their covers are
+// computed in full on the first portion and then handed out.
 //
 // Long calls release the GIL. A Dualizer used by another thread at the same time raises
 // RuntimeError instead of blocking or corrupting its state.
@@ -129,7 +151,11 @@ public:
     }
 
     bool resumable() const {
-        return info_.family == Family::Runc;
+        return info_.family == Family::Runc || info_.family == Family::FK;
+    }
+
+    Matrix const& matrix() const {
+        return alg_->get_matrix();
     }
 
     int n_rows() const {
@@ -187,8 +213,10 @@ public:
     }
 
     bool finished() const {
-        if (resumable())
+        if (info_.family == Family::Runc)
             return runc().isDualizeFinished();
+        if (info_.family == Family::FK)
+            return fk().isDualizeFinished();
         return computed_ && next_ == collected_.size();
     }
 
@@ -197,8 +225,11 @@ public:
         std::vector<Cover> covers;
         {
             py::gil_scoped_release release;
-            if (resumable()) {
+            if (info_.family == Family::Runc) {
                 covers = runc().dualize(max_count);
+            } else if (info_.family == Family::FK) {
+                for (size_t k = 0; k < max_count && fk().next(); ++k)
+                    covers.push_back(fk().getLastCover());
             } else {
                 if (!computed_) {
                     collected_ = collectAll();
@@ -221,6 +252,28 @@ public:
         return covers;
     }
 
+    std::optional<Cover> next_cover() {
+        std::vector<Cover> covers = next_batch(1);
+        if (covers.empty())
+            return std::nullopt;
+        return std::move(covers.front());
+    }
+
+    // All covers in one run of the algorithm (for FK much faster than portions: FK::GlobalState::dualize()
+    // does not repeat the duality test from the root for each cover); restarts the enumeration.
+    std::vector<Cover> all_covers() {
+        Busy busy(*this);
+        std::vector<Cover> covers;
+        {
+            py::gil_scoped_release release;
+            covers = collectAll();
+            for (auto& cover : covers)
+                std::sort(cover.begin(), cover.end());
+        }
+        resetEnumeration();
+        return covers;
+    }
+
     uint64_t count() {
         Busy busy(*this);
         uint64_t total = 0;
@@ -231,6 +284,16 @@ public:
         }
         resetEnumeration();
         return total;
+    }
+
+    // Duality test of the matrices of two dualizers (the same object may be passed twice).
+    static std::optional<std::pair<std::string, Cover>> isDual(Dualizer& h, Dualizer& g) {
+        Busy busyH(h);
+        std::optional<Busy> busyG;
+        if (&g != &h)
+            busyG.emplace(g);
+        py::gil_scoped_release release;
+        return dualityTest(h.matrix(), g.matrix());
     }
 
 private:
@@ -250,14 +313,20 @@ private:
         return static_cast<Runc::RuncGlobalState&>(*alg_);
     }
 
+    FK::GlobalState& fk() const {
+        return static_cast<FK::GlobalState&>(*alg_);
+    }
+
     void setMatrix(Matrix matrix) {
         alg_->setMatrix(std::move(matrix));
         resetEnumeration();
     }
 
     void resetEnumeration() {
-        if (resumable())
+        if (info_.family == Family::Runc)
             runc().resetDualize();
+        else if (info_.family == Family::FK)
+            fk().resetDualize();
         collected_ = std::vector<Cover>();
         computed_ = false;
         next_ = 0;
@@ -313,8 +382,10 @@ PYBIND11_MODULE(_dual, m) {
 Enumerator of the minimal covers of a Boolean matrix, returning them portion by portion.
 
 The RUNC-family algorithms ('runcm', 'runc', 'opt') resume the search between portions, so
-memory does not grow with the number of covers. The AOT1 ('ao1', ..., 'ao2m') and PUNC ('punc')
-algorithms compute all covers on the first portion. Covers are lists of 0-based column indices
+memory does not grow with the number of covers. FK ('fk', Khachiyan's incremental dualization)
+is resumable too: each next cover is found by a Fredman-Khachiyan duality test of the covers
+found so far, which it keeps. The AOT1 ('ao1', ..., 'ao2m') and PUNC ('punc') algorithms compute
+all covers on the first portion. Covers are lists of 0-based column indices
 in increasing order. Setting a new matrix or calling reset() restarts the enumeration.
 )doc")
             .def(py::init<std::string const&>(),
@@ -323,7 +394,7 @@ in increasing order. Setting a new matrix or calling reset() restarts the enumer
             .def_property_readonly("algorithm", &Dualizer::algorithm, "Name of the algorithm.")
             .def_property_readonly("resumable",
                                    &Dualizer::resumable,
-                                   "True if the search is resumed between portions (RUNC family).")
+                                   "True if the search is resumed between portions (RUNC family and FK).")
             .def_property_readonly("n_rows", &Dualizer::n_rows, "Number of rows of the matrix.")
             .def_property_readonly("n_cols", &Dualizer::n_cols, "Number of columns of the matrix.")
             .def_property_readonly("finished",
@@ -342,8 +413,27 @@ in increasing order. Setting a new matrix or calling reset() restarts the enumer
                  &Dualizer::next_batch,
                  py::arg("max_count"),
                  "Return up to max_count next covers; an empty list (for max_count > 0) means the end.")
+            .def("next_cover",
+                 &Dualizer::next_cover,
+                 "Return the next cover, or None once all covers have been returned.")
+            .def("all_covers",
+                 &Dualizer::all_covers,
+                 "Return all covers computed in one run (faster than portions for 'fk'); restarts the enumeration.")
             .def("count",
                  &Dualizer::count,
                  "Count all minimal covers without returning them; restarts the enumeration.")
             .def("reset", &Dualizer::reset, "Restart the enumeration from the first cover.");
+
+    m.def("is_dual",
+          &Dualizer::isDual,
+          py::arg("h"),
+          py::arg("g"),
+          R"doc(
+Fredman-Khachiyan duality test (algorithm B) of the matrices of two dualizers.
+
+Returns None if the minimal rows of g are exactly the minimal covers of h, otherwise a pair
+(kind, witness): kind 'new_transversal' means the witness (a sorted list of columns) covers h and
+contains no row of g; 'not_transversal' means the witness contains a row of g and its complement
+contains a row of h, so that row of g is not a cover of h.
+)doc");
 }
