@@ -88,12 +88,16 @@ inline void resetBit(Word* a, int j) {
     a[(unsigned) j / wordBits] &= ~bitOf(j);
 }
 
+// Plain loops: with std::fill and std::copy over an int bound, GCC 13 at -O3 warns that the
+// memset may get a negative size (-Wstringop-overflow)
 inline void clearSet(Word* a, int w) {
-    std::fill(a, a + w, Word(0));
+    for (int k = 0; k < w; ++k)
+        a[k] = 0;
 }
 
 inline void copySet(Word* dst, Word const* a, int w) {
-    std::copy(a, a + w, dst);
+    for (int k = 0; k < w; ++k)
+        dst[k] = a[k];
 }
 
 inline bool isEmpty(Word const* a, int w) {
@@ -113,7 +117,11 @@ inline bool isSubset(Word const* a, Word const* b, int w) {
 }
 
 inline bool equalSets(Word const* a, Word const* b, int w) {
-    return std::equal(a, a + w, b);
+    for (int k = 0; k < w; ++k) {
+        if (a[k] != b[k])
+            return false;
+    }
+    return true;
 }
 
 inline bool intersects(Word const* a, Word const* b, int w) {
@@ -347,7 +355,8 @@ void removeDominated(Family& m, int n, DominationWork& work) {
         // A dominated dominator has the same supersets as the set dominating it, or fewer
         if (!work.keep[j])
             continue;
-        std::fill(sup, sup + sw, ~Word(0));
+        for (int k = 0; k < sw; ++k)
+            sup[k] = ~Word(0);
         if (s % wordBits)
             sup[sw - 1] = (Word(1) << (s % wordBits)) - 1;
         bool any = true;
