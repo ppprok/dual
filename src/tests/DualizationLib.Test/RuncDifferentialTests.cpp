@@ -7,8 +7,11 @@
 #include <sstream>
 #include <string>
 
-#include "CoverCollector.h"
+#include <dual/cover_collector.h>
+
 #include "RuncTestUtils.h"
+
+using namespace dual;
 
 using namespace runc_test;
 
@@ -105,7 +108,10 @@ void checkAll(Rows const& rows, std::set<Cover> const* reference) {
             {"C ABI buffer width+1", enumerateCApi(rows, n + 1, &capiOk)},
     };
     auto const& expected = reference ? *reference : results.front().second.covers;
-    for (auto const& [name, r] : results) {
+    // No structured bindings: INFO captures `name` in a lambda, which is C++20 for a binding (clang warns)
+    for (auto const& result : results) {
+        auto const& name = result.first;
+        auto const& r = result.second;
         INFO(name << " on matrix\n" << describe(rows));
         CHECK(r.duplicates == 0);
         CHECK(r.notMinimal == 0);

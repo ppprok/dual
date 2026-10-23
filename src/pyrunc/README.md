@@ -1,7 +1,17 @@
 # src/pyrunc
 
+**Deprecated:** use the pip-installable package `dual` in [`../../python`](../../python/README.md)
+(`pip install .` from the repository root). Importing `runc.py` emits a `DeprecationWarning`.
+
 Python access to RUNCM through the C ABI of `librunc.so` (see [`../dual`](../dual/README.md#c-abi)).
-Not a package yet: a pip-installable module is planned in #13.
+It is kept as a minimal example of calling the C ABI from another language, and as a quick check
+of `librunc.so`, which stays a supported artifact.
+
+| Old (`runc.py`) | New (`dual` package) |
+|---|---|
+| `RuncDualizer()` + `add_input_row(row)` per row | `dual.make_dualizer(rows)` or `dual.Dualizer().set_rows(rows)` |
+| `enumerate_covers(buffer_count)` until it returns `[]` | `dual.iter_batches(rows, batch_size=...)`, or `Dualizer.next_batch(n)` |
+| covers as numpy `int32` arrays in search order | covers as lists of `int`, sorted |
 
 | File | Contents |
 |---|---|

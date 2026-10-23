@@ -9,9 +9,13 @@ The algorithms are described in the papers listed in `docs/references.md`.
 
 | CMake target | Contents |
 |---|---|
-| `dual::common` (`libdual_common.a`) | Bit containers and utilities: bit_chunk (non-owning bit set view), bit_vector (owning bit array), bit_mask (operations under a mask), bit_matrix (growable bit matrix), raw_vector / blob, IntegersFileReader / IntegersFileWriter (text I/O, `.hg` files), graph algorithms on adjacency matrices. |
+| `dual::common` (`libdual_common.a`) | Bit containers and IO: bit_chunk (non-owning bit set view), bit_vector (owning bit array), bit_mask (operations under a mask), bit_matrix (growable bit matrix), raw_vector / blob, IntegersFileReader / IntegersFileWriter (text I/O, `.hg` files). |
 | `dual::dual` (`libdual.a`) | Dualization algorithms and callbacks: Runc::RuncGlobalState (RUNC, RUNCM, OPT; resumable), AOT1::GlobalState (AO1/AO2 variants), PUNC::GlobalState, RuncFixed (32/64 columns); cover collectors (CoverCollector, MostCoverCollector, BitCoverCollectorCallback), file writers, Counters, weighters and pruning callbacks. |
-| `dual::runc` (`librunc.so`) | C ABI over RUNCM for `ctypes` (`src/pyrunc/runc.py`): see RuncExecutor.h. |
+| `dual::runc` (`librunc.so`) | C ABI over RUNCM (used by the deprecated `ctypes` wrapper `src/pyrunc/runc.py`): see runc_executor.h. The Python package `dual` (`python/`) uses pybind11 instead. |
+
+All headers are under `include/dual/` and are included as `#include <dual/runc.h>`. Everything
+except the C ABI is in namespace `dual`; the algorithms keep their state in the nested namespaces
+`dual::Runc`, `dual::AOT1` and `dual::PUNC`.
 
 ## Input format (`.hg`)
 
@@ -36,12 +40,12 @@ A callback may stop the enumeration (DualizationNode::stoped) or prune a branch
 (DualizationNode::pruned). Use dualization_callback() to wrap a lambda.
 
 ```cpp
-#include "CoverCollector.h"
-#include "Runc.h"
+#include <dual/cover_collector.h>
+#include <dual/runc.h>
 
-Runc::RuncGlobalState runc(Runc::RUNCM);
+dual::Runc::RuncGlobalState runc(dual::Runc::RUNCM);
 runc.loadMatrix("data/15_20_275.hg");
-CoverCollector collector;
+dual::CoverCollector collector;
 runc.CoverCallback = &collector;
 runc.dualize();                       // collector.GetCovers().size() == 275
 ```
@@ -52,7 +56,7 @@ Runc::RuncGlobalState is iterative rather than recursive, so enumeration can be 
 Runc::RuncGlobalState::dualize(size_t) returns the next portion of covers and
 Runc::RuncGlobalState::dualize(uint32_t, uint32_t*) writes them into a buffer as
 `[size, col...]` records. The full contract is in the class description. The C ABI in
-RuncExecutor.h (`init_dualizer`, `set_input_row`, `enumerate_covers`, `release_dualizer`) is built
+runc_executor.h (`init_dualizer`, `set_input_row`, `enumerate_covers`, `release_dualizer`) is built
 on it.
 
 ## Building this documentation

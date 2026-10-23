@@ -7,14 +7,17 @@
 #include <utility>
 #include <vector>
 
-#include "bit_mask.h"
-#include "bit_matrix.h"
-#include "bit_vector.h"
-#include "blob.h"
-#include "containers.h"
-#include "graph_algorithms.h"
-#include "raw_vector.h"
-#include "string_utils.h"
+#include <dual/bit_mask.h>
+#include <dual/bit_matrix.h>
+#include <dual/bit_vector.h>
+#include <dual/blob.h>
+#include <dual/containers.h>
+#include <dual/raw_vector.h>
+
+#include "common/graph_algorithms.h"
+#include "common/string_utils.h"
+
+using namespace dual;
 
 TEST_CASE("remove_rows_returns_zero_when_no_row_matches") {
     bit_matrix m;

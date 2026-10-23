@@ -25,7 +25,7 @@ The maintained part of the project stays in `src/` (`src/common`, the built part
 
 ## Left in place on purpose
 
-- `src/common/CSVLoader.cpp` is not compiled, but its header is used by `TestUtils` (`CSVTests.cpp`);
+- `src/common/csv_loader.cpp` is not compiled, but its header is used by `TestUtils` (`CSVTests.cpp`);
   it stays next to the header.
 - `datasets/*.hg` (Boolean matrices / hypergraphs) stay at the top level: they are inputs for the
   maintained dualization algorithms.

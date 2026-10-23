@@ -1,8 +1,14 @@
+"""Deprecated ctypes wrapper over librunc.so; use the `dual` package (python/, `pip install .`)."""
+
 import ctypes
 import os
+import warnings
 from typing import List
 
 import numpy
+
+warnings.warn("src/pyrunc/runc.py is deprecated; use the `dual` package (pip install . from the "
+              "repository root, see python/README.md)", DeprecationWarning, stacklevel=2)
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 librunc = ctypes.CDLL(script_dir + "/librunc.so")
@@ -19,7 +25,7 @@ librunc.enumerate_covers.argtypes = [ctypes.c_void_p, ctypes.c_uint32,
                                      numpy.ctypeslib.ndpointer(dtype=numpy.uint32, flags="C_CONTIGUOUS")]
 librunc.enumerate_covers.restype = ctypes.c_int32
 
-# Error codes of the C ABI, see RuncExecutor.h
+# Error codes of the C ABI, see include/dual/runc_executor.h
 RUNC_OK = 0
 RUNC_ERROR_INVALID_ARGUMENT = -1
 RUNC_ERROR_BUFFER_TOO_SMALL = -2

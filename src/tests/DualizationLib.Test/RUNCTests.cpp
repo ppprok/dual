@@ -1,7 +1,9 @@
 #include <doctest.h>
 
-#include "Counters.h"
-#include "Runc.h"
+#include <dual/counters.h>
+#include <dual/runc.h>
+
+using namespace dual;
 
 void DoTest(std::string const& filename, int count) {
     Runc::AlgorithmType algs[] = {Runc::RUNC, Runc::OPT, Runc::RUNCM};
@@ -45,24 +47,22 @@ TEST_CASE("DualizeRUNCTest7") {
     DoTest("data/15_35_12226.hg", 12226);
 }
 
-TEST_CASE("Dualize by steps RUNCM"){
+TEST_CASE("Dualize by steps RUNCM") {
     Runc::RuncGlobalState A(Runc::RUNCM);
     A.loadMatrix("data/15_35_12226.hg");
     auto count = 0;
-    for (auto r = A.dualize(100); ! r.empty(); r = A.dualize(100)){
+    for (auto r = A.dualize(100); !r.empty(); r = A.dualize(100)) {
         count += r.size();
 
-        for (auto& cover : r){
+        for (auto& cover : r) {
             std::sort(cover.begin(), cover.end());
             CHECK(std::unique(cover.begin(), cover.end()) == cover.end());
         }
-
     }
     CHECK(count == 12226);
 }
 
-
-TEST_CASE("Dualize to buffer RUNCM"){
+TEST_CASE("Dualize to buffer RUNCM") {
     Runc::RuncGlobalState A(Runc::RUNCM);
     A.loadMatrix("data/15_35_12226.hg");
 
@@ -70,7 +70,7 @@ TEST_CASE("Dualize to buffer RUNCM"){
     buffer.resize(1000);
 
     auto count = 0;
-    for (auto r = A.dualize(buffer.size(), buffer.data()); r > 0; r = A.dualize(buffer.size(), buffer.data())){
+    for (auto r = A.dualize(buffer.size(), buffer.data()); r > 0; r = A.dualize(buffer.size(), buffer.data())) {
         count += r;
     }
     CHECK(count == 12226);

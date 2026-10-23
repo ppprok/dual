@@ -11,10 +11,12 @@
 #include <string>
 #include <vector>
 
-#include "AOT1.h"
-#include "CoverCollector.h"
-#include "PUNC.h"
-#include "Runc.h"
+#include <dual/aot1.h>
+#include <dual/cover_collector.h>
+#include <dual/punc.h>
+#include <dual/runc.h>
+
+using namespace dual;
 
 namespace {
 

@@ -13,6 +13,9 @@ The first release is planned as **0.1.0** (the version in `project(dual VERSION 
 
 ### Added
 
+- `.clang-tidy` with a curated check set, a blocking clang-tidy CI job and the `DUAL_CLANG_TIDY`
+  option; `.git-blame-ignore-revs` for the mass-formatting commit
+  ([#42](https://github.com/ppprok/dual/pull/42)).
 - Python package `dual` on pybind11 + scikit-build-core (`pip install .`): `enumerate_covers`,
   `minimal_covers`, `count_covers`, batched and resumable enumeration for RUNC/RUNCM/OPT, AOT1 and
   PUNC variants, numpy input, type stubs; the version comes from CMake
@@ -57,6 +60,11 @@ The first release is planned as **0.1.0** (the version in `project(dual VERSION 
 
 ### Changed
 
+- Library layout: public headers moved to `include/dual/` with snake_case names (included as
+  `<dual/name.h>`), internal headers stay in `src/`; all C++ code is in namespace `dual`, with
+  algorithm state in `dual::Runc`, `dual::AOT1` and `dual::PUNC`; `DUAL_WARNINGS_AS_ERRORS` applies
+  to GCC and Clang only; `mutable_matrix()` replaces non-const matrix access
+  ([#42](https://github.com/ppprok/dual/pull/42)).
 - The project language is English: comments, skills, the pull request template and documentation
   ([#16](https://github.com/ppprok/dual/pull/16), [#32](https://github.com/ppprok/dual/pull/32)).
 - Sources converted from windows-1251 to UTF-8 ([#16](https://github.com/ppprok/dual/pull/16)).
@@ -93,6 +101,9 @@ The first release is planned as **0.1.0** (the version in `project(dual VERSION 
   `exclude`, `bit_mask::intersects`, `raw_vector::erase`, and uninitialised members in `blob` and
   `raw_vector` constructors ([#38](https://github.com/ppprok/dual/pull/38)).
 - Build on macOS (libc++) and Windows (MSVC) ([#39](https://github.com/ppprok/dual/pull/39)).
+- Infinite recursion in `CSVLoader::GetColumn() const`, a signed index in `CharMap`, an
+  uninitialised value in `CSVColumn`, and leaks when `realloc` fails in the containers
+  ([#42](https://github.com/ppprok/dual/pull/42)).
 
 ### Removed
 

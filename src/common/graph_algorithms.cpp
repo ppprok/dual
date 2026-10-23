@@ -1,5 +1,8 @@
-#include "bit_vector.h"
 #include "graph_algorithms.h"
+
+#include <dual/bit_vector.h>
+
+namespace dual {
 
 void transitive_closure(bit_matrix& adj_mat) {
     int n = adj_mat.height();
@@ -62,7 +65,7 @@ void topological_order(bit_matrix const& adj_mat, std::vector<int>& order) {
 
 bool is_topological_order(bit_matrix const& adj_mat, std::vector<int> const& order) {
     int n = adj_mat.height();
-    if (n != order.size())
+    if (n != (int) order.size())
         throw std::invalid_argument("Length of array 'order' must be equal to number of verticies");
 
     if (n == 0)
@@ -121,3 +124,5 @@ void redirect_graph(bit_matrix const& adj_mat, bit_matrix& redirected) {
 bool is_vertex(bit_matrix& adj_mat, int i) {
     return inside(adj_mat.get_rows(), i);
 }
+
+}  // namespace dual

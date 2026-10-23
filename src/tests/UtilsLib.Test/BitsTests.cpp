@@ -1,9 +1,11 @@
-#include <vector>
-
 #include <doctest.h>
 
-#include "bits.h"
-#include "containers.h"
+#include <vector>
+
+#include <dual/bits.h>
+#include <dual/containers.h>
+
+using namespace dual;
 
 TEST_CASE("bit_count_test") {
     bits32 bits = 0x12345678;

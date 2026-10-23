@@ -1,0 +1,5 @@
+# Commits that only reformat code; use with `git blame --ignore-revs-file .git-blame-ignore-revs`
+# or `git config blame.ignoreRevsFile .git-blame-ignore-revs`. GitHub applies it automatically.
+
+# [#12] style: Run clang-format over all live C++ sources
+18c299f8fd9d7a34233c8b19b713838f3eae6314

@@ -55,11 +55,21 @@ mkdir -p build/docs && doxygen docs/Doxyfile   # HTML in build/docs/html
 - Format C++ with [`.clang-format`](.clang-format) (LLVM-based, 4-space indent, 120 columns):
   `clang-format -i <files>`, or `git clang-format origin/master` to format only the lines you
   changed. CI checks the changed lines with clang-format 23.1.3. Do not format `legacy/`.
+- Static analysis: [`.clang-tidy`](.clang-tidy) runs clean on the live code and CI fails on any
+  finding. Run it locally after configuring the `dev` preset:
+  `run-clang-tidy.py -p build/dev -quiet 'src/(common|dual|tests)/'`. Suppress a single finding
+  only with `// NOLINT(check): reason`.
+- All C++ code is in namespace `dual` (algorithm state in `dual::Runc`, `dual::AOT1`,
+  `dual::PUNC`); only the `extern "C"` API of `librunc` is outside it.
 - [`.editorconfig`](.editorconfig) sets UTF-8, LF line endings and indentation for the other file
   types.
 - Comments are in English; sources are UTF-8.
+- Public headers live in `include/dual/` with snake_case names and are included as
+  `<dual/name.h>`; internal headers stay next to their sources in `src/`. A header that a public
+  header includes must itself be public.
 - Only files listed in a `CMakeLists.txt` are built. When you add a `.cpp` or `.h`, add it to the
-  source or header list of its target, otherwise it is neither compiled nor installed.
+  source or header list of its target (`DUAL_COMMON_PUBLIC_HEADERS` / `DUAL_DUAL_PUBLIC_HEADERS` for
+  public headers), otherwise it is neither compiled nor installed.
 - No debug output, and no `TODO`/`FIXME` without an issue number.
 - `legacy/` is unmaintained and unbuilt; do not fix things there along the way.
 
@@ -85,8 +95,8 @@ mkdir -p build/docs && doxygen docs/Doxyfile   # HTML in build/docs/html
 - Every public class, function, method, enum and typedef in the installed headers has a Doxygen
   comment (`///` with `@brief`, `@param`, `@return`, `@throws` where they apply). The docs job in CI
   runs Doxygen with warnings as errors, so an undocumented public symbol fails the build.
-- A new public header must be added to `INPUT` in [`docs/Doxyfile`](docs/Doxyfile) (the list
-  mirrors the header lists in the `CMakeLists.txt` files).
+- [`docs/Doxyfile`](docs/Doxyfile) reads every header in `include/dual/`, so a new public header
+  is documented (and checked) automatically.
 - Reproduce the CI docs check locally:
 
   ```bash
@@ -133,6 +143,7 @@ mkdir -p build/docs && doxygen docs/Doxyfile   # HTML in build/docs/html
 | `linux-gcc asan` | the `asan` preset: tests under AddressSanitizer and UBSan |
 | `docs` | Doxygen with warnings as errors |
 | `clang-format` | the lines changed by the pull request are clang-formatted |
+| `clang-tidy` | `.clang-tidy` on all live code; any finding fails |
 | `python 3.10`, `python 3.12` | `pip install ".[test]"` and `pytest python/tests` |
 
 Each job can be reproduced locally with the commands above.
