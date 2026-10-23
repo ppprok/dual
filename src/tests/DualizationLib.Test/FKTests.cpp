@@ -157,7 +157,9 @@ void checkDataFile(std::string const& file, int expected) {
     double runcmTime = seconds(t0);
     CHECK_EQ((int) fk.size(), expected);
     CHECK(fk == runcm);
-    MESSAGE(file << ": FK " << fkTime << " s, RUNCM " << runcmTime << " s");
+    // Timings of the large files, for comparison with RUNCM
+    if (expected > 1000)
+        MESSAGE(file << ": FK " << fkTime << " s, RUNCM " << runcmTime << " s");
 }
 
 }  // namespace
