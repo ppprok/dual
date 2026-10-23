@@ -48,8 +48,8 @@ gcovr build/coverage                            # per-file table + line/function
 gcovr build/coverage --html-details build/coverage-report/index.html   # annotated sources
 ```
 
-Debug skips the two largest FK data files (they run in `release`/`asan`). State after #47: lines 95% overall,
-97% of `src/dual`; what stays uncovered there is defensive (`throw std::logic_error` invariants in `fk.cpp`, the
+Debug skips the two largest FK data files (they run in `release`/`asan`). State after #47: lines 96% overall,
+97.6% of `src/dual`; what stays uncovered there is defensive (`throw std::logic_error` invariants in `fk.cpp`, the
 `catch` in `set_input_row`, `AOT1::LocalState::GetNonZeroCols`, unreachable `switch` defaults).
 
 ## Known state (update when fixed)
