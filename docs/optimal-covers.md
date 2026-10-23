@@ -123,7 +123,7 @@ maximum: the sum of all remaining positive weights (or all remaining columns for
 almost never below the best cover, so in the measurements below maximisation visits exactly as many
 nodes as the full enumeration. Tighter bounds would use irreducibility (every column added to `S`
 needs a private row among the rows not covered yet, so at most that many columns can be added) and
-need the uncovered rows of the node; this is a follow-up, not part of #49. For minimisation a tighter
+need the uncovered rows of the node; this is the follow-up [#53](https://github.com/ppprok/dual/issues/53). For minimisation a tighter
 bound would add the cheapest column of an uncovered row.
 
 ## Measurements
