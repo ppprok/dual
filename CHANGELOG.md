@@ -13,6 +13,11 @@ The first release is planned as **0.1.0** (the version in `project(dual VERSION 
 
 ### Added
 
+- Optimal minimal covers by enumeration with branch pruning (`<dual/optimal_covers.h>`):
+  `OptimalCoverCollector` keeps all covers of the best weight (ties included, optional tolerance),
+  `optimalCovers` and `optimalCoversByCoveredRows` for column weights, length and weight of hit
+  target rows on RUNC/RUNCM/OPT/AOT1/PUNC (pruning) and FK (filtering); `docs/optimal-covers.md`
+  with the correctness argument and measurements ([#49](https://github.com/ppprok/dual/issues/49)).
 - Khachiyan's incremental dualization `FK::GlobalState` (`<dual/fk.h>`): the Fredman–Khachiyan
   duality test (algorithm B) `FK::isDual` with a witness of non-duality, `next()` for one more
   cover and `dualize()` for all of them ([#43](https://github.com/ppprok/dual/issues/43)).
@@ -87,6 +92,11 @@ The first release is planned as **0.1.0** (the version in `project(dual VERSION 
 
 ### Fixed
 
+- Floating-point drift of node weights in `WeightBoundsPruningCallback`, `CoveredRowsWeighter` and
+  `WeighterBase`: weights were added and subtracted incrementally, so the same cover got different
+  weights and a dynamic bound pruned tied optimal covers; the weighters now restore their state
+  exactly on backtrack (`WeightCheckpoints`). `WeighterBase::SetWeights` now recomputes the
+  remaining-weight sums ([#49](https://github.com/ppprok/dual/issues/49)).
 - Memory defects in the common containers: `chunk` offsets overflowing `int` when `realloc` moved
   large buffers, `blob::resize` on an empty blob, `bit_mask::subset_cmp`, `bit_chunk::get_last`,
   `chunk::resize` and the byte size in `bit_vector::zero`

@@ -50,6 +50,11 @@ All of them are in [`src/dual`](src/dual/README.md) (headers in `include/dual/`)
   Ready-made callbacks count nodes (`Counters`), collect covers (`CoverCollector`,
   `MostCoverCollector`), write them to files (`<dual/file_writers.h>`), weigh them and prune branches by
   weight (`<dual/weighters.h>`, `<dual/pruning.h>`). `dualization_callback(lambda)` wraps a lambda.
+- **Optimal covers.** `optimalCovers(matrix, weights, options)` and `optimalCoversByCoveredRows`
+  (`<dual/optimal_covers.h>`) return all minimal covers of the minimum or maximum total column weight
+  (or length, or weight of hit target rows), ties included, by enumeration with branch pruning; see
+  [`docs/optimal-covers.md`](docs/optimal-covers.md) for the theory, the supported algorithms and
+  the measurements.
 - **C ABI.** The shared library `librunc.so` exports `init_dualizer`, `set_input_row`,
   `enumerate_covers` and `release_dualizer` as `extern "C"` functions over RUNCM, for use from C
   or through `ctypes`. Rows may be given in any order; errors are reported as negative return codes
