@@ -3,9 +3,45 @@
 
 #pragma once
 
+#include <vector>
+
 #include <dual/dualization_backtrack_algorithm_base.h>
 
 namespace dual {
+
+/// @brief Weighter state saved on the way down the search tree and restored exactly on backtrack.
+///
+/// Weighters update `DualizationNode::weight` and their sums of remaining weights incrementally.
+/// In floating point, adding a weight and subtracting it again does not always give back the old
+/// value, so without checkpoints the weights drift over a long enumeration: the same cover gets
+/// slightly different weights and tied optimal covers can be pruned by a dynamic bound. A weighter
+/// saves its state before it adds the weight of a new node and restores it when that column is
+/// removed, so the weight of a node depends only on its path from the root.
+class WeightCheckpoints {
+public:
+    /// @brief Saved weights.
+    struct State {
+        Weight weight;        ///< Node weight.
+        Weight restPositive;  ///< Sum of the remaining positive weights.
+        Weight restNegative;  ///< Sum of the remaining negative weights.
+    };
+
+    /// @brief Save the state of the parent of the new node @p node (call before adding the weight
+    ///        of `node.lastColumn`).
+    void Save(DualizationNode const& node, State const& state);
+
+    /// @brief Restore the state saved for the parent of the removed column (call for a backtrack
+    ///        node, after the incremental update).
+    /// @return `false` if no state was saved for this depth (then @p state is not changed).
+    bool Restore(DualizationNode const& node, State& state);
+
+    /// @brief Drop all saved states.
+    void Clear();
+
+private:
+    std::vector<State> states_;
+    std::vector<char> valid_;
+};
 
 /// @brief Pruning of search tree branches by bounds on the total weight of columns.
 ///
@@ -40,6 +76,9 @@ protected:
 
     /// Weight of the columns that have no weight in the _weights array.
     Weight _defaultWeight;
+
+    /// States of the nodes on the current path, restored exactly on backtrack.
+    WeightCheckpoints _checkpoints;
 
 public:
     /// @brief Process a cover: prune it if its weight is outside the bounds, then move the
@@ -88,6 +127,13 @@ public:
     void IncRestWeight(Weight w);
     /// @brief Prune an inner node that cannot reach the allowed interval with the remaining weights.
     void PrunInnerNode(DualizationNode& node);
+
+    /// @brief Save `node.weight` and the remaining weights for the new node @p node, before its
+    ///        last column is weighed (see `WeightCheckpoints`).
+    void SaveCheckpoint(DualizationNode const& node);
+
+    /// @brief Restore `node.weight` and the remaining weights saved for the backtrack node @p node.
+    void RestoreCheckpoint(DualizationNode& node);
 };
 
 }  // namespace dual
