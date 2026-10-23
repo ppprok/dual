@@ -98,6 +98,30 @@ void checkKept(Covers const& all,
 
 const Weight inf = std::numeric_limits<Weight>::max();
 
+// Runs RUNCM with the weighter as InnerCallback and, before a CoverCollector, as CoverCallback;
+// returns the covers that were not pruned
+WeightedCoverMap runCoveredRows(Rows const& rows, CoveredRowsWeighter& weighter) {
+    struct Chain : IDualizationCallback {
+        CoveredRowsWeighter* weighter = nullptr;
+        CoverCollector collector;
+        void Call(DualizationNode& node) override {
+            weighter->Call(node);
+            collector.Call(node);
+        }
+    } chain;
+    chain.weighter = &weighter;
+    Runc::RuncGlobalState runc;
+    runc.setMatrix(makeMatrix(rows));
+    runc.InnerCallback = &weighter;
+    runc.CoverCallback = &chain;
+    runc.dualize();
+
+    WeightedCoverMap found;
+    for (auto const& c : chain.collector.GetCovers())
+        CHECK_MESSAGE(found.emplace(sorted(c.columns), c.weight).second, "repeated cover");
+    return found;
+}
+
 std::vector<std::string> readLines(std::string const& file) {
     std::ifstream in(file);
     std::vector<std::string> lines;
@@ -582,7 +606,7 @@ TEST_CASE("Restrictions: setRestrictions and loadRestrictions build the same mat
     }
 }
 
-TEST_CASE("CoveredRowsWeighter: TargetToMin and TargetToMax with epsilon") {
+TEST_CASE("CoveredRowsWeighter: fixed bounds, TargetToMin and TargetToMax with epsilon") {
     auto rows = loadRows("data/15_20_275.hg");
     auto all = allCovers(rows);
     // Every cover hits every row, so the target rows are the input rows restricted to columns 0..4:
@@ -613,6 +637,19 @@ TEST_CASE("CoveredRowsWeighter: TargetToMin and TargetToMax with epsilon") {
     }
     REQUIRE(lightest < heaviest);
 
+    // Fixed bounds on both sides keep exactly the covers inside them
+    {
+        CoveredRowsWeighter weighter;
+        CoveredRowsWeighter::Options options;
+        options.TargetRows = target.get_rows();
+        options.RowsWeights = rowWeights;
+        weighter.SetOptions(options);
+        Weight lo = lightest + 1, hi = heaviest - 1;
+        weighter.FixMinBound(lo);
+        weighter.FixMaxBound(hi);
+        checkKept(all, runCoveredRows(rows, weighter), weightOf, lo, hi);
+    }
+
     for (bool toMin : {true, false}) {
         for (Weight eps : {0.0f, 2.0f}) {
             CAPTURE(toMin);
@@ -628,24 +665,7 @@ TEST_CASE("CoveredRowsWeighter: TargetToMin and TargetToMax with epsilon") {
             else
                 weighter.TargetToMax();
 
-            struct Chain : IDualizationCallback {
-                CoveredRowsWeighter* weighter = nullptr;
-                CoverCollector collector;
-                void Call(DualizationNode& node) override {
-                    weighter->Call(node);
-                    collector.Call(node);
-                }
-            } chain;
-            chain.weighter = &weighter;
-            Runc::RuncGlobalState runc;
-            runc.setMatrix(makeMatrix(rows));
-            runc.InnerCallback = &weighter;
-            runc.CoverCallback = &chain;
-            runc.dualize();
-
-            WeightedCoverMap found;
-            for (auto const& c : chain.collector.GetCovers())
-                found.emplace(sorted(c.columns), c.weight);
+            auto found = runCoveredRows(rows, weighter);
             CHECK(found.size() < all.size());
             for (auto const& c : found)
                 CHECK_EQ(c.second, weightOf(c.first));
