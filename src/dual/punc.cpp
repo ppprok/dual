@@ -62,6 +62,18 @@ void GlobalState::dualize() {
     // by reference across recursion, so _states must not reallocate.
     int q = std::min(n, m) + 2;
     _states.reserve(q);
+
+    // The row order is built for the current height: weights set for another matrix would index
+    // past the rows (#47)
+    _rowsOrder.clear();
+    if (!_rowsWeights.empty())
+        SetOrder(_rowsWeights, m, _rowsOrder);
+
+    // Rows without columns are zero rows: no covers (the bit masks of a zero-width matrix are
+    // not valid, #47)
+    if (m > 0 && n == 0)
+        return;
+
     DoDualize(0);
 }
 
@@ -146,7 +158,7 @@ void GlobalState::InitChildState(LocalState& child, LocalState const& parent, in
 }
 
 void GlobalState::SetRowsOrder(Weights const& weights) {
-    SetOrder(weights, _matrix.height(), _rowsOrder);
+    _rowsWeights = weights;
 }
 
 void GlobalState::SetColsOrder(Weights weights) {

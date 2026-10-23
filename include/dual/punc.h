@@ -70,7 +70,10 @@ class GlobalState : public DualizationBacktrackAlgorithmBase {
 
     bit_vector _tempRow;
 
-    // Order of rows
+    // Row weights given by SetRowsOrder (empty: rows in their order)
+    Weights _rowsWeights;
+
+    // Order of rows, built from _rowsWeights for the matrix of the current dualize()
     OrderByWeights _rowsOrder;
 
     // Order of columns (column weights)
@@ -82,7 +85,9 @@ class GlobalState : public DualizationBacktrackAlgorithmBase {
 public:
     /// @brief Set the row traversal order: rows are covered in increasing order of @p weights
     ///        (missing weights are 0, ties in random order).
-    /// @note Uses the height of the current matrix; call it after setting the matrix.
+    ///
+    /// The order is built for the matrix of each `dualize()`, so the weights may be set before
+    /// or after the matrix; an empty @p weights restores the order of the rows.
     void SetRowsOrder(Weights const& weights);
 
     /// @brief Set the column traversal order: columns are tried in increasing order of @p weights
