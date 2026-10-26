@@ -10,6 +10,7 @@
       "cacheVariables": {
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
         "DUAL_BUILD_TESTS": "ON",
+        "DUAL_BUILD_BENCHMARKS": "ON",
         "DUAL_WARNINGS_AS_ERRORS": "ON"
       }
     },

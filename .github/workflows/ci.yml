@@ -180,7 +180,7 @@ jobs:
       - name: Run clang-tidy on live code
         run: |
           clang-tidy --version
-          run-clang-tidy.py -p build/dev -quiet -warnings-as-errors='*' 'src/(common|dual|tests)/'
+          run-clang-tidy.py -p build/dev -quiet -warnings-as-errors='*' '(src/(common|dual|tests)|benchmarks)/'
 
   python:
     name: python ${{ matrix.python }}
