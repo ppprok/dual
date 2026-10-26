@@ -5,6 +5,7 @@
 #include <dual/dualization_backtrack_algorithm_base.h>
 
 #include "bool_matrix_preparation.h"
+#include "runc_fixed_width.h"
 
 namespace dual {
 
@@ -215,20 +216,92 @@ void Runc::RuncLocalState::setCollectedCols(bit_chunk collectedCols) {
     collectedCols_ = collectedCols;
 }
 
-void Runc::RuncGlobalState::doDualize() {
+// Stacks of fixed-width local states (the fast path), kept out of the public header
+struct Runc::RuncGlobalState::FixedWidthStates {
+    std::vector<FixedWidthLocalState<uint64_t>> states64;
+    std::vector<FixedWidthLocalState<Bits128>> states128;
+};
 
+namespace {
+
+// Uniform access to the general and the fixed-width local states for the step template
+
+int nextColumn(Runc::RuncLocalState const& state) {
+    return state.getRestCols().find_last(state.getCollectedCols());
+}
+
+template<typename Word>
+int nextColumn(Runc::FixedWidthLocalState<Word> const& state) {
+    return state.NextColumn();
+}
+
+void collect(Runc::RuncLocalState& state, Runc::AlgorithmType type) {
+    state.setCollectedCols(state.collectCols(type));
+}
+
+template<typename Word>
+void collect(Runc::FixedWidthLocalState<Word>& state, Runc::AlgorithmType type) {
+    state.collect(type);
+}
+
+Runc::RuncLocalState makeState(Runc::RuncLocalState const* /*tag*/, size_t m, size_t n) {
+    return Runc::RuncLocalState(m, n);
+}
+
+template<typename Word>
+Runc::FixedWidthLocalState<Word> makeState(Runc::FixedWidthLocalState<Word> const* /*tag*/, size_t m, size_t /*n*/) {
+    return Runc::FixedWidthLocalState<Word>(m);
+}
+
+// The state at depth k, created (with room for m rows and n columns) if needed
+template<typename State>
+State& stateAt(std::vector<State>& states, size_t k, size_t m, size_t n) {
+    while (k >= states.size())
+        states.push_back(makeState(static_cast<State const*>(nullptr), m, n));
+    return states[k];
+}
+
+// Starts the fixed-width search: the root state holds the rows as words. Returns false if some row
+// has a column beyond the word (only possible if the matrix was changed in place past its width).
+template<typename Word>
+bool startFixedWidth(bit_matrix const& matrix,
+                     Runc::AlgorithmType type,
+                     size_t depth,
+                     std::vector<Runc::FixedWidthLocalState<Word>>& states) {
+    std::vector<Word> rows(matrix.get_rows().size());
+    for (size_t i = 0; i < rows.size(); ++i)
+        if (!Runc::wordFromRow(matrix.get_rows()[i], rows[i]))
+            return false;
+    states.clear();
+    states.reserve(depth);
+    stateAt(states, 0, rows.size(), 0).SetRoot(rows, type);
+    return true;
+}
+
+}  // namespace
+
+void Runc::RuncGlobalState::doDualize() {
+    if (enumeration_ == Enumeration::Running) {
+        switch (path_) {
+            case Path::Fixed64:
+                doDualizeIn(fixed_->states64);
+                return;
+            case Path::Fixed128:
+                doDualizeIn(fixed_->states128);
+                return;
+            case Path::General:
+                doDualizeIn(_states);
+                return;
+        }
+    }
     do {
     } while (doStep());
 }
 
-Runc::RuncLocalState& Runc::RuncGlobalState::getLocalState(std::size_t state_num) {
-    if (state_num >= _states.size()) {
-        auto m = _matrix.height();
-        auto n = _matrix.width();
-        while (state_num >= _states.size())
-            _states.emplace_back(m, n);
-    }
-    return _states[state_num];
+template<typename State>
+void Runc::RuncGlobalState::doDualizeIn(std::vector<State>& states) {
+    do {
+    } while (doStepIn(states));
 }
 
 void Runc::RuncGlobalState::dualize() {
@@ -244,13 +317,14 @@ void Runc::RuncGlobalState::dualize() {
 
 Runc::RuncGlobalState::RuncGlobalState(AlgorithmType type /*= AlgorithmType::RUNCM*/) : _type(type) {}
 
+Runc::RuncGlobalState::~RuncGlobalState() = default;
+
 void Runc::RuncGlobalState::startDualize() {
     int n = _matrix.width();
     int m = _matrix.height();
     int q = std::min(m, n);
 
-    _states.clear();
-    state_depth_ = 0;
+    resetDualize();
     resetCurrentNode(std::max(q, 0));
 
     if (m <= 0) {
@@ -267,22 +341,56 @@ void Runc::RuncGlobalState::startDualize() {
         }
     }
 
-    _states.reserve(q + 1);
-    auto& root = getLocalState(0);
+    // At most min(m, n) columns are on the path (each needs its own support rows), plus the root
+    size_t depth = q + 1;
+    enumeration_ = Enumeration::Running;
+    if (fast_path_enabled_ && n <= FastPathMaxWidth) {
+        if (!fixed_)
+            fixed_ = std::make_unique<FixedWidthStates>();
+        if (n <= 64 && startFixedWidth(_matrix, _type, depth, fixed_->states64)) {
+            path_ = Path::Fixed64;
+            return;
+        }
+        if (startFixedWidth(_matrix, _type, depth, fixed_->states128)) {
+            path_ = Path::Fixed128;
+            return;
+        }
+    }
+
+    path_ = Path::General;
+    _states.reserve(depth);
+    auto& root = stateAt(_states, 0, m, n);
     root.uncovered_.assign(_matrix.get_rows().begin(), _matrix.get_rows().end());
     root.CollectRestCols();
     root.setCollectedCols(root.collectCols(_type));
-    enumeration_ = Enumeration::Running;
 }
 
 void Runc::RuncGlobalState::resetDualize() {
     _states.clear();
+    if (fixed_) {
+        fixed_->states64.clear();
+        fixed_->states128.clear();
+    }
+    path_ = Path::General;
     state_depth_ = 0;
     enumeration_ = Enumeration::NotStarted;
 }
 
 bool Runc::RuncGlobalState::isDualizeFinished() const {
     return enumeration_ == Enumeration::Finished;
+}
+
+void Runc::RuncGlobalState::setFastPathEnabled(bool enabled) {
+    fast_path_enabled_ = enabled;
+    resetDualize();
+}
+
+bool Runc::RuncGlobalState::isFastPathEnabled() const {
+    return fast_path_enabled_;
+}
+
+bool Runc::RuncGlobalState::isFastPathActive() const {
+    return enumeration_ != Enumeration::NotStarted && path_ != Path::General;
 }
 
 void Runc::RuncGlobalState::onMatrixChanged() {
@@ -300,20 +408,34 @@ bool Runc::RuncGlobalState::doStep() {
     if (enumeration_ != Enumeration::Running)
         return false;
 
-    auto* current = &_states[state_depth_];
-    int j = current->getRestCols().find_last(current->getCollectedCols());
+    switch (path_) {
+        case Path::Fixed64:
+            return doStepIn(fixed_->states64);
+        case Path::Fixed128:
+            return doStepIn(fixed_->states128);
+        case Path::General:
+            break;
+    }
+    return doStepIn(_states);
+}
+
+// One step of the search on the stack of states of the chosen path (enumeration_ is Running)
+template<typename State>
+bool Runc::RuncGlobalState::doStepIn(std::vector<State>& states) {
+    auto* current = &states[state_depth_];
+    int j = nextColumn(*current);
     if (j >= 0) {
         current->RemoveColumn(j);
         if (addColumn(j)) {
-            auto& child = getLocalState(state_depth_ + 1);
-            current = &_states[state_depth_];  // getLocalState may have reallocated _states
+            auto& child = stateAt(states, state_depth_ + 1, _matrix.height(), _matrix.width());
+            current = &states[state_depth_];  // stateAt may have reallocated the states
             auto add_result = child.AddColumn(*current, j);
             switch (add_result) {
-                case Runc::RuncLocalState::Inner:
+                case State::Inner:
                     ++state_depth_;
-                    child.setCollectedCols(child.collectCols(_type));
+                    collect(child, _type);
                     return true;
-                case Runc::RuncLocalState::Cover:
+                case State::Cover:
                     doCoverCallback();
                     break;
                 default:
