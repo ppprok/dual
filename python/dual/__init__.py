@@ -22,6 +22,11 @@ Example::
     [[0, 1], [0, 2], [1, 2]]
     >>> dual.count_covers([[0, 1], [1, 2], [0, 2]])
     3
+    >>> dual.is_dual([[0, 1], [1, 2], [0, 2]], [[0, 1], [0, 2]])
+    DualityWitness(kind='new_transversal', columns=[1, 2])
+
+:func:`is_dual` is the Fredman–Khachiyan duality test; the ``"fk"`` algorithm (Khachiyan's
+incremental dualization) finds each next cover with it, see :meth:`Dualizer.next_cover`.
 """
 
 from __future__ import annotations
@@ -29,16 +34,19 @@ from __future__ import annotations
 import os
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as _version
-from typing import Any, Iterator, List, Sequence, Union
+from typing import Any, Iterator, List, NamedTuple, Optional, Sequence, Union
 
 from ._dual import ALGORITHMS, Dualizer
+from ._dual import is_dual as _is_dual
 
 __all__ = [
     "ALGORITHMS",
     "Dualizer",
+    "DualityWitness",
     "MatrixLike",
     "count_covers",
     "enumerate_covers",
+    "is_dual",
     "iter_batches",
     "make_dualizer",
     "minimal_covers",
@@ -60,8 +68,8 @@ def make_dualizer(matrix: MatrixLike, algorithm: str = "runcm") -> Dualizer:
     """Create a :class:`Dualizer` for ``algorithm`` and set its matrix.
 
     :param matrix: rows of column indices, a 2-D array, or a path of a ``.hg`` file.
-    :param algorithm: one of :data:`ALGORITHMS`; ``"runcm"`` (default), ``"runc"`` and ``"opt"``
-        resume the search between portions, the others compute all covers at once.
+    :param algorithm: one of :data:`ALGORITHMS`; ``"runcm"`` (default), ``"runc"``, ``"opt"`` and
+        ``"fk"`` resume the search between portions, the others compute all covers at once.
     :raises ValueError: unknown algorithm, negative column index, or a malformed array.
     :raises FileNotFoundError: the ``.hg`` file does not exist.
     """
@@ -115,10 +123,43 @@ def enumerate_covers(
 
 
 def minimal_covers(matrix: MatrixLike, algorithm: str = "runcm") -> List[List[int]]:
-    """Return all minimal covers of ``matrix`` as a list (see :func:`enumerate_covers`)."""
-    return list(enumerate_covers(matrix, algorithm))
+    """Return all minimal covers of ``matrix`` as a list.
+
+    The covers are computed in one run of the algorithm (:meth:`Dualizer.all_covers`); for
+    ``"fk"`` the order may differ from that of the generators.
+    """
+    return make_dualizer(matrix, algorithm).all_covers()
 
 
 def count_covers(matrix: MatrixLike, algorithm: str = "runcm") -> int:
     """Count the minimal covers of ``matrix`` without materializing them in Python."""
     return make_dualizer(matrix, algorithm).count()
+
+
+class DualityWitness(NamedTuple):
+    """Proof that two families of sets are not dual, returned by :func:`is_dual`."""
+
+    #: ``"new_transversal"``: ``columns`` covers every row of ``h`` and contains no row of ``g``,
+    #: so ``h`` has a minimal cover (a subset of ``columns``) that is not a row of ``g``.
+    #: ``"not_transversal"``: ``columns`` contains a row of ``g`` and its complement contains a row
+    #: of ``h``, so that row of ``g`` is not a cover of ``h``.
+    kind: str
+    #: The witness set of columns, in increasing order.
+    columns: List[int]
+
+
+def is_dual(h: MatrixLike, g: MatrixLike) -> Optional[DualityWitness]:
+    """Fredman–Khachiyan duality test (algorithm B) of the families of rows of ``h`` and ``g``.
+
+    Both matrices are first reduced to their minimal rows (duplicates and supersets of other rows
+    are dropped). They are *dual* when the minimal rows of ``g`` are exactly the minimal covers of
+    ``h`` (and then vice versa). So a matrix without rows is dual only to ``[[]]``, a matrix with a
+    zero row only to a matrix without rows, and ``dual.is_dual(h, dual.minimal_covers(h))`` is
+    always ``None``.
+
+    :param h: rows of column indices, a 2-D array, or a path of a ``.hg`` file.
+    :param g: the candidate minimal covers of ``h``, in any of the same forms.
+    :return: ``None`` if dual, otherwise a :class:`DualityWitness` (kind and columns).
+    """
+    result = _is_dual(make_dualizer(h, "fk"), make_dualizer(g, "fk"))
+    return None if result is None else DualityWitness(*result)
