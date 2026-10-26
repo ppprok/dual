@@ -787,7 +787,8 @@ TEST_CASE("CompletionBounds: corner cases") {
 
 TEST_CASE("OptimalCovers: measurements" * doctest::skip()) {
     // For every case: pruning with the completion bounds (#53, the default), pruning with the sums of
-    // the remaining weights only (#49) and the full enumeration; times are the best of three runs
+    // the remaining weights only (#49) and the full enumeration; times are the best of at least three
+    // runs (more for short ones, up to 100 ms in total)
     struct Case {
         std::string name;
         Rows rows;
@@ -839,7 +840,8 @@ TEST_CASE("OptimalCovers: measurements" * doctest::skip()) {
                         options.completionBounds = completion;
                         OptimalCovers result;
                         ms = 1e300;
-                        for (int run = 0; run < 3; ++run) {
+                        double total = 0;
+                        for (int run = 0; run < 3 || (total < 100 && run < 1000); ++run) {
                             auto t0 = std::chrono::steady_clock::now();
                             if (functional == 0)
                                 result = optimalCovers(matrix, {}, options);
@@ -848,7 +850,9 @@ TEST_CASE("OptimalCovers: measurements" * doctest::skip()) {
                             else
                                 result = optimalCoversByCoveredRows(matrix, target, rowWeights, options);
                             auto t1 = std::chrono::steady_clock::now();
-                            ms = std::min(ms, std::chrono::duration<double, std::milli>(t1 - t0).count());
+                            double t = std::chrono::duration<double, std::milli>(t1 - t0).count();
+                            ms = std::min(ms, t);
+                            total += t;
                         }
                         return result;
                     };
