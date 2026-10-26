@@ -288,5 +288,5 @@ MIT, see [`LICENSE`](LICENSE). Third-party code under `legacy/3rd-party/` keeps 
 This is research code being turned into a reusable library (epic #7). The RUNC family
 (`Runc::RuncGlobalState`), the Python package `dual` and the C ABI are the main maintained part. `AOT1`, `PUNC` and
 `RuncFixed` are tested against RUNCM on the test matrices and on random ones, but are less used.
-The Khachiyan algorithm `FK` is new and not yet in the Python package.
+The Khachiyan algorithm `FK` is new; in Python it is `algorithm="fk"` and `dual.is_dual`.
 The API may still change before a first release.
