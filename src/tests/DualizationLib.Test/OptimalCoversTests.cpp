@@ -231,8 +231,11 @@ void checkAllAlgorithms(std::vector<Cover> const& covers,
             CHECK(coverSet(pruned49) == expected);
             CHECK(coverSet(full) == expected);
             // The completion bounds only add pruning, and pruned branches hold no cover that would
-            // move the dynamic bound, so the nodes visited are a subset
-            CHECK(pruned.nodes <= pruned49.nodes);
+            // move the dynamic bound, so the nodes visited are a subset. Not for PUNC: it breaks ties
+            // between columns of equal weight at random, and the random engine advances once per
+            // expanded node, so pruning changes the order of the later branches.
+            if (algorithm != CoverAlgorithm::PUNC)
+                CHECK(pruned.nodes <= pruned49.nodes);
             if (!expected.empty()) {
                 CHECK_EQ(pruned.weight, (Weight) weight(*expected.begin()));
                 for (auto const& c : pruned.covers)
@@ -728,7 +731,8 @@ TEST_CASE("OptimalCovers: completion bounds with many ties and fractional weight
                     auto full = optimalCovers(matrix, w, options);
                     CHECK(coverSet(pruned) == coverSet(full));
                     CHECK(coverSet(pruned49) == coverSet(full));
-                    CHECK(pruned.nodes <= pruned49.nodes);
+                    if (algorithm != CoverAlgorithm::PUNC)  // random tie-breaking, see checkAllAlgorithms
+                        CHECK(pruned.nodes <= pruned49.nodes);
                     nodes += pruned.nodes;
                     nodes49 += pruned49.nodes;
                     nodesFull += full.nodes;
@@ -862,7 +866,6 @@ TEST_CASE("OptimalCovers: measurements" * doctest::skip()) {
                     auto full = solve(false, false, msFull);
                     CHECK(coverSet(pruned) == coverSet(full));
                     CHECK(coverSet(pruned49) == coverSet(full));
-                    CHECK(pruned.nodes <= pruned49.nodes);
                     std::printf("%-20s %-13s %-3s %-5s %9lld %9lld %9lld %8.2f %8.2f %8.2f %8.0f %8.0f %6zu\n",
                                 c.name.c_str(),
                                 fname,
