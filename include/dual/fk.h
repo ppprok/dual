@@ -72,11 +72,13 @@ class Solver;
 /// with a zero row has none.
 ///
 /// - `dualize()` enumerates all covers from scratch in one run of the duality test: when a witness
-///   is found deep in the recursion, the new cover is added to every family on the recursion path
+///   is found deep in the recursion, the new cover is added to the families on the recursion path
 ///   and the run continues from there, so finished parts of the recursion are never repeated.
 /// - `next()` finds one cover more than the covers found so far (`getCovers()`) or proves that
-///   there is none; each call runs the duality test from the root. Calls of `next()` may follow
-///   each other; `dualize()` and a change of the matrix restart from no covers.
+///   there is none. It is the same run as `dualize()`, paused after each new cover: the next call
+///   continues where the previous one stopped, so getting all covers one by one costs about as
+///   much as `dualize()`. Calls of `next()` may follow each other; `dualize()` and a change of the
+///   matrix restart from no covers.
 /// - If `CoverCallback` stops the node (`DualizationNode::stoped`), the enumeration is finished
 ///   (`isDualizeFinished()`), as in RUNC.
 ///
@@ -131,11 +133,10 @@ private:
 
     void start();
     bool run(bool once);
-    bool reportCover(bit_chunk cover);
+    bool reportCover(Columns const& cover);
 
     Enumeration enumeration_ = Enumeration::NotStarted;
-    bit_matrix hypergraph_;  // minimal rows of the input matrix
-    bit_matrix covers_;      // covers found so far
+    bit_matrix covers_;  // covers found so far
     Columns lastCover_;
     std::unique_ptr<Solver> solver_;
 };

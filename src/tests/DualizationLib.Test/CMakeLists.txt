@@ -6,6 +6,9 @@ dual_add_test(TestDual
         RuncApiTests.cpp
         RuncDifferentialTests.cpp
         RuncTestUtils.h
+        DualTestUtils.h
+        AlgorithmMatrixTests.cpp
+        CallbackTests.cpp
         "${PROJECT_SOURCE_DIR}/src/dual/runc_executor.cpp"
         AOT1PUNCTests.cpp
         PruningTests.cpp

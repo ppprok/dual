@@ -17,20 +17,6 @@ using namespace runc_test;
 
 namespace {
 
-std::set<Cover> bruteForce(Rows const& rows) {
-    int n = widthOf(rows);
-    std::set<Cover> result;
-    for (unsigned s = 0; s < (1u << n); ++s) {
-        Cover c;
-        for (int j = 0; j < n; ++j)
-            if (s >> j & 1)
-                c.push_back(j);
-        if (isMinimalCover(rows, c))
-            result.insert(c);
-    }
-    return result;
-}
-
 // Mostly matrices without zero rows; rarely an empty matrix (exactly the empty cover) or a zero row (no covers)
 Rows randomRows(std::mt19937& rng, int max_n, int max_m) {
     if (rng() % 50 == 0)
@@ -127,7 +113,7 @@ TEST_CASE("RuncDifferential: small matrices against brute force") {
     std::mt19937 rng(20261020);
     for (int it = 0; it < 1000; ++it) {
         auto rows = randomRows(rng, 10, 10);
-        auto reference = bruteForce(rows);
+        auto reference = dual_test::bruteForce(rows);
         checkAll(rows, &reference);
     }
 }

@@ -55,8 +55,8 @@ public:
 
     /// @brief Write a real number in fixed-point notation.
     /// @param v Number to write.
-    /// @param precision Number of digits after the point; the fraction is truncated and omitted
-    ///        for whole numbers.
+    /// @param precision Number of digits after the point; the number is rounded to them, the
+    ///        fraction is omitted for whole numbers.
     /// @param pad Minimum number of digits of the integer part.
     void WriteNumber(double v, int precision = 3, int pad = 0);
 

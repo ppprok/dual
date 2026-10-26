@@ -3,7 +3,7 @@
 #   dual_target_options(<target>)
 #
 # Sets C++17, warnings (-Wall -Wextra, /W4 on MSVC), optional -Werror and optional sanitizers
-# according to DUAL_WARNINGS_AS_ERRORS and DUAL_ENABLE_SANITIZERS.
+# according to DUAL_WARNINGS_AS_ERRORS, DUAL_ENABLE_SANITIZERS and DUAL_ENABLE_COVERAGE.
 #
 # DUAL_WARNINGS_AS_ERRORS applies to GCC and Clang (incl. Apple Clang), which CI keeps warning-free.
 # MSVC /W4 still reports the int-sized index/size design (C4244, C4267, C4245), fopen (C4996) and
@@ -27,5 +27,15 @@ function(dual_target_options target)
             # Link options propagate to consumers of static libs so the final executable gets the runtime.
             target_link_options(${target} PUBLIC $<BUILD_INTERFACE:-fsanitize=address,undefined>)
         endif()
+    endif()
+
+    # gcov instrumentation (gcc/clang only): every own object writes .gcda files next to its .o when a
+    # test runs; gcovr reads them (see the coverage preset and src/tests/README.md).
+    if(DUAL_ENABLE_COVERAGE)
+        if(MSVC)
+            message(FATAL_ERROR "DUAL_ENABLE_COVERAGE needs gcc or clang (--coverage)")
+        endif()
+        target_compile_options(${target} PRIVATE --coverage -O0)
+        target_link_options(${target} PUBLIC $<BUILD_INTERFACE:--coverage>)
     endif()
 endfunction()
