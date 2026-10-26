@@ -259,8 +259,7 @@ public:
         return std::move(covers.front());
     }
 
-    // All covers in one run of the algorithm (for FK much faster than portions: FK::GlobalState::dualize()
-    // does not repeat the duality test from the root for each cover); restarts the enumeration.
+    // All covers in one run of the algorithm, without the per-portion overhead; restarts the enumeration.
     std::vector<Cover> all_covers() {
         Busy busy(*this);
         std::vector<Cover> covers;

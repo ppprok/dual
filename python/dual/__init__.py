@@ -125,9 +125,8 @@ def enumerate_covers(
 def minimal_covers(matrix: MatrixLike, algorithm: str = "runcm") -> List[List[int]]:
     """Return all minimal covers of ``matrix`` as a list.
 
-    The covers are computed in one run of the algorithm (:meth:`Dualizer.all_covers`), so for
-    ``"fk"`` this is much faster than collecting :func:`enumerate_covers`, which finds each next
-    cover by a duality test from scratch; the order may then differ from that of the generators.
+    The covers are computed in one run of the algorithm (:meth:`Dualizer.all_covers`); for
+    ``"fk"`` the order may differ from that of the generators.
     """
     return make_dualizer(matrix, algorithm).all_covers()
 

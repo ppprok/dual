@@ -54,9 +54,9 @@ brute force.
   non-movable); the Python object is held by pybind11's default `unique_ptr` holder.
 - RUNC family (`runcm`, `runc`, `opt`) is resumable: `next_batch` calls
   `RuncGlobalState::dualize(max_count)`. FK (`fk`) is resumable too: `next_batch` calls
-  `FK::GlobalState::next()` once per cover, and each call reruns the duality test from the root
-  (about 70x slower than one `dualize()` on a whole enumeration), so `all_covers()` (used by
-  `minimal_covers`) and `count()` run the full `dualize()` instead; their order may differ from
+  `FK::GlobalState::next()` once per cover; since #45 `next()` continues the paused duality test,
+  so a portion costs about as much as the same covers from `dualize()`. `all_covers()` (used by
+  `minimal_covers`) and `count()` run the full `dualize()` in one call; their order may differ from
   the portions'. AOT1/PUNC have no resumable mode: the first `next_batch`
   runs the full `dualize()` with a collecting `CoverCallback` and then hands covers out.
 - `is_dual(h, g)` takes two `Dualizer`s only as matrix holders (the Python side builds them with

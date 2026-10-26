@@ -24,11 +24,6 @@ def expected_count(path):
     return int(path.stem.split("_")[2])
 
 
-# FK finds each next cover of a generator by a duality test from the root (quasi-polynomial in the
-# covers found so far), so its generators are only run on the smaller files.
-SMALL_HG_FILES = [p for p in HG_FILES if expected_count(p) <= 500]
-
-
 def as_set(covers):
     result = {tuple(c) for c in covers}
     assert len(result) == len(covers), "a cover is reported twice"
@@ -246,7 +241,7 @@ def test_fk_hg_same_covers_as_runcm(path):
     assert dual.count_covers(path, "fk") == expected_count(path)
 
 
-@pytest.mark.parametrize("path", SMALL_HG_FILES, ids=lambda p: p.name)
+@pytest.mark.parametrize("path", HG_FILES, ids=lambda p: p.name)
 def test_fk_generator_same_covers_as_runcm(path):
     covers = list(dual.enumerate_covers(path, "fk", batch_size=50))
     assert as_set(covers) == as_set(dual.minimal_covers(path, "runcm"))

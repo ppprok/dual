@@ -66,10 +66,9 @@ generator early stops the search. `"ao1"`, `"ao2"`, `"ao1k"`, `"ao2k"`, `"ao1m"`
 and `"punc"` (PUNC) have no resumable mode: they compute all covers in C++ on the first portion.
 `"fk"` is Khachiyan's incremental dualization (Boros, Elbassioni, Gurvich, Khachiyan): each next
 cover is found by the Fredman–Khachiyan duality test of the covers found so far, in time
-quasi-polynomial in the input and those covers. It is resumable, but every portion repeats the
-test from scratch and keeps all covers found, so collecting a large enumeration from its
-generators is slow; `minimal_covers` and `count_covers` run it in one pass instead (still much
-slower than RUNC: about 4 s vs 0.01 s for the 7187 covers of `10_50_7187.hg`).
+quasi-polynomial in the input and those covers. It is resumable: a portion continues the paused
+duality test, and it keeps all covers found so far. It is slower than RUNC (in Release about
+0.06 s vs 0.002 s for the 7187 covers of `10_50_7187.hg`).
 
 `is_dual(h, g)` is the Fredman–Khachiyan duality test (algorithm B). Both matrices are reduced to
 their minimal rows first; `h` and `g` are dual when the minimal rows of `g` are exactly the
