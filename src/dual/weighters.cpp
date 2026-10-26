@@ -93,6 +93,7 @@ bool WeighterBase::IsRestWeightsValid() const {
 void WeighterBase::InvalidateRestWeights() {
     _restNegative = 1;
     _restPositive = -1;
+    _checkpoints.Clear();
 }
 
 bool WeighterBase::Prun(Weight current, Weight minWeight, Weight maxWeight) const {
@@ -192,13 +193,20 @@ void WeighterBase::WeightInnerNode(DualizationNode& node) {
 
     switch (node.type) {
         case NodeType::NewNode:
+            _checkpoints.Save(node, {node.weight, _restPositive, _restNegative});
             WeightNewNode(node);
             Prun(node);
             break;
 
-        case NodeType::BacktrackNode:
+        case NodeType::BacktrackNode: {
             WeightBacktrackNode(node);
-            break;
+            WeightCheckpoints::State state{node.weight, _restPositive, _restNegative};
+            if (_checkpoints.Restore(node, state)) {
+                node.weight = state.weight;
+                _restPositive = state.restPositive;
+                _restNegative = state.restNegative;
+            }
+        } break;
 
         case NodeType::CoverNode:
         case NodeType::ExtraNode:

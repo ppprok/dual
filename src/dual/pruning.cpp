@@ -16,12 +16,14 @@ void CoveredRowsWeighter::Reset() {
 void CoveredRowsWeighter::Call(DualizationNode& node) {
     switch (node.type) {
         case NodeType::NewNode:
+            _pruner.SaveCheckpoint(node);
             WeightNewNode(node);
             _pruner.PrunInnerNode(node);
             break;
 
         case NodeType::BacktrackNode:
             WeightBacktrackNode(node);
+            _pruner.RestoreCheckpoint(node);
             break;
 
         case NodeType::CoverNode:

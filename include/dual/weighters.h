@@ -7,6 +7,7 @@
 
 #include <dual/bit_matrix.h>
 #include <dual/dualization_backtrack_algorithm_base.h>
+#include <dual/weight_bounds_pruning.h>
 
 namespace dual {
 
@@ -36,6 +37,9 @@ protected:
     /// Maximum number of terms in the sum (0: only the explicit weights, the default weight
     /// makes the sums unbounded).
     int _weightSumCount;
+
+    /// States of the nodes on the current path, restored exactly on backtrack.
+    WeightCheckpoints _checkpoints;
 
     /// @brief Invalidate the estimates of the sums of the remaining positive and negative terms.
     void InvalidateRestWeights();

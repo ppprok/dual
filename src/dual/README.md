@@ -27,7 +27,8 @@ part outside the namespace.
 | `<dual/file_writers.h>`, `file_writers.cpp` | Callbacks that write covers (all columns, sorted, first/last/min/max column, size, weight) to a file. |
 | `<dual/weighters.h>`, `weighters.cpp` | `WeighterBase` and weighters of search tree nodes by column weights or by covered row weights, with pruning by weight bounds. |
 | `<dual/pruning.h>`, `pruning.cpp` | `CoveredRowsWeighter`: pruning by bounds on the total weight of covered rows. Tested together with `WeightBoundsPruningCallback` on RUNC-M (`PruningTests.cpp`). |
-| `<dual/weight_bounds_pruning.h>`, `weight_bounds_pruning.cpp` | `WeightBoundsPruningCallback`: pruning by bounds on the total column weight (fixed bounds, or dynamic ones that search for the lightest / heaviest covers). |
+| `<dual/weight_bounds_pruning.h>`, `weight_bounds_pruning.cpp` | `WeightBoundsPruningCallback`: pruning by bounds on the total column weight (fixed bounds, or dynamic ones that search for the lightest / heaviest covers). `WeightCheckpoints`: weighters save their state on the way down and restore it exactly on backtrack, so `float` weights do not drift. |
+| `<dual/optimal_covers.h>`, `optimal_covers.cpp` | All optimal minimal covers (ties included) by enumeration with branch pruning: `OptimalCoverCollector` and the convenience functions `optimalCovers` (column weights or length) and `optimalCoversByCoveredRows` (weight of hit target rows), for RUNC/RUNCM/OPT/AOT1/PUNC (pruning) and FK (filtering). See [`docs/optimal-covers.md`](../../docs/optimal-covers.md). |
 | `bool_matrix_preparation.h/.cpp` (internal) | Removal of dependent rows (rows that contain another row). |
 
 ## Algorithms
