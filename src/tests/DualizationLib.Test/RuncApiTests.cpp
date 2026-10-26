@@ -381,3 +381,16 @@ TEST_CASE("RuncApi: setRestrictions fills the restriction rows") {
     CHECK(g.restrictions().get(2, 2));
     CHECK_FALSE(g.restrictions().get(2, 0));
 }
+
+// #47: a matrix too large for bit_matrix is reported as RUNC_ERROR_INTERNAL on every call
+TEST_CASE("RuncApi: C ABI reports an internal error for a matrix too large to build") {
+    auto h = init_dualizer();
+    REQUIRE(h != nullptr);
+    // 65 rows of 2^31 - 1 columns need more than INT32_MAX 64-bit blocks; only one bit is stored
+    int32_t far[] = {INT32_MAX - 1};
+    REQUIRE(set_input_row(h, 64, 1, far) == RUNC_OK);
+    uint32_t buffer[8];
+    CHECK(enumerate_covers(h, 8, buffer) == RUNC_ERROR_INTERNAL);
+    CHECK(enumerate_covers(h, 8, buffer) == RUNC_ERROR_INTERNAL);
+    release_dualizer(h);
+}

@@ -13,6 +13,19 @@ The first release is planned as **0.1.0** (the version in `project(dual VERSION 
 
 ### Added
 
+- Python bindings for FK: `algorithm="fk"` in every function of the `dual` package and in
+  `Dualizer` (resumable, one `FK::GlobalState::next()` per cover), `Dualizer.next_cover()` and
+  `Dualizer.all_covers()`, and the duality test `dual.is_dual(h, g)` returning `None` or a
+  `DualityWitness(kind, columns)` ([#46](https://github.com/ppprok/dual/issues/46)).
+- Coverage build: the `DUAL_ENABLE_COVERAGE` option, the `coverage` preset, `gcovr.cfg` and a CI job
+  that publishes the gcovr report; tests of every algorithm and option on every data file and
+  against brute force, and of the weighters, collectors, file writers and counters; line coverage
+  of `src/dual` went from 79% to 98% ([#47](https://github.com/ppprok/dual/issues/47)).
+- Optimal minimal covers by enumeration with branch pruning (`<dual/optimal_covers.h>`):
+  `OptimalCoverCollector` keeps all covers of the best weight (ties included, optional tolerance),
+  `optimalCovers` and `optimalCoversByCoveredRows` for column weights, length and weight of hit
+  target rows on RUNC/RUNCM/OPT/AOT1/PUNC (pruning) and FK (filtering); `docs/optimal-covers.md`
+  with the correctness argument and measurements ([#49](https://github.com/ppprok/dual/issues/49)).
 - Benchmarks ([#48](https://github.com/ppprok/dual/issues/48)): the `dual_bench` executable
   (option `DUAL_BUILD_BENCHMARKS`, ON in the presets and built in CI) runs any algorithm on a `.hg`
   file or a seeded random matrix with a time limit and prints JSON; `benchmarks/run_benchmarks.py`
@@ -69,6 +82,11 @@ The first release is planned as **0.1.0** (the version in `project(dual VERSION 
 
 ### Changed
 
+- `FK::GlobalState` is 20–40x faster (`10_50_7187.hg`: 2.1 s → 0.06 s, `15_35_12226.hg`: 13 s →
+  0.7 s in Release): the recursion runs on an explicit stack, so `next()` continues the run of the
+  duality test instead of restarting it from the root and getting the covers one by one costs about
+  as much as `dualize()`; sets are rows of 64-bit words, and new covers reach the families of the
+  frames above the leaf lazily ([#45](https://github.com/ppprok/dual/issues/45)).
 - Library layout: public headers moved to `include/dual/` with snake_case names (included as
   `<dual/name.h>`), internal headers stay in `src/`; all C++ code is in namespace `dual`, with
   algorithm state in `dual::Runc`, `dual::AOT1` and `dual::PUNC`; `DUAL_WARNINGS_AS_ERRORS` applies
@@ -93,6 +111,15 @@ The first release is planned as **0.1.0** (the version in `project(dual VERSION 
 
 ### Fixed
 
+- `PUNC::GlobalState` crashed on a matrix with rows but no columns, and `SetRowsOrder` built the
+  order for the matrix current at the call, so a taller matrix set later was read past the order;
+  `WeighterBase::SetWeights` kept the remaining-weight sums of the old weights; `WriteNumber` (and
+  `WeightFileWriterCallback`) truncated instead of rounding, writing 0.7f as 0.69999
+  ([#47](https://github.com/ppprok/dual/issues/47)).
+- Floating-point drift of node weights in `WeightBoundsPruningCallback`, `CoveredRowsWeighter` and
+  `WeighterBase`: weights were added and subtracted incrementally, so the same cover got different
+  weights and a dynamic bound pruned tied optimal covers; the weighters now restore their state
+  exactly on backtrack (`WeightCheckpoints`) ([#49](https://github.com/ppprok/dual/issues/49)).
 - Memory defects in the common containers: `chunk` offsets overflowing `int` when `realloc` moved
   large buffers, `blob::resize` on an empty blob, `bit_mask::subset_cmp`, `bit_chunk::get_last`,
   `chunk::resize` and the byte size in `bit_vector::zero`

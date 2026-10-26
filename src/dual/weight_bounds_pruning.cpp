@@ -4,6 +4,32 @@
 
 namespace dual {
 
+void WeightCheckpoints::Save(DualizationNode const& node, State const& state) {
+    // The parent of the new node is at depth columns.size() - 1; deeper states are stale
+    size_t depth = node.columns.empty() ? 0 : node.columns.size() - 1;
+    states_.resize(depth);
+    valid_.resize(depth, 0);
+    states_.push_back(state);
+    valid_.push_back(1);
+}
+
+bool WeightCheckpoints::Restore(DualizationNode const& node, State& state) {
+    size_t depth = node.columns.size();
+    bool found = depth < states_.size() && valid_[depth];
+    if (found)
+        state = states_[depth];
+    if (depth < states_.size()) {
+        states_.resize(depth);
+        valid_.resize(depth);
+    }
+    return found;
+}
+
+void WeightCheckpoints::Clear() {
+    states_.clear();
+    valid_.clear();
+}
+
 void WeightBoundsPruningCallback::Call(DualizationNode& node) {
     switch (node.type) {
         case NodeType::BacktrackNode: {
@@ -11,9 +37,11 @@ void WeightBoundsPruningCallback::Call(DualizationNode& node) {
             node.weight -= w;
             if (!IsDefaultWeight(node.lastColumn))
                 IncRestWeight(w);
+            RestoreCheckpoint(node);
         } break;
 
         case NodeType::NewNode: {
+            SaveCheckpoint(node);
             Weight w = GetWeight(node.lastColumn);
             node.weight += w;
             if (!IsDefaultWeight(node.lastColumn))
@@ -38,6 +66,7 @@ void WeightBoundsPruningCallback::SetWeights(Weights weights) {
     _weights = std::move(weights);
     _restNegative = 0;
     _restPositive = 0;
+    _checkpoints.Clear();
 
     for (auto w : _weights)
         IncRestWeight(w);
@@ -75,6 +104,7 @@ void WeightBoundsPruningCallback::Reset() {
     _maxWeight = std::numeric_limits<Weight>::max();
     _restNegative = 0;
     _restPositive = 0;
+    _checkpoints.Clear();
 }
 
 WeightBoundsPruningCallback::WeightBoundsPruningCallback() {
@@ -126,6 +156,19 @@ void WeightBoundsPruningCallback::DecRestWeight(Weight w) {
         _restNegative -= w;
     else if (w > 0)
         _restPositive -= w;
+}
+
+void WeightBoundsPruningCallback::SaveCheckpoint(DualizationNode const& node) {
+    _checkpoints.Save(node, {node.weight, _restPositive, _restNegative});
+}
+
+void WeightBoundsPruningCallback::RestoreCheckpoint(DualizationNode& node) {
+    WeightCheckpoints::State state{node.weight, _restPositive, _restNegative};
+    if (!_checkpoints.Restore(node, state))
+        return;
+    node.weight = state.weight;
+    _restPositive = state.restPositive;
+    _restNegative = state.restNegative;
 }
 
 }  // namespace dual

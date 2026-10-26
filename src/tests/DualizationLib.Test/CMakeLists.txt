@@ -6,11 +6,15 @@ dual_add_test(TestDual
         RuncApiTests.cpp
         RuncDifferentialTests.cpp
         RuncTestUtils.h
+        DualTestUtils.h
+        AlgorithmMatrixTests.cpp
+        CallbackTests.cpp
         "${PROJECT_SOURCE_DIR}/src/dual/runc_executor.cpp"
         AOT1PUNCTests.cpp
         PruningTests.cpp
         CoverCollectorTests.cpp
         FKTests.cpp
+        OptimalCoversTests.cpp
         LIBS dual::dual)
 
 # runc_fixed.cpp compiled with -O2 into its own client, independently of the build type: the link

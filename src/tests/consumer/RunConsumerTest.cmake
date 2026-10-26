@@ -4,8 +4,8 @@
 #   cmake -DDUAL_BUILD_DIR=<build> -DDUAL_CONFIG=<config> -DWORK_DIR=<dir> -DGENERATOR=<generator>
 #         -DCXX_COMPILER=<c++> [-DMAKE_PROGRAM=<ninja/make>] [-DLINK_FLAGS=<flags>] -P RunConsumerTest.cmake
 #
-# LINK_FLAGS carries the sanitizer runtime for a DUAL_ENABLE_SANITIZERS build: the installed static
-# libraries are instrumented, but the exported targets do not propagate -fsanitize.
+# LINK_FLAGS carries the sanitizer (or --coverage) runtime for a DUAL_ENABLE_SANITIZERS (DUAL_ENABLE_COVERAGE) build: the installed static
+# libraries are instrumented, but the exported targets do not propagate -fsanitize / --coverage.
 foreach(var DUAL_BUILD_DIR DUAL_CONFIG WORK_DIR GENERATOR CXX_COMPILER)
     if(NOT DEFINED ${var})
         message(FATAL_ERROR "RunConsumerTest.cmake: ${var} is not set")

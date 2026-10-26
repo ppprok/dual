@@ -20,6 +20,7 @@ endif()
 option(DUAL_BUILD_TESTS "Build the doctest-based unit tests" ${DUAL_IS_TOP_LEVEL})
 option(DUAL_BUILD_PYTHON "Build the pybind11 extension module dual._dual (needs pybind11; used by pip install .)" OFF)
 option(DUAL_ENABLE_SANITIZERS "Build own targets with AddressSanitizer and UndefinedBehaviorSanitizer" OFF)
+option(DUAL_ENABLE_COVERAGE "Build own targets with gcc/clang --coverage (gcov data for gcovr, see the coverage preset)" OFF)
 # OFF by default so a newer compiler cannot break a consumer's or packager's build; the CMake presets
 # (dev, release, asan) turn it ON, so the warning-free state of live code is kept in development.
 option(DUAL_WARNINGS_AS_ERRORS "Treat compiler warnings as errors for own targets" OFF)

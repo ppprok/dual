@@ -79,6 +79,45 @@ jobs:
       - name: Test
         run: ctest --preset asan
 
+  coverage:
+    name: linux-gcc coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      # Same gcovr as on the dev machine (uv tool install gcovr); it reads gcovr.cfg.
+      - name: Install Ninja and gcovr
+        run: pip install ninja gcovr==8.7
+      - name: Configure
+        run: cmake --preset coverage
+      - name: Build
+        run: cmake --build --preset coverage
+      # Test discovery runs the test binaries during the build; drop those counts before ctest.
+      - name: Test
+        run: |
+          find build/coverage -name '*.gcda' -delete
+          ctest --preset coverage
+      # Informational: the job fails only if the build or a test fails, not on a threshold.
+      - name: Coverage report
+        run: |
+          mkdir -p build/coverage-report
+          gcovr build/coverage --txt build/coverage-report/coverage.txt \
+            --html-details build/coverage-report/index.html | tee build/coverage-report/summary.txt
+          cat build/coverage-report/coverage.txt
+          {
+            echo '### Coverage of src/common, src/dual, include/dual'
+            echo '```'
+            cat build/coverage-report/summary.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: build/coverage-report
+          retention-days: 14
+
   docs:
     name: docs (Doxygen, warnings are errors)
     runs-on: ubuntu-latest
