@@ -182,6 +182,8 @@ Weight WeighterBase::GetWeight(int i) {
 
 void WeighterBase::SetWeights(Weights weights) {
     _weights = std::move(weights);
+    // The sums of the remaining weights depend on the weights: recompute them on the next node (#47)
+    InvalidateRestWeights();
 }
 
 void WeighterBase::WeightInnerNode(DualizationNode& node) {

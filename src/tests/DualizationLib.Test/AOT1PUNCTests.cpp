@@ -1,13 +1,10 @@
 #include <doctest.h>
 
 #include <algorithm>
-#include <cctype>
 #include <cmath>
-#include <filesystem>
 #include <functional>
 #include <memory>
 #include <random>
-#include <set>
 #include <string>
 #include <vector>
 
@@ -16,36 +13,18 @@
 #include <dual/punc.h>
 #include <dual/runc.h>
 
+#include "DualTestUtils.h"
+
 using namespace dual;
 
 namespace {
 
-typedef std::vector<int> Cover;
-typedef std::set<Cover> CoverSet;
-typedef std::vector<std::vector<int>> Rows;
+using namespace dual_test;
 
-// Runs the algorithm and returns its covers with sorted columns; fails on a repeated cover.
-// With maxCount > 0 the enumeration stops after that many covers.
-CoverSet Collect(DualizationBacktrackAlgorithmBase& alg, int maxCount = -1) {
-    CoverCollector collector;
-    collector.MaxCount = maxCount;
-    alg.CoverCallback = &collector;
-    alg.dualize();
-    alg.CoverCallback = nullptr;
-
-    CoverSet covers;
-    for (auto const& c : collector.GetCovers()) {
-        Cover cover = c.columns;
-        std::sort(cover.begin(), cover.end());
-        CHECK_MESSAGE(covers.insert(cover).second, "repeated cover");
-    }
-    return covers;
-}
-
-CoverSet RuncmCovers(bit_matrix matrix, int maxCount = -1) {
+Covers RuncmCovers(bit_matrix matrix, int maxCount = -1) {
     Runc::RuncGlobalState runc(Runc::RUNCM);
     runc.setMatrix(std::move(matrix));
-    return Collect(runc, maxCount);
+    return collect(runc, maxCount);
 }
 
 struct NamedAlgorithm {
@@ -72,132 +51,7 @@ std::vector<NamedAlgorithm> Algorithms() {
     return algs;
 }
 
-// Zero rows get width n, or the largest column in rows + 1 if that is larger
-bit_matrix MakeMatrix(Rows const& rows, int n = 0) {
-    for (auto const& row : rows)
-        for (int j : row)
-            n = std::max(n, j + 1);
-
-    bit_matrix matrix;
-    for (int i = 0; i < (int) rows.size(); ++i) {
-        // set() alone would drop a trailing zero row and put a leading one's successor in its place
-        if (rows[i].empty())
-            matrix.add_rows(1, n);
-        for (int j : rows[i])
-            matrix.set(i, j);
-    }
-    return matrix;
-}
-
-// bit_matrix is not copyable, so matrices are passed around as rows of column indices
-Rows ToRows(bit_matrix const& matrix) {
-    Rows rows(matrix.height());
-    for (int i = 0; i < matrix.height(); ++i) {
-        auto const& row = matrix.get_row(i);
-        for (int j = row.find_first(); j >= 0; j = row.find_next(j))
-            rows[i].push_back(j);
-    }
-    return rows;
-}
-
-Rows LoadRows(std::string const& filename) {
-    Runc::RuncGlobalState reader;
-    reader.loadMatrix(filename);
-    return ToRows(reader.get_matrix());
-}
-
-// Random matrix; about one matrix in eight gets a zero row, the rest have none
-Rows RandomRows(std::mt19937& random, int m, int n) {
-    std::uniform_real_distribution<double> density(0.05, 0.65);
-    std::uniform_real_distribution<double> uniform(0, 1);
-    double p = density(random);
-    Rows rows(m);
-    for (auto& row : rows) {
-        for (int j = 0; j < n; ++j)
-            if (uniform(random) < p)
-                row.push_back(j);
-        if (row.empty())
-            row.push_back(random() % n);
-    }
-    if (random() % 8 == 0)
-        rows[random() % m].clear();
-    return rows;
-}
-
-bool IsCover(Rows const& rows, unsigned mask) {
-    for (auto const& row : rows) {
-        bool covered = false;
-        for (int j : row)
-            covered |= ((mask >> j) & 1) != 0;
-        if (!covered)
-            return false;
-    }
-    return true;
-}
-
-// Minimal covers by exhaustive search over the column subsets (n <= 16)
-CoverSet BruteForceCovers(Rows const& rows, int n) {
-    CoverSet covers;
-    for (unsigned mask = 0; mask < (1u << n); ++mask) {
-        if (!IsCover(rows, mask))
-            continue;
-        bool minimal = true;
-        for (int j = 0; j < n && minimal; ++j)
-            if (((mask >> j) & 1) && IsCover(rows, mask & ~(1u << j)))
-                minimal = false;
-        if (!minimal)
-            continue;
-        Cover cover;
-        for (int j = 0; j < n; ++j)
-            if ((mask >> j) & 1)
-                cover.push_back(j);
-        covers.insert(cover);
-    }
-    return covers;
-}
-
-// Expected cover count from a file name like "15_20_275.hg", or -1
-int ExpectedCount(std::filesystem::path const& file) {
-    auto stem = file.stem().string();
-    auto pos = stem.rfind('_');
-    bool numeric = std::all_of(stem.begin(), stem.end(), [](char c) { return c == '_' || std::isdigit(c); });
-    if (!numeric || std::count(stem.begin(), stem.end(), '_') != 2)
-        return -1;
-    return std::stoi(stem.substr(pos + 1));
-}
-
-std::vector<std::filesystem::path> DataFiles() {
-    std::vector<std::filesystem::path> files;
-    for (auto const& entry : std::filesystem::directory_iterator("data"))
-        if (entry.path().extension() == ".hg")
-            files.push_back(entry.path());
-    std::sort(files.begin(), files.end());
-    return files;
-}
-
 }  // namespace
-
-TEST_CASE("AOT1 and PUNC match RUNCM on data files") {
-    auto files = DataFiles();
-    REQUIRE(files.size() >= 8);
-
-    for (auto const& file : files) {
-        CAPTURE(file.string());
-        auto rows = LoadRows(file.string());
-        auto expected = RuncmCovers(MakeMatrix(rows));
-
-        int count = ExpectedCount(file);
-        if (count >= 0)
-            CHECK_EQ(count, (int) expected.size());
-
-        for (auto const& alg : Algorithms()) {
-            CAPTURE(alg.name);
-            auto a = alg.create();
-            a->setMatrix(MakeMatrix(rows));
-            CHECK(Collect(*a) == expected);
-        }
-    }
-}
 
 TEST_CASE("AOT1 and PUNC match RUNCM and brute force on random small matrices") {
     std::mt19937 random(23);
@@ -206,17 +60,17 @@ TEST_CASE("AOT1 and PUNC match RUNCM and brute force on random small matrices") 
     for (int it = 0; it < 600; ++it) {
         int n = 1 + random() % 12;
         int m = 1 + random() % 12;
-        auto rows = RandomRows(random, m, n);
+        auto rows = randomRows(random, m, n);
         CAPTURE(it);
 
-        auto expected = RuncmCovers(MakeMatrix(rows, n));
-        REQUIRE(expected == BruteForceCovers(rows, n));
+        auto expected = RuncmCovers(makeMatrix(rows, n));
+        REQUIRE(expected == bruteForce(rows, n));
 
         for (auto const& alg : algs) {
             CAPTURE(alg.name);
             auto a = alg.create();
-            a->setMatrix(MakeMatrix(rows, n));
-            CHECK(Collect(*a) == expected);
+            a->setMatrix(makeMatrix(rows, n));
+            CHECK(collect(*a) == expected);
         }
     }
 }
@@ -231,18 +85,18 @@ TEST_CASE("AOT1 and PUNC match RUNCM on random larger matrices") {
     for (int it = 0; it < 200 && tested < 60; ++it) {
         int n = 1 + random() % 40;
         int m = 1 + random() % 16;
-        auto rows = RandomRows(random, m, n);
+        auto rows = randomRows(random, m, n);
         CAPTURE(it);
 
-        auto expected = RuncmCovers(MakeMatrix(rows, n), maxCovers + 1);
+        auto expected = RuncmCovers(makeMatrix(rows, n), maxCovers + 1);
         if ((int) expected.size() > maxCovers)
             continue;
         ++tested;
         for (auto const& alg : algs) {
             CAPTURE(alg.name);
             auto a = alg.create();
-            a->setMatrix(MakeMatrix(rows, n));
-            CHECK(Collect(*a) == expected);
+            a->setMatrix(makeMatrix(rows, n));
+            CHECK(collect(*a) == expected);
         }
     }
     CHECK(tested >= 30);
@@ -257,26 +111,26 @@ TEST_CASE("AOT1 and PUNC edge matrices") {
     Rows zeroRowTall = {{0}, {}, {0}, {0}};
 
     for (auto const& rows : {single, tall, diagonal, zeroRowTall}) {
-        auto expected = RuncmCovers(MakeMatrix(rows));
+        auto expected = RuncmCovers(makeMatrix(rows));
         if (rows == zeroRowTall)
             CHECK(expected.empty());
         for (auto const& alg : Algorithms()) {
             CAPTURE(alg.name);
             auto a = alg.create();
-            a->setMatrix(MakeMatrix(rows));
-            CHECK(Collect(*a) == expected);
+            a->setMatrix(makeMatrix(rows));
+            CHECK(collect(*a) == expected);
         }
     }
 }
 
 TEST_CASE("All algorithms agree on the empty matrix") {
     // The dual of the empty hypergraph is {empty set}
-    CoverSet expected = {Cover()};
+    Covers expected = {Cover()};
     for (auto type : {Runc::OPT, Runc::RUNC, Runc::RUNCM}) {
         CAPTURE(type);
         Runc::RuncGlobalState runc(type);
         runc.setMatrix(bit_matrix());
-        CHECK(Collect(runc) == expected);
+        CHECK(collect(runc) == expected);
     }
     {
         // The resumable API reports the empty cover once, then nothing
@@ -289,16 +143,16 @@ TEST_CASE("All algorithms agree on the empty matrix") {
         CAPTURE(alg.name);
         auto a = alg.create();
         a->setMatrix(bit_matrix());
-        CHECK(Collect(*a) == expected);
+        CHECK(collect(*a) == expected);
     }
 }
 
 TEST_CASE("AOT1 and PUNC repeated dualize on the same object") {
     Rows small = {{0, 1}, {1, 2}};
-    Rows big = LoadRows("data/15_20_275.hg");
+    Rows big = loadRows("data/15_20_275.hg");
 
-    auto expectedSmall = RuncmCovers(MakeMatrix(small));
-    auto expectedBig = RuncmCovers(MakeMatrix(big));
+    auto expectedSmall = RuncmCovers(makeMatrix(small));
+    auto expectedBig = RuncmCovers(makeMatrix(big));
     REQUIRE_EQ(2, (int) expectedSmall.size());
     REQUIRE_EQ(275, (int) expectedBig.size());
 
@@ -306,24 +160,24 @@ TEST_CASE("AOT1 and PUNC repeated dualize on the same object") {
         CAPTURE(alg.name);
         auto a = alg.create();
 
-        a->setMatrix(MakeMatrix(small));
-        CHECK(Collect(*a) == expectedSmall);
-        CHECK(Collect(*a) == expectedSmall);
+        a->setMatrix(makeMatrix(small));
+        CHECK(collect(*a) == expectedSmall);
+        CHECK(collect(*a) == expectedSmall);
 
         // A larger matrix on the same object, then back to the smaller one
-        a->setMatrix(MakeMatrix(big));
-        CHECK(Collect(*a) == expectedBig);
-        CHECK(Collect(*a) == expectedBig);
+        a->setMatrix(makeMatrix(big));
+        CHECK(collect(*a) == expectedBig);
+        CHECK(collect(*a) == expectedBig);
 
-        a->setMatrix(MakeMatrix(small));
-        CHECK(Collect(*a) == expectedSmall);
+        a->setMatrix(makeMatrix(small));
+        CHECK(collect(*a) == expectedSmall);
     }
 }
 
 TEST_CASE("PUNC with rows and columns order") {
     PUNC::GlobalState punc;
     punc.loadMatrix("data/10_25_480.hg");
-    auto expected = RuncmCovers(MakeMatrix(ToRows(punc.get_matrix())));
+    auto expected = RuncmCovers(makeMatrix(toRows(punc.get_matrix())));
     REQUIRE_EQ(480, (int) expected.size());
 
     Weights cw(25);
@@ -337,5 +191,5 @@ TEST_CASE("PUNC with rows and columns order") {
     punc.SetRowsOrder(rw);
     punc.SetColsOrder(std::move(cw));
 
-    CHECK(Collect(punc) == expected);
+    CHECK(collect(punc) == expected);
 }

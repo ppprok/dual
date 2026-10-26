@@ -96,11 +96,18 @@ void IntegersFileWriter::WriteNumber(double v, int precision /*= 3*/, int pad /*
     }
 
     double f = floor(v);
-    WriteInteger((int) f, pad);
-    if (f < v) {
-        WriteChar('.');
-        WriteInteger((int) ((v - f) * pow(10, precision)), precision);
+    if (f >= v) {
+        WriteInteger((int) f, pad);
+        return;
     }
+
+    // Rounded, not truncated, to `precision` digits: the float weight 0.7f is 0.69999998..., which
+    // truncation wrote as 0.69999 (#47)
+    auto scale = (long long) std::llround(pow(10, precision));
+    auto scaled = std::llround(v * (double) scale);
+    WriteInteger((int) (scaled / scale), pad);
+    WriteChar('.');
+    WriteInteger((int) (scaled % scale), precision);
 }
 
 }  // namespace dual

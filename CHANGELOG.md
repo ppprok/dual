@@ -17,6 +17,10 @@ The first release is planned as **0.1.0** (the version in `project(dual VERSION 
   `Dualizer` (resumable, one `FK::GlobalState::next()` per cover), `Dualizer.next_cover()` and
   `Dualizer.all_covers()`, and the duality test `dual.is_dual(h, g)` returning `None` or a
   `DualityWitness(kind, columns)` ([#46](https://github.com/ppprok/dual/issues/46)).
+- Coverage build: the `DUAL_ENABLE_COVERAGE` option, the `coverage` preset, `gcovr.cfg` and a CI job
+  that publishes the gcovr report; tests of every algorithm and option on every data file and
+  against brute force, and of the weighters, collectors, file writers and counters; line coverage
+  of `src/dual` went from 79% to 98% ([#47](https://github.com/ppprok/dual/issues/47)).
 - Khachiyan's incremental dualization `FK::GlobalState` (`<dual/fk.h>`): the Fredman–Khachiyan
   duality test (algorithm B) `FK::isDual` with a witness of non-duality, `next()` for one more
   cover and `dualize()` for all of them ([#43](https://github.com/ppprok/dual/issues/43)).
@@ -96,6 +100,11 @@ The first release is planned as **0.1.0** (the version in `project(dual VERSION 
 
 ### Fixed
 
+- `PUNC::GlobalState` crashed on a matrix with rows but no columns, and `SetRowsOrder` built the
+  order for the matrix current at the call, so a taller matrix set later was read past the order;
+  `WeighterBase::SetWeights` kept the remaining-weight sums of the old weights; `WriteNumber` (and
+  `WeightFileWriterCallback`) truncated instead of rounding, writing 0.7f as 0.69999
+  ([#47](https://github.com/ppprok/dual/issues/47)).
 - Memory defects in the common containers: `chunk` offsets overflowing `int` when `realloc` moved
   large buffers, `blob::resize` on an empty blob, `bit_mask::subset_cmp`, `bit_chunk::get_last`,
   `chunk::resize` and the byte size in `bit_vector::zero`

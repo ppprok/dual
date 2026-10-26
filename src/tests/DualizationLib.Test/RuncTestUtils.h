@@ -7,57 +7,19 @@
 #include <dual/runc.h>
 #include <dual/runc_executor.h>
 
-// Helpers shared by the RUNC API and differential tests
+#include "DualTestUtils.h"
+
+// Helpers shared by the RUNC API, differential and FK tests (the generic ones are in DualTestUtils.h)
 namespace runc_test {
 
 using namespace dual;
 
-typedef std::vector<std::vector<int>> Rows;
-typedef std::vector<int> Cover;
-
-inline int widthOf(Rows const& rows) {
-    int n = 0;
-    for (auto const& r : rows)
-        for (int j : r)
-            n = std::max(n, j + 1);
-    return n;
-}
-
-// Builds a bit matrix with a fixed row stride, so no row has to be moved while filling it
-inline bit_matrix makeMatrix(Rows const& rows) {
-    bit_matrix bm;
-    bm.zero(static_cast<int>(rows.size()), widthOf(rows));
-    for (size_t i = 0; i < rows.size(); ++i)
-        for (int j : rows[i])
-            bm.get_row(static_cast<int>(i)).set(j);
-    return bm;
-}
-
-inline bool isCover(Rows const& rows, Cover const& c) {
-    for (auto const& r : rows) {
-        bool covered = false;
-        for (int j : r)
-            if (std::find(c.begin(), c.end(), j) != c.end()) {
-                covered = true;
-                break;
-            }
-        if (!covered)
-            return false;
-    }
-    return true;
-}
-
-inline bool isMinimalCover(Rows const& rows, Cover const& c) {
-    if (!isCover(rows, c))
-        return false;
-    for (size_t k = 0; k < c.size(); ++k) {
-        Cover d = c;
-        d.erase(d.begin() + k);
-        if (isCover(rows, d))
-            return false;
-    }
-    return true;
-}
+using dual_test::Cover;
+using dual_test::isCover;
+using dual_test::isMinimalCover;
+using dual_test::makeMatrix;
+using dual_test::Rows;
+using dual_test::widthOf;
 
 // Collects covers, remembering whether any was reported twice or is not a minimal cover
 struct CoverSet {

@@ -33,12 +33,22 @@
         "CMAKE_BUILD_TYPE": "RelWithDebInfo",
         "DUAL_ENABLE_SANITIZERS": "ON"
       }
+    },
+    {
+      "name": "coverage",
+      "displayName": "Line/branch coverage with gcov (Debug, --coverage)",
+      "inherits": "base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "DUAL_ENABLE_COVERAGE": "ON"
+      }
     }
   ],
   "buildPresets": [
     { "name": "dev", "configurePreset": "dev" },
     { "name": "release", "configurePreset": "release" },
-    { "name": "asan", "configurePreset": "asan" }
+    { "name": "asan", "configurePreset": "asan" },
+    { "name": "coverage", "configurePreset": "coverage" }
   ],
   "testPresets": [
     {
@@ -56,6 +66,7 @@
         "ASAN_OPTIONS": "detect_leaks=1",
         "UBSAN_OPTIONS": "print_stacktrace=1"
       }
-    }
+    },
+    { "name": "coverage", "inherits": "base", "configurePreset": "coverage" }
   ]
 }
