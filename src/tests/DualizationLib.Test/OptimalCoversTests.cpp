@@ -17,6 +17,7 @@
 #include <vector>
 
 #include <dual/aot1.h>
+#include <dual/completion_bounds.h>
 #include <dual/cover_collector.h>
 #include <dual/optimal_covers.h>
 #include <dual/pruning.h>
@@ -198,6 +199,8 @@ struct Stats {
     long long withTies = 0;
     long long nodesPruned = 0;
     long long nodesFull = 0;
+    long long nodesMaxPruned = 0;  // maximisation only
+    long long nodesMaxFull = 0;
 };
 
 // Checks every algorithm, both directions, with and without pruning against the filtered covers
@@ -219,11 +222,20 @@ void checkAllAlgorithms(std::vector<Cover> const& covers,
             options.objective = objective;
             options.algorithm = algorithm;
             auto pruned = solve(options);
+            options.completionBounds = false;
+            auto pruned49 = solve(options);  // only the sums of the remaining weights (#49)
             options.prune = false;
             auto full = solve(options);
 
             CHECK(coverSet(pruned) == expected);
+            CHECK(coverSet(pruned49) == expected);
             CHECK(coverSet(full) == expected);
+            // The completion bounds only add pruning, and pruned branches hold no cover that would
+            // move the dynamic bound, so the nodes visited are a subset. Not for PUNC: it breaks ties
+            // between columns of equal weight at random, and the random engine advances once per
+            // expanded node, so pruning changes the order of the later branches.
+            if (algorithm != CoverAlgorithm::PUNC)
+                CHECK(pruned.nodes <= pruned49.nodes);
             if (!expected.empty()) {
                 CHECK_EQ(pruned.weight, (Weight) weight(*expected.begin()));
                 for (auto const& c : pruned.covers)
@@ -234,6 +246,10 @@ void checkAllAlgorithms(std::vector<Cover> const& covers,
             CHECK(pruned.coversVisited <= full.coversVisited);
             stats.nodesPruned += pruned.nodes;
             stats.nodesFull += full.nodes;
+            if (objective == Objective::Maximize) {
+                stats.nodesMaxPruned += pruned.nodes;
+                stats.nodesMaxFull += full.nodes;
+            }
         }
     }
 }
@@ -302,6 +318,7 @@ TEST_CASE("OptimalCovers: column weights, every algorithm, random matrices") {
     // Ties are common with small integer weights, so the "all optima, not one" part is exercised
     CHECK(stats.withTies * 10 > stats.runs);
     CHECK(stats.nodesPruned < stats.nodesFull);
+    CHECK(stats.nodesMaxPruned < stats.nodesMaxFull);
 }
 
 TEST_CASE("OptimalCovers: covered rows weight, every algorithm, random matrices") {
@@ -315,6 +332,7 @@ TEST_CASE("OptimalCovers: covered rows weight, every algorithm, random matrices"
     }
     CHECK(stats.withTies * 10 > stats.runs);
     CHECK(stats.nodesPruned < stats.nodesFull);
+    CHECK(stats.nodesMaxPruned < stats.nodesMaxFull);
 }
 
 TEST_CASE("OptimalCovers: data files, every algorithm") {
@@ -337,6 +355,7 @@ TEST_CASE("OptimalCovers: data files, every algorithm") {
         checkCoveredRows(rows, n, rng, withFK, stats);
     }
     CHECK(stats.nodesPruned < stats.nodesFull);
+    CHECK(stats.nodesMaxPruned * 2 < stats.nodesMaxFull);
 }
 
 TEST_CASE("OptimalCovers: corner cases") {
@@ -574,7 +593,206 @@ TEST_CASE("Weighters restore node weights exactly on backtrack (no floating-poin
     }
 }
 
+// The completion bounds (#53) against brute force: for every column set S of a small random matrix,
+// MaxGain and MinGain bound f(C) - f(S) over all minimal covers C that contain S. This is the
+// algorithm-independent part of the admissibility argument (docs/optimal-covers.md).
+TEST_CASE("CompletionBounds: the bounds hold for every column set on small random matrices") {
+    std::mt19937 rng(5301);
+    long long sets = 0, withCovers = 0, tightMax = 0, tightMin = 0;
+    for (int iter = 0; iter < 150; ++iter) {
+        int n = 1 + (int) (rng() % 9);
+        int m = 1 + (int) (rng() % 8);
+        auto rows = randomRows(rng, n, m, 30 + (int) (rng() % 30));
+        auto matrix = makeMatrixOfWidth(rows, n);
+        auto covers = bruteForce(rows);
+        CAPTURE(iter);
+
+        // Additive: column weights of both signs; not additive: weights of hit target rows
+        Weights w;
+        for (int j = 0; j < n; ++j)
+            w.push_back((Weight) ((int) (rng() % 9) - 4));
+        int t = 1 + (int) (rng() % 5);
+        Rows target = randomRows(rng, n, t, 30);
+        Weights tw;
+        for (int i = 0; i < t; ++i)
+            tw.push_back((Weight) ((int) (rng() % 9) - 4));
+
+        for (bool additive : {true, false}) {
+            CAPTURE(additive);
+            Weights positive(n, 0), negative(n, 0);
+            CoverWeight f;
+            if (additive) {
+                for (int j = 0; j < n; ++j)
+                    (w[j] > 0 ? positive : negative)[j] = w[j];
+                f = columnWeightOf(w);
+            } else {
+                for (int i = 0; i < t; ++i)
+                    for (int j : target[i])
+                        (tw[i] > 0 ? positive : negative)[j] += tw[i];
+                f = coveredRowsWeightOf(target, tw);
+            }
+
+            CompletionBounds bounds;
+            bounds.SetMatrix(matrix);
+            bounds.SetGains(positive, negative, additive, 100, n);
+            REQUIRE(bounds.Enabled());
+            for (unsigned mask = 0; mask < (1u << n); ++mask) {
+                Cover set;
+                for (int j = 0; j < n; ++j)
+                    if (mask >> j & 1u)
+                        set.push_back(j);
+                std::shuffle(set.begin(), set.end(), rng);
+
+                // Walk down to S; the same object is reused, so states of earlier paths are stale
+                DualizationNode node;
+                for (int j : set) {
+                    node.AddColumn(j);
+                    bounds.Update(node);
+                }
+                std::sort(set.begin(), set.end());
+                double fs = f(set);
+                bool any = false;
+                double best = 0, worst = 0;
+                for (auto const& c : covers)
+                    if (std::includes(c.begin(), c.end(), set.begin(), set.end())) {
+                        double g = f(c) - fs;
+                        best = any ? std::max(best, g) : g;
+                        worst = any ? std::min(worst, g) : g;
+                        any = true;
+                    }
+                ++sets;
+                if (set.empty())
+                    continue;  // the root is never a new node
+                double maxGain = bounds.MaxGain();
+                double minGain = bounds.MinGain();
+                if (!any)
+                    continue;
+                ++withCovers;
+                CAPTURE(mask);
+                CHECK(maxGain >= best);
+                CHECK(minGain <= worst);
+                tightMax += maxGain == best;
+                tightMin += minGain == worst;
+
+                // Early stops keep the answer on the right side of the threshold
+                for (double stop : {best - 1, best, best + 0.5, maxGain, maxGain + 1})
+                    CHECK(bounds.MaxGainBelow(stop) == (maxGain < stop));
+                for (double stop : {worst - 1, worst, worst - 0.5, minGain, minGain - 1})
+                    CHECK(bounds.MinGainAbove(stop) == (minGain > stop));
+            }
+        }
+    }
+    CHECK(withCovers > 1000);
+    // The bounds are not trivial: often exact
+    CHECK(tightMax * 4 > withCovers);
+    CHECK(tightMin * 4 > withCovers);
+    MESSAGE("sets " << sets << ", with covers " << withCovers << ", tight max " << tightMax << ", tight min "
+                    << tightMin);
+}
+
+// Cases that stress the completion bounds: many ties (length, weights 1 or 2), maximisation, both
+// signs, and fractional weights with tolerance 0, where only the floating-point slack keeps pruned
+// and full enumeration equal (the covers have the same path-order weights in both).
+TEST_CASE("OptimalCovers: completion bounds with many ties and fractional weights") {
+    std::mt19937 rng(5302);
+    long long nodes = 0, nodes49 = 0, nodesFull = 0;
+    for (int iter = 0; iter < 40; ++iter) {
+        int n = 4 + (int) (rng() % 14);
+        int m = 2 + (int) (rng() % 14);
+        auto rows = randomRows(rng, n, m, 15 + (int) (rng() % 30));
+        auto matrix = makeMatrixOfWidth(rows, n);
+        CAPTURE(iter);
+        for (int kind = 0; kind < 4; ++kind) {
+            CAPTURE(kind);
+            Weights w;
+            for (int j = 0; j < n; ++j) {
+                if (kind == 0)
+                    w.push_back(1);  // the length
+                else if (kind == 1)
+                    w.push_back((Weight) (1 + rng() % 2));
+                else if (kind == 2)
+                    w.push_back((Weight) (1 + rng() % 9) * 0.1f);
+                else
+                    w.push_back((Weight) ((int) (rng() % 9) - 4) * 0.3f);
+            }
+            for (auto objective : {Objective::Minimize, Objective::Maximize}) {
+                CAPTURE((objective == Objective::Minimize ? "min" : "max"));
+                for (auto algorithm : allAlgorithms) {
+                    if (algorithm == CoverAlgorithm::FK)
+                        continue;
+                    CAPTURE(algorithmName(algorithm));
+                    OptimalCoversOptions options;
+                    options.objective = objective;
+                    options.algorithm = algorithm;
+                    auto pruned = optimalCovers(matrix, w, options);
+                    options.completionBounds = false;
+                    auto pruned49 = optimalCovers(matrix, w, options);
+                    options.prune = false;
+                    auto full = optimalCovers(matrix, w, options);
+                    CHECK(coverSet(pruned) == coverSet(full));
+                    CHECK(coverSet(pruned49) == coverSet(full));
+                    if (algorithm != CoverAlgorithm::PUNC)  // random tie-breaking, see checkAllAlgorithms
+                        CHECK(pruned.nodes <= pruned49.nodes);
+                    nodes += pruned.nodes;
+                    nodes49 += pruned49.nodes;
+                    nodesFull += full.nodes;
+                }
+            }
+        }
+    }
+    CHECK(nodes * 4 < nodes49 * 3);
+    MESSAGE("nodes " << nodes << ", without completion bounds " << nodes49 << ", full " << nodesFull);
+}
+
+TEST_CASE("CompletionBounds: corner cases") {
+    CompletionBounds bounds;
+    CHECK_FALSE(bounds.Enabled());
+    CHECK_FALSE(bounds.HasMatrix());
+
+    // No rows: every node is a cover, nothing can be gained
+    bit_matrix empty;
+    empty.zero(0, 3);
+    bounds.SetMatrix(empty);
+    CHECK(bounds.HasMatrix());
+    CHECK_FALSE(bounds.Enabled());
+    bounds.SetGains({1, 1, 1}, {}, true, 3, 3);
+    CHECK(bounds.Enabled());
+    DualizationNode node;
+    node.AddColumn(1);
+    bounds.Update(node);
+    CHECK_EQ(bounds.MaxGain(), 0);
+    CHECK_EQ(bounds.MinGain(), 0);
+
+    // Rows {0, 1}, {0, 1, 2} (not minimal), {2, 3}: after {0} only {2, 3} is uncovered, so one more
+    // column of weight 3 or 4 (or a column past the matrix, which hits nothing)
+    bit_matrix m = makeMatrix({{0, 1}, {0, 1, 2}, {2, 3}});
+    bounds.SetMatrix(m);
+    bounds.SetGains({1, 2, 3, 4}, {}, true, 10, 4);
+    node.Reset();
+    node.AddColumn(0);
+    bounds.Update(node);
+    CHECK_EQ(bounds.MaxGain(), 4);
+    CHECK_EQ(bounds.MinGain(), 3);
+    node.AddColumn(7);
+    bounds.Update(node);
+    CHECK_EQ(bounds.MaxGain(), 4);
+    node.Backtrack();
+    node.Backtrack();
+    node.AddColumn(2);  // hits {2, 3}; {0, 1} is left
+    bounds.Update(node);
+    CHECK_EQ(bounds.MaxGain(), 2);
+    CHECK_EQ(bounds.MinGain(), 1);
+    CHECK(bounds.Slack(0) > 0);
+    CHECK(bounds.Slack(0) < 1e-4);
+
+    bounds.Clear();
+    CHECK_FALSE(bounds.Enabled());
+}
+
 TEST_CASE("OptimalCovers: measurements" * doctest::skip()) {
+    // For every case: pruning with the completion bounds (#53, the default), pruning with the sums of
+    // the remaining weights only (#49) and the full enumeration; times are the best of at least three
+    // runs (more for short ones, up to 100 ms in total)
     struct Case {
         std::string name;
         Rows rows;
@@ -586,17 +804,20 @@ TEST_CASE("OptimalCovers: measurements" * doctest::skip()) {
     cases.push_back({"random 30x40 p=0.2", randomRows(rng, 40, 30, 20)});
     cases.push_back({"random 20x60 p=0.1", randomRows(rng, 60, 20, 10)});
 
-    std::printf("%-22s %-14s %-4s %-6s %10s %10s %9s %9s %8s %8s\n",
+    std::printf("%-20s %-13s %-3s %-5s %9s %9s %9s %8s %8s %8s %8s %8s %6s\n",
                 "input",
                 "functional",
                 "dir",
                 "alg",
                 "nodes",
-                "nodes-full",
+                "nodes-49",
+                "full",
                 "ms",
+                "ms-49",
                 "ms-full",
-                "covers",
-                "optimal");
+                "ns/node",
+                "ns/n-49",
+                "optim");
     for (auto const& c : cases) {
         int n = widthOf(c.rows);
         auto matrix = makeMatrixOfWidth(c.rows, n);
@@ -615,33 +836,49 @@ TEST_CASE("OptimalCovers: measurements" * doctest::skip()) {
                 for (auto algorithm : allAlgorithms) {
                     if (algorithm == CoverAlgorithm::FK)
                         continue;  // no search tree: the same work with and without pruning
-                    OptimalCoversOptions options;
-                    options.objective = objective;
-                    options.algorithm = algorithm;
-                    auto solve = [&]() {
-                        if (functional == 0)
-                            return optimalCovers(matrix, {}, options);
-                        if (functional == 1)
-                            return optimalCovers(matrix, weights, options);
-                        return optimalCoversByCoveredRows(matrix, target, rowWeights, options);
+                    auto solve = [&](bool prune, bool completion, double& ms) {
+                        OptimalCoversOptions options;
+                        options.objective = objective;
+                        options.algorithm = algorithm;
+                        options.prune = prune;
+                        options.completionBounds = completion;
+                        OptimalCovers result;
+                        ms = 1e300;
+                        double total = 0;
+                        for (int run = 0; run < 3 || (total < 100 && run < 1000); ++run) {
+                            auto t0 = std::chrono::steady_clock::now();
+                            if (functional == 0)
+                                result = optimalCovers(matrix, {}, options);
+                            else if (functional == 1)
+                                result = optimalCovers(matrix, weights, options);
+                            else
+                                result = optimalCoversByCoveredRows(matrix, target, rowWeights, options);
+                            auto t1 = std::chrono::steady_clock::now();
+                            double t = std::chrono::duration<double, std::milli>(t1 - t0).count();
+                            ms = std::min(ms, t);
+                            total += t;
+                        }
+                        return result;
                     };
-                    auto t0 = std::chrono::steady_clock::now();
-                    auto pruned = solve();
-                    auto t1 = std::chrono::steady_clock::now();
-                    options.prune = false;
-                    auto full = solve();
-                    auto t2 = std::chrono::steady_clock::now();
+                    double ms = 0, ms49 = 0, msFull = 0;
+                    auto pruned = solve(true, true, ms);
+                    auto pruned49 = solve(true, false, ms49);
+                    auto full = solve(false, false, msFull);
                     CHECK(coverSet(pruned) == coverSet(full));
-                    std::printf("%-22s %-14s %-4s %-6s %10lld %10lld %9.2f %9.2f %8lld %8zu\n",
+                    CHECK(coverSet(pruned49) == coverSet(full));
+                    std::printf("%-20s %-13s %-3s %-5s %9lld %9lld %9lld %8.2f %8.2f %8.2f %8.0f %8.0f %6zu\n",
                                 c.name.c_str(),
                                 fname,
                                 objective == Objective::Minimize ? "min" : "max",
                                 algorithmName(algorithm),
                                 pruned.nodes,
+                                pruned49.nodes,
                                 full.nodes,
-                                std::chrono::duration<double, std::milli>(t1 - t0).count(),
-                                std::chrono::duration<double, std::milli>(t2 - t1).count(),
-                                full.coversVisited,
+                                ms,
+                                ms49,
+                                msFull,
+                                ms * 1e6 / (double) std::max(pruned.nodes, 1LL),
+                                ms49 * 1e6 / (double) std::max(pruned49.nodes, 1LL),
                                 pruned.covers.size());
                 }
             }

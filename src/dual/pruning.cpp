@@ -1,5 +1,7 @@
 #include <dual/pruning.h>
 
+#include <cmath>
+
 namespace dual {
 
 CoveredRowsWeighter::CoveredRowsWeighter() {
@@ -11,6 +13,7 @@ void CoveredRowsWeighter::Reset() {
     _targetRows.clear();
     _coveredRows.clear();
     _pruner.Reset();
+    _completion.Clear();
 }
 
 void CoveredRowsWeighter::Call(DualizationNode& node) {
@@ -19,6 +22,10 @@ void CoveredRowsWeighter::Call(DualizationNode& node) {
             _pruner.SaveCheckpoint(node);
             WeightNewNode(node);
             _pruner.PrunInnerNode(node);
+            if (_completion.Enabled()) {
+                _completion.Update(node);
+                _pruner.PrunByCompletion(node, _completion);
+            }
             break;
 
         case NodeType::BacktrackNode:
@@ -83,6 +90,26 @@ void CoveredRowsWeighter::SetOptions(Options options) {
     _uncoveredRows.reserve(m);
     for (int i = 0; i < m; ++i)
         _uncoveredRows.push_back(i);
+}
+
+void CoveredRowsWeighter::EnableCompletionBounds(bit_matrix const& matrix) {
+    _completion.SetMatrix(matrix);
+
+    // A column gains at most the positive weights of the target rows it hits and loses at most
+    // their negative weights; the gain is not additive (a row hit twice counts once)
+    int n = _completion.Columns();
+    Weights positive(n, 0), negative(n, 0);
+    Weight magnitude = 0;
+    for (int i = 0; i < (int) _targetRows.size(); ++i) {
+        Weight w = _pruner.GetWeight(i);
+        magnitude += std::fabs(w);
+        auto const& row = _targetRows[i];
+        if (w == 0 || !row.begin)
+            continue;
+        for (int j = row.find_first(); j >= 0 && j < n; j = row.find_next(j))
+            (w > 0 ? positive : negative)[j] += w;
+    }
+    _completion.SetGains(positive, negative, false, magnitude, (int) _targetRows.size());
 }
 
 void CoveredRowsWeighter::FixMaxBound(Weight bound) {

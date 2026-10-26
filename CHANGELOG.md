@@ -13,6 +13,13 @@ The first release is planned as **0.1.0** (the version in `project(dual VERSION 
 
 ### Added
 
+- Pruning bounds for optimal covers from irreducibility (`<dual/completion_bounds.h>`): every
+  column added to a node needs its own uncovered minimal row, which bounds what the node can still
+  gain or lose. `CompletionBounds`, `EnableCompletionBounds` of `WeightBoundsPruningCallback` and
+  `CoveredRowsWeighter`, and `OptimalCoversOptions::completionBounds` (on by default); maximisation
+  now prunes (2-900 times fewer nodes with RUNCM on the measured inputs) and minimisation of the
+  length and column weights prunes more; proof, per-algorithm check and measurements in
+  `docs/optimal-covers.md` ([#53](https://github.com/ppprok/dual/issues/53)).
 - Python bindings for FK: `algorithm="fk"` in every function of the `dual` package and in
   `Dualizer` (resumable, one `FK::GlobalState::next()` per cover), `Dualizer.next_cover()` and
   `Dualizer.all_covers()`, and the duality test `dual.is_dual(h, g)` returning `None` or a

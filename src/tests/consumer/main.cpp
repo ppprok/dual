@@ -4,6 +4,7 @@
 #include <utility>
 #include <vector>
 
+#include <dual/completion_bounds.h>
 #include <dual/cover_collector.h>
 #include <dual/fk.h>
 #include <dual/optimal_covers.h>
@@ -95,6 +96,14 @@ int main() {
     auto best = dual::optimalCovers(triangle2, {1, 2, 3});
     Check(best.covers.size() == 1 && best.weight == 3 && best.covers[0].columns == dual::Columns{0, 1},
           "optimalCovers finds the lightest cover");
+    dual::OptimalCoversOptions heaviest;  // pruned by the completion bounds (#53)
+    heaviest.objective = dual::Objective::Maximize;
+    best = dual::optimalCovers(triangle2, {1, 2, 3}, heaviest);
+    Check(best.covers.size() == 1 && best.weight == 5 && best.covers[0].columns == dual::Columns{1, 2},
+          "optimalCovers finds the heaviest cover");
+    dual::CompletionBounds bounds;
+    bounds.SetMatrix(triangle2);
+    Check(bounds.HasMatrix() && !bounds.Enabled(), "CompletionBounds needs gains");
 
     if (failures == 0)
         std::printf("dual consumer: OK\n");

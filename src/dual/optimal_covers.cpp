@@ -190,6 +190,8 @@ OptimalCovers optimalCovers(bit_matrix const& matrix,
             pruner.TargetToMin();
         else
             pruner.TargetToMax();
+        if (options.completionBounds)
+            pruner.EnableCompletionBounds(matrix);
     }
 
     auto weigh = [&weights](Columns const& columns) {
@@ -231,6 +233,11 @@ OptimalCovers optimalCoversByCoveredRows(bit_matrix const& matrix,
             pruner.TargetToMin();
         else
             pruner.TargetToMax();
+        // For minimisation the bounds can only use negative row weights (a column has no positive
+        // gain it is sure to bring), so with non-negative weights they would cost without pruning
+        bool anyNegative = std::any_of(weights.begin(), weights.end(), [](Weight w) { return w < 0; });
+        if (options.completionBounds && (options.objective == Objective::Maximize || anyNegative))
+            pruner.EnableCompletionBounds(matrix);
     }
 
     // Column order for PUNC: the total weight of the target rows each column covers

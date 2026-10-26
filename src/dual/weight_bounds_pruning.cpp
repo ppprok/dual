@@ -1,5 +1,7 @@
 #include <dual/weight_bounds_pruning.h>
 
+#include <algorithm>
+#include <cmath>
 #include <limits>
 
 namespace dual {
@@ -47,6 +49,12 @@ void WeightBoundsPruningCallback::Call(DualizationNode& node) {
             if (!IsDefaultWeight(node.lastColumn))
                 DecRestWeight(w);
             PrunInnerNode(node);
+            if (_completion.HasMatrix()) {
+                if (_completionDirty)
+                    UpdateCompletionGains();
+                _completion.Update(node);
+                PrunByCompletion(node, _completion);
+            }
         } break;
 
         case NodeType::CoverNode:
@@ -64,6 +72,7 @@ Weight WeightBoundsPruningCallback::GetWeight(int j) const {
 
 void WeightBoundsPruningCallback::SetWeights(Weights weights) {
     _weights = std::move(weights);
+    _completionDirty = true;
     _restNegative = 0;
     _restPositive = 0;
     _checkpoints.Clear();
@@ -105,6 +114,8 @@ void WeightBoundsPruningCallback::Reset() {
     _restNegative = 0;
     _restPositive = 0;
     _checkpoints.Clear();
+    _completion.Clear();
+    _completionDirty = true;
 }
 
 WeightBoundsPruningCallback::WeightBoundsPruningCallback() {
@@ -113,6 +124,50 @@ WeightBoundsPruningCallback::WeightBoundsPruningCallback() {
 
 void WeightBoundsPruningCallback::SetDefaultWeight(Weight w) {
     _defaultWeight = w;
+    _completionDirty = true;
+}
+
+void WeightBoundsPruningCallback::EnableCompletionBounds(bit_matrix const& matrix) {
+    _completion.SetMatrix(matrix);
+    _completionDirty = true;
+}
+
+void WeightBoundsPruningCallback::DisableCompletionBounds() {
+    _completion.Clear();
+}
+
+void WeightBoundsPruningCallback::UpdateCompletionGains() {
+    // A column adds exactly its weight: the positive and negative gains are its two parts
+    int n = _completion.Columns();
+    Weights positive(n), negative(n);
+    Weight magnitude = 0;
+    for (int j = 0; j < n; ++j) {
+        Weight w = GetWeight(j);
+        positive[j] = std::max<Weight>(w, 0);
+        negative[j] = std::min<Weight>(w, 0);
+        magnitude += std::fabs(w);
+    }
+    _completion.SetGains(positive, negative, true, magnitude, n);
+    _completionDirty = false;
+}
+
+void WeightBoundsPruningCallback::PrunByCompletion(DualizationNode& node, CompletionBounds& bounds) const {
+    if (node.pruned || !bounds.Enabled())
+        return;
+
+    // Only a bound that was moved (by a fixed value or by a found cover) can prune
+    Weight const unbounded = std::numeric_limits<Weight>::max();
+    double slack = bounds.Slack(node.weight);
+    if (_maxWeight < unbounded) {
+        // Prune if f(S) + MinGain - slack > max
+        double limit = (double) _maxWeight - node.weight + slack;
+        node.Prun(bounds.MinGainAbove(limit));
+    }
+    if (!node.pruned && _minWeight > -unbounded) {
+        // Prune if f(S) + MaxGain + slack < min
+        double needed = (double) _minWeight - node.weight - slack;
+        node.Prun(bounds.MaxGainBelow(needed));
+    }
 }
 
 void WeightBoundsPruningCallback::PrunCoverNode(DualizationNode& node) {

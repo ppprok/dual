@@ -1,6 +1,7 @@
 # Public headers of dual::dual (installed, included as <dual/...>).
 set(DUAL_DUAL_PUBLIC_HEADERS
         aot1.h
+        completion_bounds.h
         counters.h
         cover_collector.h
         dualization_backtrack_algorithm_base.h
@@ -22,6 +23,7 @@ list(TRANSFORM DUAL_DUAL_PUBLIC_HEADERS PREPEND "${PROJECT_SOURCE_DIR}/include/d
 add_library(dual
         aot1.cpp
         bool_matrix_preparation.cpp
+        completion_bounds.cpp
         cover_collector.cpp
         dualization_backtrack_algorithm_base.cpp
         dualization_counters.cpp

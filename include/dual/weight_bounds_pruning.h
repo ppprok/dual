@@ -5,6 +5,7 @@
 
 #include <vector>
 
+#include <dual/completion_bounds.h>
 #include <dual/dualization_backtrack_algorithm_base.h>
 
 namespace dual {
@@ -80,6 +81,15 @@ protected:
     /// States of the nodes on the current path, restored exactly on backtrack.
     WeightCheckpoints _checkpoints;
 
+    /// Bounds from irreducibility (see `EnableCompletionBounds`).
+    CompletionBounds _completion;
+
+    /// The column weights changed since the gains of `_completion` were computed.
+    bool _completionDirty;
+
+    /// @brief Recompute the gains of `_completion` from the column weights.
+    void UpdateCompletionGains();
+
 public:
     /// @brief Process a cover: prune it if its weight is outside the bounds, then move the
     ///        dynamic bounds.
@@ -127,6 +137,23 @@ public:
     void IncRestWeight(Weight w);
     /// @brief Prune an inner node that cannot reach the allowed interval with the remaining weights.
     void PrunInnerNode(DualizationNode& node);
+
+    /// @brief Also prune by the irreducibility of the covers of @p matrix (`CompletionBounds`).
+    ///
+    /// Every column added to a node `S` of a minimal cover needs its own row not hit by `S`, so a
+    /// node can gain at most the `u` largest positive weights of the columns of its `u` uncovered
+    /// minimal rows (and at most the largest weight of each such row), and loses at least the
+    /// cheapest column of every row of a disjoint set of uncovered rows. These bounds are much
+    /// tighter than the sums of all remaining weights, above all for maximisation. @p matrix must
+    /// be the matrix being dualized; the bounds follow later changes of the weights.
+    void EnableCompletionBounds(bit_matrix const& matrix);
+
+    /// @brief Stop pruning by `CompletionBounds` (also done by `Reset`).
+    void DisableCompletionBounds();
+
+    /// @brief Prune the new node @p node if @p bounds (updated for this node) show that no minimal
+    ///        cover in its subtree gets into the allowed interval.
+    void PrunByCompletion(DualizationNode& node, CompletionBounds& bounds) const;
 
     /// @brief Save `node.weight` and the remaining weights for the new node @p node, before its
     ///        last column is weighed (see `WeightCheckpoints`).
