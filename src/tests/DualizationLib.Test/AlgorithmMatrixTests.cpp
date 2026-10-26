@@ -34,7 +34,6 @@ typedef std::unique_ptr<DualizationBacktrackAlgorithmBase> AlgorithmPtr;
 struct BacktrackAlgorithm {
     std::string name;
     std::function<AlgorithmPtr(int n)> create;  // n: number of columns, for the order weights
-    bool slowOnLargeFiles = false;              // FK: see Enumerator::slowOnLargeFiles
 };
 
 // PUNC with a row and a column order given by weights; ties are broken at random inside PUNC
@@ -75,7 +74,7 @@ std::vector<BacktrackAlgorithm> backtrackAlgorithms() {
     // The order weights are set before the matrix: SetRowsOrder must not depend on the matrix
     // that is current when it is called (#47)
     algs.push_back({"PUNC rows and columns order", [](int n) { return puncWithOrder(n + 3, n); }});
-    algs.push_back({"FK", [](int) { return AlgorithmPtr(new FK::GlobalState()); }, true});
+    algs.push_back({"FK", [](int) { return AlgorithmPtr(new FK::GlobalState()); }});
     return algs;
 }
 
@@ -84,10 +83,6 @@ struct Enumerator {
     std::string name;
     std::function<Covers(Rows const& rows, int n)> run;
     int maxWidth = 1 << 30;  // RuncFixed: the width of its row type
-    // Skipped on the data files with more than 5000 covers: FK takes seconds there in Release and
-    // minutes in Debug, and next() restarts the duality test for every cover; FKTests.cpp runs
-    // FK dualize() on those files in optimized builds
-    bool slowOnLargeFiles = false;
 };
 
 Covers runcPortions(Rows const& rows, int n, Runc::AlgorithmType type, size_t portion) {
@@ -147,14 +142,13 @@ std::vector<Enumerator> enumerators() {
                               a->setMatrix(makeMatrix(rows, n));
                               return collect(*a);
                           },
-                          1 << 30,
-                          alg.slowOnLargeFiles});
+                          1 << 30});
     }
     result.push_back({"Runc::RUNCM dualize(max_count)",
                       [](Rows const& rows, int n) { return runcPortions(rows, n, Runc::RUNCM, 5); }});
     result.push_back({"Runc::OPT dualize(max_count)",
                       [](Rows const& rows, int n) { return runcPortions(rows, n, Runc::OPT, 64); }});
-    result.push_back({"FK next()", fkNext, 1 << 30, true});
+    result.push_back({"FK next()", fkNext});
     result.push_back({"RuncFixedDualize<bits32>", [](Rows const& rows, int) { return runcFixed<bits32>(rows); }, 32});
     result.push_back({"RuncFixedDualize<bits64>", [](Rows const& rows, int) { return runcFixed<bits64>(rows); }, 64});
     result.push_back(
@@ -232,10 +226,8 @@ TEST_CASE("AlgorithmMatrix: every algorithm finds the covers of every data file"
         int count = expectedCount(file);
         if (count >= 0)
             CHECK_EQ(count, (int) expected.size());
-        bool large = expected.size() > 5000;
-
         for (auto const& e : all) {
-            if (n > e.maxWidth || (large && e.slowOnLargeFiles))
+            if (n > e.maxWidth)
                 continue;
             CAPTURE(e.name);
             CHECK(e.run(rows, n) == expected);
