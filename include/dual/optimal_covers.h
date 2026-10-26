@@ -84,6 +84,11 @@ struct OptimalCoversOptions {
     /// Prune branches by the dynamic weight bound; `false` enumerates all covers and filters them
     /// (for comparison). Ignored by `CoverAlgorithm::FK`, which never prunes.
     bool prune = true;
+    /// With `prune`, also prune by the irreducibility of the covers (`CompletionBounds`): a node
+    /// with `u` uncovered minimal rows can get at most `u` more columns, one from each of
+    /// different such rows. This is what makes maximisation prune at all; see
+    /// docs/optimal-covers.md for the bounds and their cost.
+    bool completionBounds = true;
 };
 
 /// @brief Result of `optimalCovers`.

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <dual/completion_bounds.h>
 #include <dual/dualization_backtrack_algorithm_base.h>
 #include <dual/weight_bounds_pruning.h>
 
@@ -33,6 +34,9 @@ class CoveredRowsWeighter : public IDualizationCallback {
 
     // Computes the weights of covered rows
     WeightBoundsPruningCallback _pruner;
+
+    // Bounds from irreducibility (see EnableCompletionBounds)
+    CompletionBounds _completion;
 
 public:
     /// @brief Rows and their weights.
@@ -77,6 +81,15 @@ public:
 
     /// @brief Set the allowed deviation outside the interval (used by dynamic bounds).
     void SetEpsilon(Weight eps);
+
+    /// @brief Also prune by the irreducibility of the covers of @p matrix (`CompletionBounds`).
+    ///
+    /// Every column added to a node `S` of a minimal cover needs its own row not hit by `S`, so a
+    /// node with `u` uncovered minimal rows gains at most the weight of the target rows hit by the
+    /// `u` most promising columns of those rows (and by the most promising column of each of
+    /// them). Call after `SetOptions` with the matrix being dualized; `Reset` and `SetOptions`
+    /// disable the bounds.
+    void EnableCompletionBounds(bit_matrix const& matrix);
 
 private:
     // Compute the weight of a new search tree node
