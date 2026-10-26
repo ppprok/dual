@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include <dual/aot1.h>
@@ -173,6 +174,13 @@ public:
 /// - The object is neither copyable nor movable; one object must not be used from several threads
 ///   at once.
 ///
+/// Fixed-width fast path: when the matrix has at most `FastPathMaxWidth` columns, the enumeration
+/// keeps every row in one or two machine words instead of the general bit containers. The fast
+/// path builds the same search tree: it reports the same nodes with the same `DualizationNode`
+/// contents to the callbacks, and the same covers in the same order, so callbacks, pruning and the
+/// resumable API behave identically; only the speed differs. It is chosen when an enumeration
+/// starts; `setFastPathEnabled(false)` forces the general path (for tests and benchmarks).
+///
 /// Example:
 /// @code
 /// Runc::RuncGlobalState runc;              // RUNCM
@@ -190,14 +198,44 @@ private:
         Finished
     };
 
+    enum class Path {
+        General,
+        Fixed64,
+        Fixed128
+    };
+
+    struct FixedWidthStates;
+
     std::vector<RuncLocalState> _states;
     AlgorithmType _type;
     size_t state_depth_ = 0;
     Enumeration enumeration_ = Enumeration::NotStarted;
+    Path path_ = Path::General;
+    bool fast_path_enabled_ = true;
+    std::unique_ptr<FixedWidthStates> fixed_;
 
 public:
+    /// Largest number of columns for which the fixed-width fast path is used.
+    static constexpr int FastPathMaxWidth = 128;
+
     /// @brief Algorithm of variant @p type with an empty input matrix.
     RuncGlobalState(AlgorithmType type = AlgorithmType::RUNCM);
+
+    /// @brief Destructor.
+    ~RuncGlobalState() override;
+
+    /// @brief Allow (the default) or forbid the fixed-width fast path; resets the enumeration.
+    ///
+    /// Both paths report the same search tree and covers; forbidding the fast path is meant for
+    /// tests and benchmarks.
+    void setFastPathEnabled(bool enabled);
+
+    /// @brief Whether the fixed-width fast path may be used (see `setFastPathEnabled`).
+    bool isFastPathEnabled() const;
+
+    /// @brief Whether the current enumeration runs on the fixed-width fast path (`false` before an
+    ///        enumeration has started and after it was reset).
+    bool isFastPathActive() const;
 
     /// @brief (Re)starts the enumeration from the first cover.
     void startDualize();
@@ -241,7 +279,11 @@ private:
     void doDualize();
     bool doStep();
 
-    RuncLocalState& getLocalState(std::size_t state_num);
+    template<typename State>
+    bool doStepIn(std::vector<State>& states);
+
+    template<typename State>
+    void doDualizeIn(std::vector<State>& states);
 };
 
 }  // namespace Runc

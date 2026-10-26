@@ -5,6 +5,7 @@ dual_add_test(TestDual
         RUNCTests.cpp
         RuncApiTests.cpp
         RuncDifferentialTests.cpp
+        RuncFastPathTests.cpp
         RuncTestUtils.h
         DualTestUtils.h
         AlgorithmMatrixTests.cpp
