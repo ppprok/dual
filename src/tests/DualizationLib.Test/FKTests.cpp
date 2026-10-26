@@ -188,20 +188,37 @@ TEST_CASE("DualizeFK 10_25_480") {
     checkDataFile("data/10_25_480.hg", 480);
 }
 
-// The two largest files take about 2 s and 10 s in Release (RUNCM: 0.1 s), several times longer in
-// Debug, so they run only in optimized builds (release and asan presets)
-#ifdef NDEBUG
-constexpr bool debugBuild = false;
-#else
-constexpr bool debugBuild = true;
-#endif
-
-TEST_CASE("DualizeFK 10_50_7187" * doctest::skip(debugBuild)) {
+TEST_CASE("DualizeFK 10_50_7187") {
     checkDataFile("data/10_50_7187.hg", 7187);
 }
 
-TEST_CASE("DualizeFK 15_35_12226" * doctest::skip(debugBuild)) {
+TEST_CASE("DualizeFK 15_35_12226") {
     checkDataFile("data/15_35_12226.hg", 12226);
+}
+
+TEST_CASE("FK next() continues the run of dualize()") {
+    // Covers one by one through next() are the covers of dualize(), in the same order
+    for (auto const* file : {"data/10_25_480.hg", "data/10_50_7187.hg"}) {
+        CAPTURE(file);
+        FK::GlobalState fk;
+        fk.loadMatrix(file);
+        fk.dualize();
+        Rows all;
+        for (auto const& r : fk.getCovers().get_rows()) {
+            all.emplace_back();
+            for (int j = r.find_first(); j >= 0; j = r.find_next(j))
+                all.back().push_back(j);
+        }
+        fk.resetDualize();
+        size_t count = 0;
+        while (fk.next()) {
+            REQUIRE(count < all.size());
+            CHECK(fk.getLastCover() == all[count]);
+            ++count;
+        }
+        CHECK_EQ(count, all.size());
+        CHECK(fk.isDualizeFinished());
+    }
 }
 
 TEST_CASE("FK next() finds the covers one by one") {
@@ -279,8 +296,7 @@ TEST_CASE("FK matches RUNCM and brute force on random matrices") {
         CHECK(fk == runcmCovers(rows));
         CHECK(fk == bruteForce(rows));
     }
-    // Wider matrices; FK slows down superlinearly in the number of covers (about 4 s in Release for
-    // 10000 covers of a 15 x 39 matrix), so matrices with many covers are skipped
+    // Wider matrices; matrices with many covers are skipped to keep the Debug run short
     int tested = 0;
     for (int iter = 0; iter < 80; ++iter) {
         int n = 10 + rng() % 30;
@@ -294,6 +310,42 @@ TEST_CASE("FK matches RUNCM and brute force on random matrices") {
         CHECK(fkCovers(rows) == expected);
     }
     CHECK(tested >= 40);
+}
+
+TEST_CASE("FK matches RUNCM on matrices with more than 64 columns") {
+    // Sets of several words; the columns are spread so that rows have ones in different words
+    std::mt19937 rng(4545);
+    int tested = 0;
+    for (int iter = 0; iter < 40; ++iter) {
+        int n = 60 + rng() % 120;
+        int m = 3 + rng() % 6;
+        Rows rows(m);
+        for (auto& r : rows) {
+            int k = 1 + rng() % 6;
+            for (int i = 0; i < k; ++i)
+                r.push_back(rng() % n);
+            std::sort(r.begin(), r.end());
+            r.erase(std::unique(r.begin(), r.end()), r.end());
+        }
+        CAPTURE(iter);
+        auto expected = runcmCovers(rows);
+        if (expected.size() > 1000)
+            continue;
+        ++tested;
+        auto fk = fkCovers(rows);
+        CHECK(fk == expected);
+
+        Rows g = toRows(expected);
+        int width = widthOf(rows);
+        CHECK(FK::isDual(matrixOf(rows, width), matrixOf(g, width)).dual());
+        Rows missing = g;
+        missing.erase(missing.begin() + rng() % missing.size());
+        checkWitness(rows,
+                     missing,
+                     FK::isDual(matrixOf(rows, width), matrixOf(missing, width)),
+                     FK::Duality::NewTransversal);
+    }
+    CHECK(tested >= 20);
 }
 
 TEST_CASE("FK duality test on dual and non-dual pairs") {

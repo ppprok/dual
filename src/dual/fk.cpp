@@ -1,14 +1,16 @@
 #include <dual/fk.h>
 
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <cmath>
+#include <cstdint>
 #include <functional>
 #include <stdexcept>
 #include <utility>
 #include <vector>
 
-#include <dual/bit_vector.h>
+#include <dual/bits.h>
 
 // Notation. The families F (the hypergraph) and G (the covers found so far, or the second argument
 // of isDual) define the monotone Boolean functions f and g: f(Y) = 1 if Y contains a set of F. The
@@ -25,6 +27,13 @@
 // first pair is dual, the second one is dual if and only if (F0 with t removed, G1 restricted to
 // the sets disjoint with t) is dual for every t in F1 (beta below). A witness of a subproblem is
 // lifted to a witness of F and G by fixing x and the columns of t (see Solver::lift).
+//
+// Implementation. The recursion is kept on an explicit stack of frames, so the generation can stop
+// after a new cover and continue from the same place later (GlobalState::next). Sets are rows of
+// 64-bit words stored contiguously (Family). When a cover is found at the leaf, only the leaf's
+// input G gets its image at once; the split families of the frames above get the new covers
+// lazily, when the frame goes on to its next subproblem (Solver::sync), and frames that have no
+// subproblem left never get them.
 
 namespace dual {
 
@@ -32,107 +41,387 @@ namespace FK {
 
 namespace {
 
-// Rows of the work matrices need memory even when there are no columns
+typedef std::uint64_t Word;
+constexpr int wordBits = 64;
+
+// Words for sets over n columns (at least one, so rows need memory even without columns)
+int wordsFor(int n) {
+    return std::max(1, (n + wordBits - 1) / wordBits);
+}
+
+// Columns of the work families: at least one
 int workWidth(int n) {
     return std::max(n, 1);
 }
 
-// Append the rows of src to dst bit by bit, so rows with any layout fit into dst's row slots
-void copyRows(bit_matrix const& src, bit_matrix& dst, int n) {
-    for (auto const& r : src.get_rows()) {
-        dst.add_rows(1, n);
-        if (!r.begin)
-            continue;
-        auto& row = dst.get_rows().back();
-        for (int j = r.find_first(); j >= 0; j = r.find_next(j))
-            row.set(j);
+// Index of the lowest set bit of a non-zero word (de Bruijn multiplication, portable)
+constexpr Word deBruijn = 0x03f79d71b4cb0a89ULL;
+
+constexpr std::array<int, 64> makeLowBitTable() {
+    std::array<int, 64> table{};
+    for (int i = 0; i < 64; ++i)
+        table[(std::size_t) (((Word(1) << i) * deBruijn) >> 58)] = i;
+    return table;
+}
+
+constexpr std::array<int, 64> lowBitTable = makeLowBitTable();
+
+inline int lowBit(Word v) {
+    return lowBitTable[(std::size_t) (((v & (~v + 1)) * deBruijn) >> 58)];
+}
+
+// Operations on sets of w words; columns are j >= 0
+inline Word bitOf(int j) {
+    assert(j >= 0);
+    return Word(1) << ((unsigned) j % wordBits);
+}
+
+inline bool getBit(Word const* a, int j) {
+    return (a[(unsigned) j / wordBits] & bitOf(j)) != 0;
+}
+
+inline void setBit(Word* a, int j) {
+    a[(unsigned) j / wordBits] |= bitOf(j);
+}
+
+inline void resetBit(Word* a, int j) {
+    a[(unsigned) j / wordBits] &= ~bitOf(j);
+}
+
+// Plain loops: with std::fill and std::copy over an int bound, GCC 13 at -O3 warns that the
+// memset may get a negative size (-Wstringop-overflow)
+inline void clearSet(Word* a, int w) {
+    for (int k = 0; k < w; ++k)
+        a[k] = 0;
+}
+
+inline void copySet(Word* dst, Word const* a, int w) {
+    for (int k = 0; k < w; ++k)
+        dst[k] = a[k];
+}
+
+inline bool isEmpty(Word const* a, int w) {
+    for (int k = 0; k < w; ++k) {
+        if (a[k])
+            return false;
+    }
+    return true;
+}
+
+inline bool isSubset(Word const* a, Word const* b, int w) {
+    for (int k = 0; k < w; ++k) {
+        if (a[k] & ~b[k])
+            return false;
+    }
+    return true;
+}
+
+inline bool equalSets(Word const* a, Word const* b, int w) {
+    for (int k = 0; k < w; ++k) {
+        if (a[k] != b[k])
+            return false;
+    }
+    return true;
+}
+
+inline bool intersects(Word const* a, Word const* b, int w) {
+    for (int k = 0; k < w; ++k) {
+        if (a[k] & b[k])
+            return true;
+    }
+    return false;
+}
+
+inline int countSet(Word const* a, int w) {
+    int c = 0;
+    for (int k = 0; k < w; ++k)
+        c += bits_count((bits64) a[k]);
+    return c;
+}
+
+// First column of a, or -1
+inline int firstBit(Word const* a, int w) {
+    for (int k = 0; k < w; ++k) {
+        if (a[k])
+            return k * wordBits + lowBit(a[k]);
+    }
+    return -1;
+}
+
+// dst = a | b, a & b, a \ b (dst may be a or b)
+inline void assignOr(Word* dst, Word const* a, Word const* b, int w) {
+    for (int k = 0; k < w; ++k)
+        dst[k] = a[k] | b[k];
+}
+
+inline void assignAnd(Word* dst, Word const* a, Word const* b, int w) {
+    for (int k = 0; k < w; ++k)
+        dst[k] = a[k] & b[k];
+}
+
+inline void assignSub(Word* dst, Word const* a, Word const* b, int w) {
+    for (int k = 0; k < w; ++k)
+        dst[k] = a[k] & ~b[k];
+}
+
+// Call fn(j) for every column j of a, in increasing order
+template<typename Fn>
+inline void forEachBit(Word const* a, int w, Fn fn) {
+    for (int k = 0; k < w; ++k) {
+        for (Word v = a[k]; v; v &= v - 1)
+            fn(k * wordBits + lowBit(v));
     }
 }
 
-// Keep only the minimal rows (drop duplicates and supersets of other rows), in their order. Only
-// the rows listed in dominators are compared with the others: the caller knows that no other row
-// is a subset of another row.
-void removeDominated(bit_matrix& m,
-                     std::vector<int> const& dominators,
-                     std::vector<int>& counts,
-                     std::vector<char>& keep) {
-    auto& rows = m.get_rows();
-    int s = (int) rows.size();
-    counts.resize(s);
-    keep.assign(s, 1);
-    for (int i = 0; i < s; ++i)
-        counts[i] = rows[i].count();
+typedef std::vector<Word> Set;
 
-    for (int i = 0; i < s; ++i) {
-        for (int j : dominators) {
-            if (j == i || counts[j] > counts[i])
-                continue;
-            bool dominated = counts[j] < counts[i] ? rows[j].is_subset_of(rows[i]) : j < i && rows[j] == rows[i];
-            if (dominated) {
-                keep[i] = 0;
-                break;
+// Family of sets: rows of w words stored one after another
+class Family {
+public:
+    explicit Family(int w = 1) : w_(w) {}
+
+    // Remove all sets and set the number of words per set
+    void reset(int w) {
+        w_ = w;
+        clear();
+    }
+
+    void clear() {
+        rows_ = 0;
+        data_.clear();
+    }
+
+    int words() const {
+        return w_;
+    }
+
+    int size() const {
+        return rows_;
+    }
+
+    bool empty() const {
+        return rows_ == 0;
+    }
+
+    Word* row(int i) {
+        return data_.data() + (std::size_t) i * w_;
+    }
+
+    Word const* row(int i) const {
+        return data_.data() + (std::size_t) i * w_;
+    }
+
+    // Append an empty set; the pointer is valid until the family grows again
+    Word* addRow() {
+        ++rows_;
+        data_.resize((std::size_t) rows_ * w_, Word(0));
+        return row(rows_ - 1);
+    }
+
+    // Append a copy of s (s must not point into this family)
+    void add(Word const* s) {
+        copySet(addRow(), s, w_);
+    }
+
+    // Index of a set that is a subset of s, or -1
+    int findSubset(Word const* s) const {
+        if (w_ == 1) {
+            Word out = ~s[0];
+            for (int i = 0; i < rows_; ++i) {
+                if (!(data_[i] & out))
+                    return i;
+            }
+            return -1;
+        }
+        for (int i = 0; i < rows_; ++i) {
+            if (isSubset(row(i), s, w_))
+                return i;
+        }
+        return -1;
+    }
+
+    // Index of a set equal to s, or -1
+    int findEqual(Word const* s) const {
+        for (int i = 0; i < rows_; ++i) {
+            if (equalSets(row(i), s, w_))
+                return i;
+        }
+        return -1;
+    }
+
+    // Index of the first set with column j, or -1
+    int findWith(int j) const {
+        for (int i = 0; i < rows_; ++i) {
+            if (getBit(row(i), j))
+                return i;
+        }
+        return -1;
+    }
+
+    // Remove the supersets of s, keeping the order of the other sets
+    void removeSupersets(Word const* s) {
+        int k = 0;
+        if (w_ == 1) {
+            Word v = s[0];
+            for (int i = 0; i < rows_; ++i) {
+                if ((data_[i] & v) != v)
+                    data_[k++] = data_[i];
+            }
+        } else {
+            for (int i = 0; i < rows_; ++i) {
+                if (isSubset(s, row(i), w_))
+                    continue;
+                if (k != i)
+                    copySet(row(k), row(i), w_);
+                ++k;
             }
         }
+        truncate(k);
     }
 
-    int k = 0;
-    for (int i = 0; i < s; ++i) {
-        if (!keep[i])
+    // Keep the sets i with keep[i], in their order
+    void compact(std::vector<char> const& keep) {
+        int k = 0;
+        for (int i = 0; i < rows_; ++i) {
+            if (!keep[i])
+                continue;
+            if (k != i)
+                copySet(row(k), row(i), w_);
+            ++k;
+        }
+        truncate(k);
+    }
+
+private:
+    void truncate(int m) {
+        rows_ = m;
+        data_.resize((std::size_t) m * w_);
+    }
+
+    int w_;
+    int rows_ = 0;
+    std::vector<Word> data_;
+};
+
+// Family of the rows of a matrix over w words
+Family familyOf(bit_matrix const& m, int w) {
+    Family f(w);
+    for (auto const& r : m.get_rows()) {
+        Word* row = f.addRow();
+        if (!r.begin)
             continue;
-        if (k != i)
-            rows[k].assign(rows[i]);
-        ++k;
+        for (int j = r.find_first(); j >= 0; j = r.find_next(j))
+            setBit(row, j);
     }
-    m.trim_rows(k);
+    return f;
 }
 
-// Keep only the minimal rows of any family
-void minimize(bit_matrix& m, std::vector<int>& dominators, std::vector<int>& counts, std::vector<char>& keep) {
-    dominators.resize(m.height());
-    for (int i = 0; i < m.height(); ++i)
-        dominators[i] = i;
-    removeDominated(m, dominators, counts, keep);
+void toColumns(Word const* s, int w, Columns& columns) {
+    columns.clear();
+    forEachBit(s, w, [&columns](int j) { columns.push_back(j); });
 }
 
-// dst = min(sets of a with the columns of t removed) for a Sperner family a. A set that misses t
-// stays as it is and is a subset of no other set of the result (it would be a subset of another
-// set of a), so only the sets that meet t can make other sets non-minimal.
-void subtractMin(bit_matrix& dst,
-                 bit_matrix const& a,
-                 bit_chunk const& t,
-                 int n,
-                 std::vector<int>& dominators,
-                 std::vector<int>& counts,
-                 std::vector<char>& keep) {
-    dst.trim_rows(0);
-    dominators.clear();
-    for (auto const& r : a.get_rows()) {
-        if (r.intersects(t))
-            dominators.push_back(dst.height());
-        dst.add_rows(1, n);
-        dst.get_rows().back().assign_sub(r, t);
+// Work memory of removeDominated
+struct DominationWork {
+    std::vector<int> dominators;  // sets that may be subsets of other sets
+    std::vector<int> counts;      // size of each set
+    std::vector<Word> columns;    // for each column, the bit set of the sets that contain it
+    std::vector<Word> supersets;  // bit set of the supersets of a dominator
+    std::vector<char> keep;
+};
+
+// Keep only the minimal sets of m over n columns (drop duplicates and supersets of other sets), in
+// their order. Only the sets listed in work.dominators are compared with the others: the caller
+// knows that no other set is a subset of another set. The supersets of a dominator are found as
+// the intersection of the bit sets (over the sets of m) of its columns.
+void removeDominated(Family& m, int n, DominationWork& work) {
+    int s = m.size();
+    int w = m.words();
+    if (work.dominators.empty() || s < 2)
+        return;
+    int sw = (s + wordBits - 1) / wordBits;
+    work.counts.resize(s);
+    work.keep.assign(s, 1);
+    work.columns.assign((std::size_t) n * sw, Word(0));
+    for (int i = 0; i < s; ++i) {
+        work.counts[i] = countSet(m.row(i), w);
+        Word bit = Word(1) << (i % wordBits);
+        forEachBit(m.row(i), w, [&](int c) { work.columns[(std::size_t) c * sw + i / wordBits] |= bit; });
     }
-    removeDominated(dst, dominators, counts, keep);
+
+    work.supersets.resize(sw);
+    Word* sup = work.supersets.data();
+    for (int j : work.dominators) {
+        // A dominated dominator has the same supersets as the set dominating it, or fewer
+        if (!work.keep[j])
+            continue;
+        for (int k = 0; k < sw; ++k)
+            sup[k] = ~Word(0);
+        if (s % wordBits)
+            sup[sw - 1] = (Word(1) << (s % wordBits)) - 1;
+        bool any = true;
+        forEachBit(m.row(j), w, [&](int c) {
+            if (!any)
+                return;
+            Word const* col = work.columns.data() + (std::size_t) c * sw;
+            Word acc = 0;
+            for (int k = 0; k < sw; ++k)
+                acc |= (sup[k] &= col[k]);
+            any = acc != 0;
+        });
+        if (!any)
+            continue;
+        int cj = work.counts[j];
+        forEachBit(sup, sw, [&](int i) {
+            // A superset of the same size is equal; of equal sets the first one is kept
+            if (work.counts[i] > cj || (work.counts[i] == cj && j < i))
+                work.keep[i] = 0;
+        });
+    }
+    m.compact(work.keep);
+}
+
+// Keep only the minimal sets of any family over n columns
+void minimize(Family& m, int n) {
+    DominationWork work;
+    work.dominators.resize(m.size());
+    for (int i = 0; i < m.size(); ++i)
+        work.dominators[i] = i;
+    removeDominated(m, n, work);
+}
+
+// dst = min(sets of a with the columns of t removed) for a Sperner family a over n columns. A set
+// that misses t stays as it is and is a subset of no other set of the result (it would be a subset
+// of another set of a), so only the sets that meet t can make other sets non-minimal.
+void subtractMin(Family& dst, Family const& a, Word const* t, int n, DominationWork& work) {
+    int w = a.words();
+    dst.clear();
+    work.dominators.clear();
+    for (int i = 0; i < a.size(); ++i) {
+        Word const* r = a.row(i);
+        if (intersects(r, t, w))
+            work.dominators.push_back(dst.size());
+        assignSub(dst.addRow(), r, t, w);
+    }
+    removeDominated(dst, n, work);
 }
 
 // dst = min(a + b) for Sperner families a and b where no set of b is a proper subset of a set of a
-void unionMin(bit_matrix& dst, bit_matrix const& a, bit_matrix const& b, int n) {
-    dst.trim_rows(0);
-    for (auto const& r : a.get_rows())
-        dst.add_row(r, n);
-    for (auto const& r : b.get_rows()) {
-        if (a.find_sub_row(r) < 0)
-            dst.add_row(r, n);
+void unionMin(Family& dst, Family const& a, Family const& b) {
+    dst = a;
+    for (int i = 0; i < b.size(); ++i) {
+        if (a.findSubset(b.row(i)) < 0)
+            dst.add(b.row(i));
     }
 }
 
-// Add s to a Sperner family unless a set of it is a subset of s, removing the supersets of s
-bool insertMin(bit_matrix& m, bit_chunk const& s, int n) {
-    if (m.find_sub_row(s) >= 0)
-        return false;
-    m.remove_sup_rows(s);
-    m.add_row(s, n);
-    return true;
+// dst = the sets of a disjoint with t
+void disjointSets(Family& dst, Family const& a, Word const* t) {
+    dst.clear();
+    for (int i = 0; i < a.size(); ++i) {
+        if (!intersects(a.row(i), t, a.words()))
+            dst.add(a.row(i));
+    }
 }
 
 // Root of c * ln(c) = ln(v), i.e. c^c = v, for v >= 1
@@ -154,46 +443,60 @@ double chi(double v) {
 
 }  // namespace
 
-// The duality test and the generation of covers. One recursion frame per depth is kept between
-// runs, so the matrices of the subproblems are allocated once.
+// The duality test and the generation of covers, as a resumable depth-first run over an explicit
+// stack of frames. One frame per depth is kept between runs, so the families of the subproblems are
+// allocated once.
 class Solver {
 public:
     // Called for every new cover; returns false to stop the generation
-    typedef std::function<bool(bit_chunk)> Report;
+    typedef std::function<bool(Columns const&)> Report;
 
-    // Prepare for families over n columns (n >= 1)
-    void init(int n);
+    enum class Result {
+        Dual,     // the families are dual: the test is over, or all covers have been generated
+        NotDual,  // test: the families are not dual, witness() holds a witness
+        Found,    // generation with once: a new cover was reported, run() continues from here
+        Stopped   // generation: report returned false
+    };
 
-    // Duality test of Sperner families f and g whose sets pairwise intersect.
-    // Returns true if they are dual; otherwise witness() is a witness.
-    bool test(bit_matrix const& f, bit_matrix const& g);
+    // Start a test of Sperner families f and g over n >= 1 columns whose sets pairwise intersect.
+    // For the generation, g is a subset of Tr(f) and receives the new covers.
+    void init(int n, Family f, Family g);
 
-    // Generate the minimal transversals of the Sperner family f that are not in g (g is a subset of
-    // Tr(f)), adding each to g and passing it to report. With once, stops after the first one.
-    // Returns true if g = Tr(f) at the end, false if stopped.
-    bool generate(bit_matrix const& f, bit_matrix& g, bool once, Report const& report);
+    // Run (or continue) the test. Without report it is a duality test that stops at the first
+    // witness. With report it generates the minimal transversals of f that are not in g, adding
+    // each to g and passing it to report; with once, it stops after the first one.
+    Result run(Report const* report, bool once);
 
-    // Witness of the last test that returned false
-    bit_chunk witness() const {
-        return witness_;
+    // Witness of the last run that returned NotDual
+    Columns witness() const {
+        Columns columns;
+        toColumns(witness_.data(), w_, columns);
+        return columns;
+    }
+
+    Family const& rootF() const {
+        return rootF_;
+    }
+
+    Family const& rootG() const {
+        return rootG_;
     }
 
 private:
-    enum class Result {
-        Dual,     // the pair is dual
-        NotDual,  // the pair is not dual, witness_ holds a witness (test)
-        Stopped,  // the generation is stopped
-        Retry     // a new cover was added to the families on the path: test this pair again (generate)
-    };
-
     enum class Base {
         Dual,     // the pair is dual
         Witness,  // witness_ is a witness for the pair
         Split     // no answer without splitting
     };
 
+    enum class Kind {
+        AB,     // the two pairs of algorithm A
+        Alpha,  // the second pair, then alpha subproblems (or the first pair)
+        Beta    // the first pair, then beta subproblems
+    };
+
     enum class Phase {
-        None,  // the frame is a leaf
+        None,  // no child yet
         Pair1,
         Pair2,
         Alpha,
@@ -201,172 +504,173 @@ private:
     };
 
     struct Frame {
-        bit_matrix const* f = nullptr;  // input families
-        bit_matrix const* g = nullptr;
-        int x = -1;  // split column
-        Phase phase = Phase::None;
-        bit_matrix f0, f1, g0, g1;  // input families split on x
-        bit_matrix childF, childG;  // input families of the child, unless they are f0 or g0
-        bit_matrix ts;              // sets t of the alpha subproblems
-        bit_vector t;               // set t of the alpha or beta subproblem
+        Family const* f = nullptr;  // input families; g gets the new covers while the frame is a leaf
+        Family* g = nullptr;
+        bool split = false;  // the frame has been split and goes over its children
+        Kind kind = Kind::AB;
+        Phase phase = Phase::None;  // the current child
+        int x = -1;                 // split column
+        int step = 0;               // position in the sequence of children
+        int index = 0;              // next set of ts (alpha) or f1 (beta)
+        int synced = 0;             // covers (rows of the root G) that are in g0 and g1
+        Family f0, f1, g0, g1;      // input families split on x
+        Family childF, childG;      // input families of the child, unless f is f0
+        Family ts;                  // sets t of the alpha subproblems
+        Set t;                      // set t of the alpha or beta subproblem
 
-        explicit Frame(int n) : t(n) {}
+        explicit Frame(int w) : f0(w), f1(w), g0(w), g1(w), childF(w), childG(w), ts(w), t((std::size_t) w, Word(0)) {}
     };
 
     Frame& frame(int d);
-    Result solve(int d);
     Base baseCase(Frame const& fr);
-    bool missingTransversal(bit_chunk const& a, bit_chunk const& b, bit_matrix::bit_rows const& other);
-    bool volumeWitness(bit_matrix::bit_rows const& f, bit_matrix::bit_rows const& g);
+    bool missingTransversal(Word const* a, Word const* b, Family const& other);
+    bool volumeWitness(Family const& f, Family const& g);
     void chooseColumn(Frame& fr);
-    Result split(int d);
-    Result pair1(int d);
-    Result pair2(int d);
-    Result alpha(int d, bit_chunk const& t);
-    Result beta(int d, int i);
-    Result child(int d, bit_matrix const* f, bit_matrix const* g);
-    Result found(int d);
+    void split(Frame& fr);
+    bool nextChild(Frame& fr, int d);
+    void pair1(Frame& fr);
+    void pair2(Frame& fr);
+    void alpha(Frame& fr, Word const* t);
+    void beta(Frame& fr, int i);
+    Result found();
     void lift(Frame const& fr);
     void minimalTransversal();
-    bool propagate(Frame& fr);
+    void imageAt(int d, Word const* cover, Word* image);
+    void sync(Frame& fr, int d);
 
     int n_ = 0;
+    int w_ = 0;
+    int depth_ = -1;  // top of the stack; -1 when the run is over
+    Family rootF_, rootG_;
     std::vector<std::unique_ptr<Frame>> frames_;
-    bit_vector witness_, supportF_, supportG_, temp_, image_, childImage_, pairA_, pairB_, pairC_, pairT_;
-    std::vector<int> countF_, countG_, counts_, dominators_;
-    std::vector<char> keep_;
+    Set witness_, supportF_, supportG_, temp_, image_, pairA_, pairB_, pairC_, pairT_;
+    Columns cover_;
+    std::vector<int> countF_, countG_, counts_;
+    DominationWork work_;
     std::vector<int> restF_, restG_;
-    bool splitAlpha_ = false, splitBeta_ = false;
 
-    // Generation mode
-    bit_matrix* covers_ = nullptr;
     Report const* report_ = nullptr;
     bool once_ = false;
 };
 
-void Solver::init(int n) {
+void Solver::init(int n, Family f, Family g) {
     assert(n >= 1);
-    if (n != n_) {
-        n_ = n;
+    int w = wordsFor(n);
+    if (w != w_)
         frames_.clear();
-    }
-    witness_.zero(n);
-    supportF_.zero(n);
-    supportG_.zero(n);
-    temp_.zero(n);
-    image_.zero(n);
-    childImage_.zero(n);
-    pairA_.zero(n);
-    pairB_.zero(n);
-    pairC_.zero(n);
-    pairT_.zero(n);
+    n_ = n;
+    w_ = w;
+    rootF_ = std::move(f);
+    rootG_ = std::move(g);
+    for (Set* s : {&witness_, &supportF_, &supportG_, &temp_, &image_, &pairA_, &pairB_, &pairC_, &pairT_})
+        s->assign((std::size_t) w, Word(0));
+    depth_ = 0;
+    auto& root = frame(0);
+    root.f = &rootF_;
+    root.g = &rootG_;
+    root.split = false;
 }
 
 Solver::Frame& Solver::frame(int d) {
     while ((int) frames_.size() <= d)
-        frames_.push_back(std::make_unique<Frame>(n_));
+        frames_.push_back(std::make_unique<Frame>(w_));
     return *frames_[d];
 }
 
-bool Solver::test(bit_matrix const& f, bit_matrix const& g) {
-    covers_ = nullptr;
-    report_ = nullptr;
-    auto& root = frame(0);
-    root.f = &f;
-    root.g = &g;
-    return solve(0) == Result::Dual;
-}
-
-bool Solver::generate(bit_matrix const& f, bit_matrix& g, bool once, Report const& report) {
-    covers_ = &g;
-    report_ = &report;
+Solver::Result Solver::run(Report const* report, bool once) {
+    report_ = report;
     once_ = once;
-    auto& root = frame(0);
-    root.f = &f;
-    root.g = &g;
-    auto r = solve(0);
-    covers_ = nullptr;
-    report_ = nullptr;
-    return r == Result::Dual;
-}
-
-Solver::Result Solver::solve(int d) {
-    for (;;) {
-        auto& fr = frame(d);
-        fr.phase = Phase::None;
-        switch (baseCase(fr)) {
-            case Base::Dual:
-                return Result::Dual;
-            case Base::Witness: {
-                auto r = found(d);
-                if (r != Result::Retry)
+    while (depth_ >= 0) {
+        auto& fr = *frames_[depth_];
+        if (!fr.split) {
+            switch (baseCase(fr)) {
+                case Base::Dual:
+                    --depth_;
+                    continue;
+                case Base::Witness: {
+                    auto r = found();
+                    if (r == Result::Dual)  // test the leaf pair again with the new cover
+                        continue;
                     return r;
-                continue;
+                }
+                case Base::Split:
+                    split(fr);
+                    break;
             }
-            case Base::Split:
-                break;
         }
-        return split(d);
+        if (!nextChild(fr, depth_)) {
+            --depth_;
+            continue;
+        }
+        auto& c = frame(++depth_);
+        c.f = fr.phase == Phase::Pair2 ? &fr.f0 : &fr.childF;
+        c.g = &fr.childG;
+        c.split = false;
     }
+    return Result::Dual;
 }
 
 // Answer without splitting where the families are small or obviously not dual. Relies on F and G
 // being Sperner with pairwise intersecting sets.
 Solver::Base Solver::baseCase(Frame const& fr) {
-    auto const& f = fr.f->get_rows();
-    auto const& g = fr.g->get_rows();
-    witness_.clear();
+    auto const& f = *fr.f;
+    auto const& g = *fr.g;
+    int w = w_;
+    Word* wit = witness_.data();
+    clearSet(wit, w);
 
     if (f.empty()) {
         // f = 0 is dual only to g = 1, i.e. G = {{}}; otherwise X = {} has f(C) = g({}) = 0
-        if (g.size() == 1 && g[0].none())
+        if (g.size() == 1 && isEmpty(g.row(0), w))
             return Base::Dual;
         return Base::Witness;
     }
 
     if (g.empty()) {
         // g = 0 is dual only to F = {{}}; otherwise X = the columns of F has f({}) = g(X) = 0
-        if (f.size() == 1 && f[0].none())
+        if (f.size() == 1 && isEmpty(f.row(0), w))
             return Base::Dual;
-        for (auto const& r : f)
-            witness_.assign_or(witness_, r);
+        for (int i = 0; i < f.size(); ++i)
+            assignOr(wit, wit, f.row(i), w);
         return Base::Witness;
     }
 
-    if (f.size() == 1 && f[0].none()) {
+    if (f.size() == 1 && isEmpty(f.row(0), w)) {
         // f = 1 and G is not empty: X = a set of G has f(C \ X) = g(X) = 1
-        witness_.assign(g[0]);
+        copySet(wit, g.row(0), w);
         return Base::Witness;
     }
 
-    if (g.size() == 1 && g[0].none()) {
+    if (g.size() == 1 && isEmpty(g.row(0), w)) {
         // g = 1 and F is not empty: X = {} has f(C) = g({}) = 1
         return Base::Witness;
     }
 
-    supportF_.clear();
-    for (auto const& r : f)
-        supportF_.assign_or(supportF_, r);
-    supportG_.clear();
-    for (auto const& r : g)
-        supportG_.assign_or(supportG_, r);
+    Word* sf = supportF_.data();
+    Word* sg = supportG_.data();
+    Word* temp = temp_.data();
+    clearSet(sf, w);
+    for (int i = 0; i < f.size(); ++i)
+        assignOr(sf, sf, f.row(i), w);
+    clearSet(sg, w);
+    for (int i = 0; i < g.size(); ++i)
+        assignOr(sg, sg, g.row(i), w);
 
-    if (!(supportF_ == supportG_)) {
-        temp_.assign_sub(supportF_, supportG_);
-        int v = temp_.find_first();
+    if (!equalSets(sf, sg, w)) {
+        assignSub(temp, sf, sg, w);
+        int v = firstBit(temp, w);
         if (v >= 0) {
             // v is in a set h of F but in no set of G: X = (columns \ h) + {v}
-            auto const& h = f[fr.f->find_row([v](bit_chunk const& r) { return r.get(v); })];
-            witness_.assign_or(supportF_, supportG_);
-            witness_.assign_sub(witness_, h);
-            witness_.set(v);
+            Word const* h = f.row(f.findWith(v));
+            assignOr(wit, sf, sg, w);
+            assignSub(wit, wit, h, w);
+            setBit(wit, v);
         } else {
             // v is in a set s of G but in no set of F: X = s \ {v}
-            temp_.assign_sub(supportG_, supportF_);
-            v = temp_.find_first();
-            auto const& s = g[fr.g->find_row([v](bit_chunk const& r) { return r.get(v); })];
-            witness_.assign(s);
-            witness_.reset(v);
+            assignSub(temp, sg, sf, w);
+            v = firstBit(temp, w);
+            copySet(wit, g.row(g.findWith(v)), w);
+            resetBit(wit, v);
         }
         return Base::Witness;
     }
@@ -376,22 +680,22 @@ Solver::Base Solver::baseCase(Frame const& fr) {
         // Otherwise X = s \ {v} (s in G) or X = {v} (s in F) for a column v of s that is not a
         // singleton of the other side.
         bool sInG = g.size() == 1;
-        auto const& s = sInG ? g[0] : f[0];
+        Word const* s = sInG ? g.row(0) : f.row(0);
         auto const& other = sInG ? f : g;
-        temp_.clear();
-        for (auto const& r : other) {
-            if (r.count(1) == 1)
-                temp_.set(r.find_first());
+        clearSet(temp, w);
+        for (int i = 0; i < other.size(); ++i) {
+            if (countSet(other.row(i), w) == 1)
+                setBit(temp, firstBit(other.row(i), w));
         }
-        temp_.assign_sub(s, temp_);
-        int v = temp_.find_first();
+        assignSub(temp, s, temp, w);
+        int v = firstBit(temp, w);
         if (v < 0)
             return Base::Dual;
         if (sInG) {
-            witness_.assign(s);
-            witness_.reset(v);
+            copySet(wit, s, w);
+            resetBit(wit, v);
         } else {
-            witness_.set(v);
+            setBit(wit, v);
         }
         return Base::Witness;
     }
@@ -401,22 +705,22 @@ Solver::Base Solver::baseCase(Frame const& fr) {
         // missing transversal t of F is a witness itself; for G, X = (columns) \ t.
         bool pairInF = f.size() == 2;
         auto const& pair = pairInF ? f : g;
-        if (!missingTransversal(pair[0], pair[1], pairInF ? g : f))
+        if (!missingTransversal(pair.row(0), pair.row(1), pairInF ? g : f))
             return Base::Dual;
         if (pairInF)
-            witness_.assign(pairT_);
+            copySet(wit, pairT_.data(), w);
         else
-            witness_.assign_sub(supportF_, pairT_);
+            assignSub(wit, sf, pairT_.data(), w);
         return Base::Witness;
     }
 
     // Duality needs sum 2^-|h| + sum 2^-|s| >= 1 (the expected number of sets h of F with h in
     // C \ X plus sets s of G with s in X, for a random X, is at least 1)
     double volume = 0;
-    for (auto const& r : f)
-        volume += std::ldexp(1.0, -r.count());
-    for (auto const& r : g)
-        volume += std::ldexp(1.0, -r.count());
+    for (int i = 0; i < f.size(); ++i)
+        volume += std::ldexp(1.0, -countSet(f.row(i), w));
+    for (int i = 0; i < g.size(); ++i)
+        volume += std::ldexp(1.0, -countSet(g.row(i), w));
     if (volume < 1 && volumeWitness(f, g))
         return Base::Witness;
 
@@ -426,54 +730,63 @@ Solver::Base Solver::baseCase(Frame const& fr) {
 // Tr({a, b}) = {{v} : v in a & b} + {{u, w} : u in a \ b, w in b \ a}. Finds a set of Tr({a, b})
 // that is not in the Sperner family `other` of transversals of {a, b} and puts it into pairT_;
 // returns false if there is none (other = Tr({a, b})).
-bool Solver::missingTransversal(bit_chunk const& a, bit_chunk const& b, bit_matrix::bit_rows const& other) {
-    pairC_.assign_and(a, b);
-    pairA_.assign_sub(a, b);
-    pairB_.assign_sub(b, a);
-    pairT_.clear();
-    temp_.clear();  // singletons of other
+bool Solver::missingTransversal(Word const* a, Word const* b, Family const& other) {
+    int w = w_;
+    Word* pc = pairC_.data();
+    Word* pa = pairA_.data();
+    Word* pb = pairB_.data();
+    Word* pt = pairT_.data();
+    Word* temp = temp_.data();
+    assignAnd(pc, a, b, w);
+    assignSub(pa, a, b, w);
+    assignSub(pb, b, a, w);
+    clearSet(pt, w);
+    clearSet(temp, w);  // singletons of other
     long long pairs = 0;
-    for (auto const& r : other) {
-        if (r.intersects(pairC_)) {
-            if (r.count(1) > 1) {
+    for (int i = 0; i < other.size(); ++i) {
+        Word const* r = other.row(i);
+        if (intersects(r, pc, w)) {
+            if (countSet(r, w) > 1) {
                 // r is a proper superset of {v} for a common column v, so {v} is not in other
-                temp_.assign_and(r, pairC_);
-                pairT_.set(temp_.find_first());
+                assignAnd(temp, r, pc, w);
+                setBit(pt, firstBit(temp, w));
                 return true;
             }
-            temp_.set(r.find_first());
-        } else if (r.count(2) > 2) {
+            setBit(temp, firstBit(r, w));
+        } else if (countSet(r, w) > 2) {
             // r is a proper superset of a pair {u, w}, which is not in other then
-            temp_.assign_and(r, pairA_);
-            pairT_.set(temp_.find_first());
-            temp_.assign_and(r, pairB_);
-            pairT_.set(temp_.find_first());
+            assignAnd(temp, r, pa, w);
+            setBit(pt, firstBit(temp, w));
+            assignAnd(temp, r, pb, w);
+            setBit(pt, firstBit(temp, w));
             return true;
         } else {
             ++pairs;
         }
     }
 
-    temp_.assign_sub(pairC_, temp_);
-    int v = temp_.find_first();
+    assignSub(temp, pc, temp, w);
+    int v = firstBit(temp, w);
     if (v >= 0) {
-        pairT_.set(v);
+        setBit(pt, v);
         return true;
     }
 
-    if (pairs == (long long) pairA_.count() * pairB_.count())
+    if (pairs == (long long) countSet(pa, w) * countSet(pb, w))
         return false;
-    for (int u = pairA_.find_first(); u >= 0; u = pairA_.find_next(u)) {
-        temp_.clear();  // columns paired with u in other
-        for (auto const& r : other) {
-            if (r.get(u))
-                temp_.assign_or(temp_, r);
+    for (int u = 0; u < n_; ++u) {
+        if (!getBit(pa, u))
+            continue;
+        clearSet(temp, w);  // columns paired with u in other
+        for (int i = 0; i < other.size(); ++i) {
+            if (getBit(other.row(i), u))
+                assignOr(temp, temp, other.row(i), w);
         }
-        temp_.assign_sub(pairB_, temp_);
-        int w = temp_.find_first();
-        if (w >= 0) {
-            pairT_.set(u);
-            pairT_.set(w);
+        assignSub(temp, pb, temp, w);
+        int c = firstBit(temp, w);
+        if (c >= 0) {
+            setBit(pt, u);
+            setBit(pt, c);
             return true;
         }
     }
@@ -483,41 +796,40 @@ bool Solver::missingTransversal(bit_chunk const& a, bit_chunk const& b, bit_matr
 // Find X with f(C \ X) = g(X) = 0 by the method of conditional expectations: put the columns of
 // the support into X or C \ X one by one, keeping the expected number of sets h of F in C \ X plus
 // sets s of G in X below 1. Returns false if rounding errors spoiled the result.
-bool Solver::volumeWitness(bit_matrix::bit_rows const& f, bit_matrix::bit_rows const& g) {
-    int p = (int) f.size();
-    int q = (int) g.size();
+bool Solver::volumeWitness(Family const& f, Family const& g) {
+    int p = f.size();
+    int q = g.size();
     restF_.resize(p);  // columns of h not placed yet, or -1 if h meets X
     restG_.resize(q);  // columns of s not placed yet, or -1 if s meets C \ X
     for (int i = 0; i < p; ++i)
-        restF_[i] = f[i].count();
+        restF_[i] = countSet(f.row(i), w_);
     for (int i = 0; i < q; ++i)
-        restG_[i] = g[i].count();
+        restG_[i] = countSet(g.row(i), w_);
 
-    for (int v = supportF_.find_first(); v >= 0; v = supportF_.find_next(v)) {
-        bit_chunk::get_bit_iterator it(v);
+    forEachBit(supportF_.data(), w_, [&](int v) {
         // Expectations of the sets with v if v goes into C \ X (sets of F) or into X (sets of G)
         double outside = 0;
         double inside = 0;
         for (int i = 0; i < p; ++i) {
-            if (restF_[i] > 0 && f[i].get(it))
+            if (restF_[i] > 0 && getBit(f.row(i), v))
                 outside += std::ldexp(1.0, 1 - restF_[i]);
         }
         for (int i = 0; i < q; ++i) {
-            if (restG_[i] > 0 && g[i].get(it))
+            if (restG_[i] > 0 && getBit(g.row(i), v))
                 inside += std::ldexp(1.0, 1 - restG_[i]);
         }
         bool inX = inside <= outside;
         if (inX)
-            witness_.set(v);
+            setBit(witness_.data(), v);
         for (int i = 0; i < p; ++i) {
-            if (restF_[i] > 0 && f[i].get(it))
+            if (restF_[i] > 0 && getBit(f.row(i), v))
                 restF_[i] = inX ? -1 : restF_[i] - 1;
         }
         for (int i = 0; i < q; ++i) {
-            if (restG_[i] > 0 && g[i].get(it))
+            if (restG_[i] > 0 && getBit(g.row(i), v))
                 restG_[i] = inX ? restG_[i] - 1 : -1;
         }
-    }
+    });
 
     // A set with 0 columns left lies in C \ X (F) or in X (G)
     for (int r : restF_) {
@@ -533,18 +845,14 @@ bool Solver::volumeWitness(bit_matrix::bit_rows const& f, bit_matrix::bit_rows c
 
 // Split column: the most frequent one in F or G; the kind of the split by algorithm B
 void Solver::chooseColumn(Frame& fr) {
-    auto const& f = fr.f->get_rows();
-    auto const& g = fr.g->get_rows();
+    auto const& f = *fr.f;
+    auto const& g = *fr.g;
     countF_.assign(n_, 0);
     countG_.assign(n_, 0);
-    for (auto const& r : f) {
-        for (int j = r.find_first(); j >= 0; j = r.find_next(j))
-            ++countF_[j];
-    }
-    for (auto const& r : g) {
-        for (int j = r.find_first(); j >= 0; j = r.find_next(j))
-            ++countG_[j];
-    }
+    for (int i = 0; i < f.size(); ++i)
+        forEachBit(f.row(i), w_, [this](int j) { ++countF_[j]; });
+    for (int i = 0; i < g.size(); ++i)
+        forEachBit(g.row(i), w_, [this](int j) { ++countG_[j]; });
 
     double p = (double) f.size();
     double q = (double) g.size();
@@ -561,140 +869,158 @@ void Solver::chooseColumn(Frame& fr) {
     // x is that frequent in both, split into the two pairs of algorithm A; otherwise the side where
     // x is rare gives few subproblems of algorithm B.
     double eps = 1 / chi(p * q);
-    splitAlpha_ = countG_[fr.x] / q < eps;
-    splitBeta_ = !splitAlpha_ && countF_[fr.x] / p < eps;
+    if (countG_[fr.x] / q < eps)
+        fr.kind = Kind::Alpha;
+    else if (countF_[fr.x] / p < eps)
+        fr.kind = Kind::Beta;
+    else
+        fr.kind = Kind::AB;
 }
 
-Solver::Result Solver::split(int d) {
-    auto& fr = *frames_[d];
+void Solver::split(Frame& fr) {
     chooseColumn(fr);
-    bool alphaSplit = splitAlpha_;
-    bool betaSplit = splitBeta_;
-
     int x = fr.x;
-    fr.f0.trim_rows(0);
-    fr.f1.trim_rows(0);
-    fr.g0.trim_rows(0);
-    fr.g1.trim_rows(0);
-    for (auto const& r : fr.f->get_rows()) {
-        if (r.get(x))
-            fr.f1.add_row(r, n_).reset(x);
-        else
-            fr.f0.add_row(r, n_);
-    }
-    for (auto const& r : fr.g->get_rows()) {
-        if (r.get(x))
-            fr.g1.add_row(r, n_).reset(x);
-        else
-            fr.g0.add_row(r, n_);
-    }
-
-    Result r;
-    if (alphaSplit) {
-        if ((r = pair2(d)) != Result::Dual)
-            return r;
-        // In the generation, the covers found meanwhile may have made x frequent in G: then the
-        // single first pair is cheaper than a subproblem for every set of G1
-        double q = fr.g0.height() + fr.g1.height();
-        if (fr.g1.height() / q >= 1 / chi(fr.f->height() * q))
-            return pair1(d);
-        // New covers found in these subproblems do not contain x, so they add no set to G1, but
-        // they may remove supersets from it: go over a copy and skip the removed sets
-        fr.ts.trim_rows(0);
-        for (auto const& t : fr.g1.get_rows())
-            fr.ts.add_row(t, n_);
-        for (int i = 0; i < fr.ts.height(); ++i) {
-            if (fr.g1.find_equal_row(fr.ts.get_row(i)) < 0)
-                continue;
-            if ((r = alpha(d, fr.ts.get_row(i))) != Result::Dual)
-                return r;
+    fr.f0.clear();
+    fr.f1.clear();
+    fr.g0.clear();
+    fr.g1.clear();
+    for (int i = 0; i < fr.f->size(); ++i) {
+        Word const* r = fr.f->row(i);
+        if (getBit(r, x)) {
+            fr.f1.add(r);
+            resetBit(fr.f1.row(fr.f1.size() - 1), x);
+        } else {
+            fr.f0.add(r);
         }
-        return Result::Dual;
     }
-
-    if (betaSplit) {
-        if ((r = pair1(d)) != Result::Dual)
-            return r;
-        for (int i = 0; i < fr.f1.height(); ++i) {
-            if ((r = beta(d, i)) != Result::Dual)
-                return r;
+    for (int i = 0; i < fr.g->size(); ++i) {
+        Word const* r = fr.g->row(i);
+        if (getBit(r, x)) {
+            fr.g1.add(r);
+            resetBit(fr.g1.row(fr.g1.size() - 1), x);
+        } else {
+            fr.g0.add(r);
         }
-        return Result::Dual;
     }
+    fr.split = true;
+    fr.phase = Phase::None;
+    fr.step = 0;
+    fr.index = 0;
+    fr.synced = rootG_.size();
+}
 
-    if ((r = pair1(d)) != Result::Dual)
-        return r;
-    return pair2(d);
+// Prepare the next child of a split frame at depth d; false if there is none left (all the
+// children were dual, so the frame's pair is dual)
+bool Solver::nextChild(Frame& fr, int d) {
+    sync(fr, d);
+    switch (fr.kind) {
+        case Kind::AB:
+            if (fr.step == 0) {
+                fr.step = 1;
+                pair1(fr);
+                return true;
+            }
+            if (fr.step == 1) {
+                fr.step = 2;
+                pair2(fr);
+                return true;
+            }
+            return false;
+
+        case Kind::Alpha:
+            if (fr.step == 0) {
+                fr.step = 1;
+                pair2(fr);
+                return true;
+            }
+            if (fr.step == 1) {
+                // In the generation, the covers found meanwhile may have made x frequent in G: then
+                // the single first pair is cheaper than a subproblem for every set of G1
+                double q = fr.g0.size() + fr.g1.size();
+                if (fr.g1.size() / q >= 1 / chi(fr.f->size() * q)) {
+                    fr.step = 3;
+                    pair1(fr);
+                    return true;
+                }
+                // New covers found in the subproblems do not contain x, so they add no set to G1,
+                // but they may remove supersets from it: go over a copy and skip the removed sets
+                fr.ts = fr.g1;
+                fr.index = 0;
+                fr.step = 2;
+            }
+            if (fr.step == 2) {
+                while (fr.index < fr.ts.size()) {
+                    Word const* t = fr.ts.row(fr.index++);
+                    if (fr.g1.findEqual(t) >= 0) {
+                        alpha(fr, t);
+                        return true;
+                    }
+                }
+            }
+            return false;
+
+        case Kind::Beta:
+            if (fr.step == 0) {
+                fr.step = 1;
+                pair1(fr);
+                return true;
+            }
+            if (fr.index < fr.f1.size()) {
+                beta(fr, fr.index++);
+                return true;
+            }
+            return false;
+    }
+    return false;
 }
 
 // (min(F0 + F1), G0)
-Solver::Result Solver::pair1(int d) {
-    auto& fr = *frames_[d];
+void Solver::pair1(Frame& fr) {
     fr.phase = Phase::Pair1;
     // A set of F0 cannot be a proper subset of a set of F1 since F is Sperner
-    unionMin(fr.childF, fr.f1, fr.f0, n_);
-    return child(d, &fr.childF, &fr.g0);
+    unionMin(fr.childF, fr.f1, fr.f0);
+    fr.childG = fr.g0;
 }
 
 // (F0, min(G0 + G1))
-Solver::Result Solver::pair2(int d) {
-    auto& fr = *frames_[d];
+void Solver::pair2(Frame& fr) {
     fr.phase = Phase::Pair2;
-    unionMin(fr.childG, fr.g1, fr.g0, n_);
-    return child(d, &fr.f0, &fr.childG);
+    unionMin(fr.childG, fr.g1, fr.g0);
 }
 
 // (sets of F1 disjoint with t, min(G0 with t removed)) for a set t of G1
-Solver::Result Solver::alpha(int d, bit_chunk const& t) {
-    auto& fr = *frames_[d];
+void Solver::alpha(Frame& fr, Word const* t) {
     fr.phase = Phase::Alpha;
-    fr.t.assign(t);
-    fr.childF.trim_rows(0);
-    for (auto const& r : fr.f1.get_rows()) {
-        if (!r.intersects(fr.t))
-            fr.childF.add_row(r, n_);
-    }
-    subtractMin(fr.childG, fr.g0, fr.t, n_, dominators_, counts_, keep_);
-    return child(d, &fr.childF, &fr.childG);
+    copySet(fr.t.data(), t, w_);
+    disjointSets(fr.childF, fr.f1, fr.t.data());
+    subtractMin(fr.childG, fr.g0, fr.t.data(), n_, work_);
 }
 
 // (min(F0 with t removed), sets of G1 disjoint with t) for the i-th set t of F1
-Solver::Result Solver::beta(int d, int i) {
-    auto& fr = *frames_[d];
+void Solver::beta(Frame& fr, int i) {
     fr.phase = Phase::Beta;
-    fr.t.assign(fr.f1.get_row(i));
-    subtractMin(fr.childF, fr.f0, fr.t, n_, dominators_, counts_, keep_);
-    fr.childG.trim_rows(0);
-    for (auto const& r : fr.g1.get_rows()) {
-        if (!r.intersects(fr.t))
-            fr.childG.add_row(r, n_);
-    }
-    return child(d, &fr.childF, &fr.childG);
-}
-
-Solver::Result Solver::child(int d, bit_matrix const* f, bit_matrix const* g) {
-    auto& c = frame(d + 1);
-    c.f = f;
-    c.g = g;
-    return solve(d + 1);
+    copySet(fr.t.data(), fr.f1.row(i), w_);
+    subtractMin(fr.childF, fr.f0, fr.t.data(), n_, work_);
+    disjointSets(fr.childG, fr.g1, fr.t.data());
 }
 
 // Turn a witness X' of the child of fr into a witness X of fr's pair
 void Solver::lift(Frame const& fr) {
+    Word* wit = witness_.data();
     switch (fr.phase) {
         case Phase::Pair1:  // X = X' without x
-            witness_.reset(fr.x);
+            resetBit(wit, fr.x);
             break;
         case Phase::Pair2:  // X = X' + {x}
-            witness_.set(fr.x);
+            setBit(wit, fr.x);
             break;
         case Phase::Alpha:  // X = X' + t without x
-            witness_.assign_or(witness_, fr.t);
-            witness_.reset(fr.x);
+            assignOr(wit, wit, fr.t.data(), w_);
+            resetBit(wit, fr.x);
             break;
         case Phase::Beta:  // X = X' \ t + {x}
-            witness_.assign_sub(witness_, fr.t);
-            witness_.set(fr.x);
+            assignSub(wit, wit, fr.t.data(), w_);
+            setBit(wit, fr.x);
             break;
         case Phase::None:
             assert(false);
@@ -702,138 +1028,163 @@ void Solver::lift(Frame const& fr) {
     }
 }
 
-// witness_ is a witness for the pair at depth d
-Solver::Result Solver::found(int d) {
-    for (int k = d - 1; k >= 0; --k)
+// witness_ is a witness for the pair at the top of the stack. Returns Dual to test the pair again
+// with the new cover.
+Solver::Result Solver::found() {
+    for (int k = depth_ - 1; k >= 0; --k)
         lift(*frames_[k]);
 
-    if (!covers_)
+    if (!report_)
         return Result::NotDual;
 
     minimalTransversal();
-    covers_->add_row(image_, n_);
-    if (!(*report_)(image_) || once_)
+    rootG_.add(image_.data());
+    toColumns(image_.data(), w_, cover_);
+    if (!(*report_)(cover_))
         return Result::Stopped;
 
-    // Add the cover to the families of every frame on the path, so that the leaf pair is tested
-    // again with it and the frames above go on with it
-    for (int k = 0; k < d; ++k) {
-        if (!propagate(*frames_[k]))
+    // The leaf pair is tested again with the image of the new cover in its G; the frames above get
+    // it when they go on to their next child (sync)
+    if (depth_ > 0) {
+        imageAt(depth_, rootG_.row(rootG_.size() - 1), temp_.data());
+        auto& g = frames_[depth_ - 1]->childG;
+        if (g.findSubset(temp_.data()) >= 0)
             throw std::logic_error("FK: a new cover does not reach the subproblem it was found in");
+        g.removeSupersets(temp_.data());
+        g.add(temp_.data());
     }
-    return Result::Retry;
+    return once_ ? Result::Found : Result::Dual;
 }
 
 // Reduce the witness (a transversal of the root F that contains no set of G) to a minimal
 // transversal in image_, removing columns greedily in increasing order
 void Solver::minimalTransversal() {
-    auto const& f = frames_[0]->f->get_rows();
-    int p = (int) f.size();
+    auto const& f = rootF_;
+    int p = f.size();
     counts_.assign(p, 0);  // columns of X in each set of F
-    for (int j = witness_.find_first(); j >= 0; j = witness_.find_next(j)) {
-        bit_chunk::get_bit_iterator it(j);
-        for (int i = 0; i < p; ++i) {
-            if (f[i].get(it))
-                ++counts_[i];
-        }
-    }
-    for (int c : counts_) {
-        if (c == 0)
+    for (int i = 0; i < p; ++i) {
+        Word const* r = f.row(i);
+        for (int k = 0; k < w_; ++k)
+            counts_[i] += bits_count((bits64) (r[k] & witness_[k]));
+        if (counts_[i] == 0)
             throw std::logic_error("FK: the witness is not a transversal");
     }
 
-    image_.assign(witness_);
-    for (int j = witness_.find_first(); j >= 0; j = witness_.find_next(j)) {
-        bit_chunk::get_bit_iterator it(j);
-        bool needed = false;
-        for (int i = 0; i < p && !needed; ++i)
-            needed = counts_[i] == 1 && f[i].get(it);
-        if (needed)
-            continue;
-        image_.reset(j);
+    copySet(image_.data(), witness_.data(), w_);
+    forEachBit(witness_.data(), w_, [&](int j) {
         for (int i = 0; i < p; ++i) {
-            if (f[i].get(it))
+            if (counts_[i] == 1 && getBit(f.row(i), j))
+                return;  // j is needed
+        }
+        resetBit(image_.data(), j);
+        for (int i = 0; i < p; ++i) {
+            if (getBit(f.row(i), j))
                 --counts_[i];
         }
-    }
-    assert(covers_->find_sub_row(image_) < 0);
+    });
+    assert(rootG_.findSubset(image_.data()) < 0);
 }
 
-// The image of a new cover is in image_ and already in fr's input G: add it to fr's split families
-// and put its image for the child into image_ (adding it to the child's input G). Returns false if
-// the child's input G does not get it.
-bool Solver::propagate(Frame& fr) {
-    // The parent removed the supersets of the image from fr's input G; remove them from both split
-    // families (a set of G0 cannot contain an image with x)
-    bool hasX = image_.get(fr.x);
-    bool inserted;
-    if (hasX) {
-        childImage_.assign(image_);
-        childImage_.reset(fr.x);
-        inserted = insertMin(fr.g1, childImage_, n_);
-    } else {
-        inserted = insertMin(fr.g0, image_, n_);
-        fr.g1.remove_sup_rows(image_);
+// Image of a cover in the input G of the frame at depth d: the transformations of the frames
+// above, checking that the cover reaches each of their children
+void Solver::imageAt(int d, Word const* cover, Word* image) {
+    copySet(image, cover, w_);
+    bool reaches = true;
+    for (int k = 0; k < d && reaches; ++k) {
+        auto const& fr = *frames_[k];
+        bool hasX = getBit(image, fr.x);
+        switch (fr.phase) {
+            case Phase::Pair1:  // the child's G is G0
+                reaches = !hasX;
+                break;
+            case Phase::Pair2:  // min(G0 + G1)
+                resetBit(image, fr.x);
+                break;
+            case Phase::Alpha:  // G0 with t removed
+                reaches = !hasX;
+                assignSub(image, image, fr.t.data(), w_);
+                break;
+            case Phase::Beta:  // the sets of G1 disjoint with t
+                reaches = hasX && !intersects(image, fr.t.data(), w_);
+                resetBit(image, fr.x);
+                break;
+            case Phase::None:
+                reaches = false;
+                break;
+        }
     }
+    if (!reaches)
+        throw std::logic_error("FK: a new cover does not reach the subproblem it was found in");
+}
 
-    switch (fr.phase) {
-        case Phase::Pair1:  // the child's G is g0
-            return !hasX && inserted;
-        case Phase::Pair2:
-            if (!hasX)
-                childImage_.assign(image_);
-            break;
-        case Phase::Alpha:
-            if (hasX)
-                return false;
-            childImage_.assign_sub(image_, fr.t);
-            break;
-        case Phase::Beta:
-            if (!hasX || image_.intersects(fr.t))
-                return false;
-            break;
-        case Phase::None:
-            return false;
+// Add the covers found since the frame at depth d was split (all in its subtree) to its split
+// families. A new cover's image contains no set of the frame's G (it was a witness there), but it
+// may be a proper subset of some of them, which are removed. That needs a frame above with the
+// first or an alpha subproblem: the other subproblems take some of the sets of G1 or G0 and remove
+// the same columns from all of them, so the images of covers stay pairwise incomparable as at the
+// root, where G is a family of minimal transversals.
+void Solver::sync(Frame& fr, int d) {
+    int total = rootG_.size();
+    if (fr.synced == total)
+        return;
+    bool shrinks = false;
+    for (int k = 0; k < d && !shrinks; ++k)
+        shrinks = frames_[k]->phase == Phase::Pair2 || frames_[k]->phase == Phase::Alpha;
+
+    Word* image = temp_.data();
+    for (int c = fr.synced; c < total; ++c) {
+        imageAt(d, rootG_.row(c), image);
+        if (getBit(image, fr.x)) {
+            // A set of G0 cannot contain an image with x
+            resetBit(image, fr.x);
+            if (shrinks)
+                fr.g1.removeSupersets(image);
+            fr.g1.add(image);
+        } else {
+            if (shrinks) {
+                fr.g0.removeSupersets(image);
+                fr.g1.removeSupersets(image);
+            }
+            fr.g0.add(image);
+        }
     }
-    if (!insertMin(fr.childG, childImage_, n_))
-        return false;
-    std::swap(image_, childImage_);
-    return true;
+    fr.synced = total;
 }
 
 DualityResult isDual(bit_matrix const& h, bit_matrix const& g) {
     int n = workWidth(std::max(h.width(), g.width()));
-    std::vector<int> dominators, counts;
-    std::vector<char> keep;
-    bit_matrix f;
-    copyRows(h, f, n);
-    minimize(f, dominators, counts, keep);
-    bit_matrix s;
-    copyRows(g, s, n);
-    minimize(s, dominators, counts, keep);
+    int w = wordsFor(n);
+    Family f = familyOf(h, w);
+    minimize(f, n);
+    Family s = familyOf(g, w);
+    minimize(s, n);
 
     DualityResult result;
-    for (auto const& a : s.get_rows()) {
-        for (auto const& b : f.get_rows()) {
-            if (!a.intersects(b)) {
+    for (int i = 0; i < s.size(); ++i) {
+        for (int j = 0; j < f.size(); ++j) {
+            if (!intersects(s.row(i), f.row(j), w)) {
                 // X = a has g(X) = 1 and f(C \ X) = 1 (b lies in C \ X)
                 result.result = Duality::NotTransversal;
-                a.get_bits(result.witness);
+                toColumns(s.row(i), w, result.witness);
                 return result;
             }
         }
     }
 
     Solver solver;
-    solver.init(n);
-    if (solver.test(f, s))
+    solver.init(n, std::move(f), std::move(s));
+    if (solver.run(nullptr, false) == Solver::Result::Dual)
         return result;
 
-    auto x = solver.witness();
-    x.get_bits(result.witness);
-    bool transversal =
-            std::all_of(f.get_rows().begin(), f.get_rows().end(), [&x](bit_chunk const& r) { return r.intersects(x); });
-    bool containsG = s.find_sub_row(x) >= 0;
+    result.witness = solver.witness();
+    Set x((std::size_t) w, Word(0));
+    for (int j : result.witness)
+        setBit(x.data(), j);
+    auto const& rf = solver.rootF();
+    bool transversal = true;
+    for (int i = 0; i < rf.size() && transversal; ++i)
+        transversal = intersects(rf.row(i), x.data(), w);
+    bool containsG = solver.rootG().findSubset(x.data()) >= 0;
     if (transversal == containsG)
         throw std::logic_error("FK: invalid witness");
     result.result = transversal ? Duality::NewTransversal : Duality::NotTransversal;
@@ -888,13 +1239,10 @@ void GlobalState::start() {
     }
 
     int w = workWidth(n);
-    hypergraph_.zero(0, w);
-    copyRows(_matrix, hypergraph_, w);
-    std::vector<int> dominators, counts;
-    std::vector<char> keep;
-    minimize(hypergraph_, dominators, counts, keep);
+    Family hypergraph = familyOf(_matrix, wordsFor(w));
+    minimize(hypergraph, w);
     covers_.zero(0, w);
-    solver_->init(w);
+    solver_->init(w, std::move(hypergraph), Family(wordsFor(w)));
     enumeration_ = Enumeration::Running;
 }
 
@@ -906,9 +1254,9 @@ bool GlobalState::run(bool once) {
 
     int before = covers_.height();
     try {
-        bool complete =
-                solver_->generate(hypergraph_, covers_, once, [this](bit_chunk cover) { return reportCover(cover); });
-        if (complete || _currentNode.stoped)
+        Solver::Report report = [this](Columns const& cover) { return reportCover(cover); };
+        auto r = solver_->run(&report, once);
+        if (r != Solver::Result::Found || _currentNode.stoped)
             enumeration_ = Enumeration::Finished;
     }
     catch (...) {
@@ -918,9 +1266,16 @@ bool GlobalState::run(bool once) {
     return covers_.height() > before;
 }
 
-bool GlobalState::reportCover(bit_chunk cover) {
-    lastCover_.clear();
-    cover.get_bits(lastCover_);
+bool GlobalState::reportCover(Columns const& cover) {
+    lastCover_ = cover;
+    // add_rows reserves the row container one row ahead: grow it geometrically instead
+    int h = covers_.height();
+    if ((int) covers_.get_rows().capacity() == h)
+        covers_.reserve(std::max(16, 2 * h), covers_.width());
+    covers_.add_rows(1, covers_.width());
+    auto& row = covers_.get_rows().back();
+    for (int j : cover)
+        row.set(j);
     _currentNode.columns = lastCover_;
     return doCoverCallback();
 }
