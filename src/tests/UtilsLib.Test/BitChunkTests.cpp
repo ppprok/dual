@@ -117,10 +117,13 @@ TEST_CASE("find_diff_bits_test") {
 
 namespace {
 
-// Bit set of random blocks; some blocks (also trailing ones) are zero so that trimming is exercised
+// Bit set of n random blocks; some blocks (also trailing ones) are zero so that trimming is exercised.
+// One extra zero block keeps data() non-null for n = 0 (a chunk with null bounds is not valid()).
 std::vector<bit_chunk::Block> randomBlocks(std::mt19937_64& g, int n) {
-    std::vector<bit_chunk::Block> v(n);
+    std::vector<bit_chunk::Block> v(n + 1, 0);
     for (auto& b : v) {
+        if (&b == &v.back())
+            break;
         switch (g() % 4) {
             case 0:
                 b = 0;
