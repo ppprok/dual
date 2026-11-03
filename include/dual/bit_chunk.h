@@ -299,36 +299,12 @@ public:
 protected:
     /// @brief Index of the lowest set bit of a non-zero block.
     static inline int get_first(Block b) {
-        auto b1 = b & 0xff;
-        if (b1)
-            return BitOpTables::low_bit_number[b1];
-
-        auto b2 = b & 0xff00;
-        if (b2)
-            return BitOpTables::low_bit_number[b2 >> 8] + 8;
-
-        auto b3 = b & 0xff0000;
-        if (b3)
-            return BitOpTables::low_bit_number[b3 >> 16] + 16;
-
-        return BitOpTables::low_bit_number[b >> 24] + 24;
+        return lowest_bit_index(b);
     }
 
     /// @brief Index of the highest set bit of a non-zero block.
     static inline int get_last(Block b) {
-        auto b1 = b & 0xff000000;
-        if (b1)
-            return BitOpTables::high_bit_number[b1 >> 24] + 24;
-
-        auto b2 = b & 0xff0000;
-        if (b2)
-            return BitOpTables::high_bit_number[b2 >> 16] + 16;
-
-        auto b3 = b & 0xff00;
-        if (b3)
-            return BitOpTables::high_bit_number[b3 >> 8] + 8;
-
-        return BitOpTables::high_bit_number[b];
+        return highest_bit_index(b);
     }
 
 public:

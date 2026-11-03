@@ -18,7 +18,7 @@ the **internal** headers, which are not installed. Everything is in namespace `d
 | `<dual/bit_vector.h>` | `bit_vector`: a `bit_chunk` that owns its storage. |
 | `<dual/bit_mask.h>` | `bit_mask`: a `bit_chunk` used as a mask on other bit strings (`trim`, masked counts and searches). |
 | `<dual/bit_matrix.h>` | `bit_matrix`: rows as `bit_chunk`s over one contiguous block buffer. Move-only. `set(i, j)` grows the matrix in any order (missing rows are added as zero rows, rows are re-laid out when a column does not fit); it returns `false` only for negative or `INT_MAX` indices and throws `std::length_error` when the size does not fit into `int`. |
-| `<dual/bits.h>`, `bits.cpp` | `bits32` / `bits64` words and byte lookup tables for bit counts and lowest/highest set bits; used by `bit_chunk` and `RuncFixed`. |
+| `<dual/bits.h>` | `bits32` / `bits64` words; `bits_count`, `lowest_bit_index`, `highest_bit_index` (compiler builtins with portable fallbacks) and the `low_bit` iterator; used by `bit_chunk`, `RuncFixed`, FK and the optimal-cover bounds. |
 | `<dual/blob.h>`, `<dual/raw_vector.h>` | Containers that do not run element constructors; they throw `std::bad_alloc` and stay unchanged when memory runs out. |
 | `<dual/containers.h>`, `<dual/range.h>`, `<dual/marked.h>` | Container helpers, an index range, a value with an attached mark (used by the algorithms' headers). |
 
