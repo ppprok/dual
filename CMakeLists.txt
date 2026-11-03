@@ -28,6 +28,11 @@ option(DUAL_INSTALL "Generate install rules and the dualConfig.cmake package" ${
 option(DUAL_BUILD_DOCS "Add the dual_docs target that builds the API documentation with Doxygen" OFF)
 option(DUAL_CLANG_TIDY "Run clang-tidy (config .clang-tidy) on own sources as part of the build" OFF)
 option(DUAL_BUILD_BENCHMARKS "Build the dual_bench executable used by benchmarks/run_benchmarks.py" OFF)
+# OFF by default: a build with it runs only on CPUs with the instruction set of the build machine (or of
+# DUAL_ARCH_FLAGS). Without it x86-64 has no POPCNT, so bits_count falls back to a SWAR popcount.
+option(DUAL_NATIVE_ARCH "Compile own targets for the build machine's CPU (-march=native, or DUAL_ARCH_FLAGS)" OFF)
+set(DUAL_ARCH_FLAGS "" CACHE STRING
+        "Flags that DUAL_NATIVE_ARCH uses instead of the default, e.g. -march=x86-64-v3 or /arch:AVX2")
 
 if(DUAL_IS_TOP_LEVEL)
     if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)

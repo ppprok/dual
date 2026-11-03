@@ -94,6 +94,7 @@ Compare against this list: a new failure is yours; an old one is not to be fixed
 | Job | What | Reproduce locally |
 |---|---|---|
 | `linux-gcc` / `linux-clang` / `macos` / `windows-msvc` × `dev`, `release` | `cmake --preset P`, `cmake --build --preset P`, `ctest --preset P` (incl. `dual_consumer`) | the same three commands (only gcc is available here; clang, macOS and MSVC run only in CI) |
+| `linux-gcc` / `macos` / `windows-msvc` `release native` | `cmake --preset release -DDUAL_NATIVE_ARCH=ON`, build, `ctest --preset release` (builtin popcount/ctz/clz branches of `<dual/bits.h>`; the default x86-64 build uses the portable fallbacks) | the same commands (use a separate build dir, e.g. `-B build/native`, to keep `build/release` portable) |
 | `linux-gcc asan` | the `asan` preset | `cmake --preset asan && cmake --build --preset asan && ctest --preset asan` |
 | `linux-gcc coverage` | the `coverage` preset + gcovr 8.7; summary in the job summary, HTML in the `coverage-report` artifact; no threshold | the commands of the Coverage section |
 | `docs` | Doxygen with `WARN_AS_ERROR = FAIL_ON_WARNINGS` | `mkdir -p build && printf '@INCLUDE = docs/Doxyfile\nWARN_AS_ERROR = FAIL_ON_WARNINGS\n' > build/Doxyfile.ci && doxygen build/Doxyfile.ci` |

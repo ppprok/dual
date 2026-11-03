@@ -62,6 +62,44 @@ jobs:
       - name: Test
         run: ctest --preset ${{ matrix.preset }}
 
+  # DUAL_NATIVE_ARCH=ON (#59): -march=native (GCC, Clang; -mcpu=native as a fallback) or /arch:AVX2
+  # (MSVC), so the builtin/intrinsic branches of <dual/bits.h> are built and tested, not only the
+  # portable fallbacks that the default build of x86-64 uses.
+  native:
+    name: ${{ matrix.name }} release native
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: linux-gcc
+            os: ubuntu-latest
+            cc: gcc
+            cxx: g++
+          - name: macos
+            os: macos-latest
+            cc: clang
+            cxx: clang++
+          - name: windows-msvc
+            os: windows-latest
+            cc: cl
+            cxx: cl
+    env:
+      CC: ${{ matrix.cc }}
+      CXX: ${{ matrix.cxx }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ilammy/msvc-dev-cmd@v1
+        if: runner.os == 'Windows'
+      - name: Install Ninja
+        run: pipx install ninja
+      - name: Configure
+        run: cmake --preset release -DDUAL_NATIVE_ARCH=ON
+      - name: Build
+        run: cmake --build --preset release
+      - name: Test
+        run: ctest --preset release
+
   asan:
     name: linux-gcc asan
     runs-on: ubuntu-latest
