@@ -134,7 +134,7 @@ TEST_CASE("bit_vector_zero_allocates_enough_bytes") {
     bit_vector v;
     v.zero(256);
 #if defined(__GLIBC__)
-    CHECK(malloc_usable_size(v.begin) >= 8 * sizeof(bit_chunk::Block));
+    CHECK(malloc_usable_size(v.begin) >= 256 / 8);
 #endif
     for (int i = 0; i != 256; ++i)
         v.set(i);
@@ -143,7 +143,7 @@ TEST_CASE("bit_vector_zero_allocates_enough_bytes") {
 
     v.zero(1024);
 #if defined(__GLIBC__)
-    CHECK(malloc_usable_size(v.begin) >= 32 * sizeof(bit_chunk::Block));
+    CHECK(malloc_usable_size(v.begin) >= 1024 / 8);
 #endif
     for (int i = 0; i != 1024; ++i)
         v.set(i);

@@ -6,9 +6,6 @@
 #include <limits>
 #include <numeric>
 
-#if defined(_MSC_VER) && !defined(__clang__)
-#    include <intrin.h>
-#endif
 
 namespace dual {
 
@@ -16,32 +13,6 @@ namespace {
 
 int wordsFor(int bits) {
     return (bits + 63) / 64;
-}
-
-int popCount(bits64 w) {
-#if defined(__GNUC__) || defined(__clang__)
-    return __builtin_popcountll(w);
-#else
-    return bits_count(w);
-#endif
-}
-
-// Index of the lowest set bit of a non-zero word
-int lowestBit(bits64 w) {
-#if defined(__GNUC__) || defined(__clang__)
-    return __builtin_ctzll(w);
-#elif defined(_MSC_VER)
-    unsigned long index = 0;
-    _BitScanForward64(&index, w);
-    return (int) index;
-#else
-    int i = 0;
-    while (!(w & 1u)) {
-        w >>= 1;
-        ++i;
-    }
-    return i;
-#endif
 }
 
 bool isSubset(std::vector<bits64> const& a, std::vector<bits64> const& b) {
@@ -54,7 +25,7 @@ bool isSubset(std::vector<bits64> const& a, std::vector<bits64> const& b) {
 int countBits(std::vector<bits64> const& a) {
     int c = 0;
     for (auto w : a)
-        c += popCount(w);
+        c += bits_count(w);
     return c;
 }
 
@@ -254,7 +225,7 @@ int CompletionBounds::CountUncovered() const {
     bits64 const* rows = uncovered(depth_);
     int u = 0;
     for (int k = 0; k < rowWords_; ++k)
-        u += popCount(rows[k]);
+        u += bits_count(rows[k]);
     return u;
 }
 
@@ -296,7 +267,7 @@ double CompletionBounds::maxGain(double threshold, bool exact) {
     bool first = true;
     for (int k = 0; k < rowWords_; ++k)
         for (bits64 w = rows[k]; w; w &= w - 1) {
-            int i = k * 64 + lowestBit(w);
+            int i = k * 64 + lowest_bit_index(w);
             sumOfRowMax += maxPositive_[i];
             if (first || maxNegative_[i] < negativePart)
                 negativePart = maxNegative_[i];
@@ -319,7 +290,7 @@ double CompletionBounds::maxGain(double threshold, bool exact) {
     int taken = 0;
     for (int c = 0; c < columnWords_ && taken < u && sum < stopAt; ++c)
         for (bits64 w = union_[c]; w && taken < u && sum < stopAt; w &= w - 1) {
-            int p = c * 64 + lowestBit(w);
+            int p = c * 64 + lowest_bit_index(w);
             if (p >= positiveColumns_) {
                 taken = u;
                 break;
@@ -345,7 +316,7 @@ double CompletionBounds::minGain(double threshold, bool exact) {
         double sumOfRowMin = 0;
         for (int k = 0; k < rowWords_; ++k)
             for (bits64 w = rows[k]; w; w &= w - 1) {
-                int i = k * 64 + lowestBit(w);
+                int i = k * 64 + lowest_bit_index(w);
                 sumOfRowMin += minNegative_[i];
                 bits64 const* row = rows_.data() + (size_t) i * columnWords_;
                 for (int c = 0; c < columnWords_; ++c)
@@ -373,7 +344,7 @@ double CompletionBounds::minGain(double threshold, bool exact) {
         double largest = 0;
         for (int k = 0; k < rowWords_; ++k)
             for (bits64 w = rows[k]; w; w &= w - 1) {
-                int i = k * 64 + lowestBit(w);
+                int i = k * 64 + lowest_bit_index(w);
                 largest = std::max(largest, minPositive_[i]);
                 bits64 const* row = rows_.data() + (size_t) i * columnWords_;
                 bool disjoint = true;

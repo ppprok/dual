@@ -13,6 +13,11 @@ The first release is planned as **0.1.0** (the version in `project(dual VERSION 
 
 ### Added
 
+- CMake option `DUAL_NATIVE_ARCH` (OFF by default): compiles the library's own targets for the build
+  machine (`-march=native`, `-mcpu=native` as a fallback, `/arch:AVX2` on MSVC) or with
+  `DUAL_ARCH_FLAGS` (e.g. `-march=x86-64-v3`); the flags are not exported to consumers. CI builds and
+  tests the `release` preset with it on Linux (GCC) and Windows (MSVC). `dual::hardware_popcount` tells
+  whether `bits_count` uses a popcount instruction ([#59](https://github.com/ppprok/dual/issues/59)).
 - Fixed-width fast path in `Runc::RuncGlobalState` for matrices of at most 128 columns
   (`FastPathMaxWidth`): rows are kept in one (n <= 64) or two 64-bit words instead of the general
   bit containers, for `OPT`, `RUNC` and `RUNCM`. It reports the identical search tree (every
@@ -96,6 +101,15 @@ The first release is planned as **0.1.0** (the version in `project(dual VERSION 
 
 ### Changed
 
+- Faster general bit containers and general RUNC path (more than 128 columns)
+  ([#59](https://github.com/ppprok/dual/issues/59)): `bit_chunk` blocks are 64-bit words instead of
+  `unsigned int` (the in-memory layout of `bit_matrix` changes; the public API and the C ABI do
+  not); `bits_count`, `lowest_bit_index` and `highest_bit_index` in `<dual/bits.h>` use compiler
+  builtins with portable fallbacks; the block loops have a single exit condition and vectorize on
+  rows of 16 blocks and more; `RuncGlobalState` stops at a cover before building support groups it
+  never uses (the search tree is unchanged). Median time per cover against master, without
+  `-march`, on random matrices of 150-1500 columns: RUNCM 2.4-5.9x, RUNC 2.3-5.8x, OPT 1.8-3.1x,
+  AOT1 AO2M 1.1-1.4x, PUNC 1.1-1.5x faster; up to 96 columns AOT1 and PUNC gain up to 1.25x.
 - `FK::GlobalState` is 20–40x faster (`10_50_7187.hg`: 2.1 s → 0.06 s, `15_35_12226.hg`: 13 s →
   0.7 s in Release): the recursion runs on an explicit stack, so `next()` continues the run of the
   duality test instead of restarting it from the root and getting the covers one by one costs about
@@ -157,6 +171,8 @@ The first release is planned as **0.1.0** (the version in `project(dual VERSION 
 
 ### Removed
 
+- The byte lookup tables `BitOpTables` and `src/common/bits.cpp`; the bit helpers use builtins
+  ([#59](https://github.com/ppprok/dual/issues/59)).
 - Unmaintained code and data moved to `legacy/` (not built): logical-analysis classifiers,
   dualization over products of posets, the `dualizer` executable, Boost-based helpers,
   third-party reference implementations, experiments and `.int` datasets

@@ -28,7 +28,6 @@ set(DUAL_COMMON_INTERNAL_HEADERS
         string_utils.h)
 
 add_library(common
-        bits.cpp
         graph_algorithms.cpp
         integers_file_reader.cpp
         integers_file_writer.cpp

@@ -288,10 +288,11 @@ void PrintInfo() {
 #else
     const char* assertions = "on";
 #endif
-    std::printf("{\"compiler\": \"%s\", \"assertions\": \"%s\", \"pointer_bits\": %d}\n",
+    std::printf("{\"compiler\": \"%s\", \"assertions\": \"%s\", \"pointer_bits\": %d, \"hardware_popcount\": %s}\n",
                 Escape(compiler).c_str(),
                 assertions,
-                (int) (8 * sizeof(void*)));
+                (int) (8 * sizeof(void*)),
+                dual::hardware_popcount ? "true" : "false");
 }
 
 void PrintUsage() {

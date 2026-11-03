@@ -11,9 +11,6 @@
 #include <dual/bit_chunk.h>
 #include <dual/runc.h>
 
-#if defined(_MSC_VER) && (defined(_M_X64) || defined(_M_ARM64))
-#    include <intrin.h>
-#endif
 
 namespace dual {
 
@@ -46,15 +43,7 @@ inline bool operator==(Bits128 a, Bits128 b) {
 
 /// @brief Number of set bits.
 inline int wordCount(uint64_t x) {
-#if defined(__GNUC__) && defined(__POPCNT__)
-    return __builtin_popcountll(x);
-#else
-    // SWAR popcount: without the POPCNT instruction the builtin is a library call
-    x = x - ((x >> 1) & 0x5555555555555555ULL);
-    x = (x & 0x3333333333333333ULL) + ((x >> 2) & 0x3333333333333333ULL);
-    x = (x + (x >> 4)) & 0x0f0f0f0f0f0f0f0fULL;
-    return int((x * 0x0101010101010101ULL) >> 56);
-#endif
+    return bits_count(x);
 }
 /// @brief Number of set bits.
 inline int wordCount(Bits128 x) {
@@ -63,18 +52,7 @@ inline int wordCount(Bits128 x) {
 
 /// @brief Index of the highest set bit of a non-zero word.
 inline int wordLast(uint64_t x) {
-#if defined(__GNUC__)
-    return 63 - __builtin_clzll(x);
-#elif defined(_MSC_VER) && (defined(_M_X64) || defined(_M_ARM64))
-    unsigned long i = 0;
-    _BitScanReverse64(&i, x);
-    return int(i);
-#else
-    int i = 0;
-    while (x >>= 1)
-        ++i;
-    return i;
-#endif
+    return highest_bit_index(x);
 }
 /// @brief Index of the highest set bit of a non-zero word.
 inline int wordLast(Bits128 x) {
@@ -125,29 +103,29 @@ bool wordFromRow(bit_chunk const& row, Word& word);
 template<>
 inline bool wordFromRow<uint64_t>(bit_chunk const& row, uint64_t& word) {
     word = 0;
-    int k = 0;
-    for (auto d = row.begin; d != row.end; ++d, ++k) {
-        if (k >= 2) {
+    int offset = 0;
+    for (auto d = row.begin; d != row.end; ++d, offset += bit_chunk::bits_per_block) {
+        if (offset >= 64) {
             if (*d)
                 return false;
             continue;
         }
-        word |= uint64_t(*d) << (32 * k);
+        word |= uint64_t(*d) << offset;
     }
     return true;
 }
 template<>
 inline bool wordFromRow<Bits128>(bit_chunk const& row, Bits128& word) {
     word = Bits128{};
-    int k = 0;
-    for (auto d = row.begin; d != row.end; ++d, ++k) {
-        if (k >= 4) {
+    int offset = 0;
+    for (auto d = row.begin; d != row.end; ++d, offset += bit_chunk::bits_per_block) {
+        if (offset >= 128) {
             if (*d)
                 return false;
             continue;
         }
-        uint64_t& half = k < 2 ? word.lo : word.hi;
-        half |= uint64_t(*d) << (32 * (k & 1));
+        uint64_t& half = offset < 64 ? word.lo : word.hi;
+        half |= uint64_t(*d) << (offset & 63);
     }
     return true;
 }

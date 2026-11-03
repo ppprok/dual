@@ -1,7 +1,6 @@
 #include <dual/fk.h>
 
 #include <algorithm>
-#include <array>
 #include <cassert>
 #include <cmath>
 #include <cstdint>
@@ -54,21 +53,6 @@ int workWidth(int n) {
     return std::max(n, 1);
 }
 
-// Index of the lowest set bit of a non-zero word (de Bruijn multiplication, portable)
-constexpr Word deBruijn = 0x03f79d71b4cb0a89ULL;
-
-constexpr std::array<int, 64> makeLowBitTable() {
-    std::array<int, 64> table{};
-    for (int i = 0; i < 64; ++i)
-        table[(std::size_t) (((Word(1) << i) * deBruijn) >> 58)] = i;
-    return table;
-}
-
-constexpr std::array<int, 64> lowBitTable = makeLowBitTable();
-
-inline int lowBit(Word v) {
-    return lowBitTable[(std::size_t) (((v & (~v + 1)) * deBruijn) >> 58)];
-}
 
 // Operations on sets of w words; columns are j >= 0
 inline Word bitOf(int j) {
@@ -135,7 +119,7 @@ inline bool intersects(Word const* a, Word const* b, int w) {
 inline int countSet(Word const* a, int w) {
     int c = 0;
     for (int k = 0; k < w; ++k)
-        c += bits_count((bits64) a[k]);
+        c += bits_count(a[k]);
     return c;
 }
 
@@ -143,7 +127,7 @@ inline int countSet(Word const* a, int w) {
 inline int firstBit(Word const* a, int w) {
     for (int k = 0; k < w; ++k) {
         if (a[k])
-            return k * wordBits + lowBit(a[k]);
+            return k * wordBits + lowest_bit_index(a[k]);
     }
     return -1;
 }
@@ -169,7 +153,7 @@ template<typename Fn>
 inline void forEachBit(Word const* a, int w, Fn fn) {
     for (int k = 0; k < w; ++k) {
         for (Word v = a[k]; v; v &= v - 1)
-            fn(k * wordBits + lowBit(v));
+            fn(k * wordBits + lowest_bit_index(v));
     }
 }
 
@@ -1065,7 +1049,7 @@ void Solver::minimalTransversal() {
     for (int i = 0; i < p; ++i) {
         Word const* r = f.row(i);
         for (int k = 0; k < w_; ++k)
-            counts_[i] += bits_count((bits64) (r[k] & witness_[k]));
+            counts_[i] += bits_count(Word(r[k] & witness_[k]));
         if (counts_[i] == 0)
             throw std::logic_error("FK: the witness is not a transversal");
     }

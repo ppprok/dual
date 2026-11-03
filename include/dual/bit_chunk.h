@@ -38,8 +38,11 @@ struct log2<1> {
 /// forward (`set`, `pad_blocks`, `pad_bits`, `assign*`) write past the current `end`; the caller
 /// must guarantee that enough memory is available there (see `bit_vector` and `bit_matrix`,
 /// which allocate the storage). Preconditions are checked with `assert` only.
-//template <typename BaseChunk>
-struct bit_chunk : chunk<unsigned int> {
+///
+/// Blocks are 64-bit words (`bits64`) on every platform. The block width is an implementation detail
+/// of the in-memory layout: code outside the containers should use `Block` and `bits_per_block`
+/// rather than assume a width.
+struct bit_chunk : chunk<bits64> {
     /// Byte type.
     typedef unsigned char byte;
 
@@ -85,7 +88,7 @@ struct bit_chunk : chunk<unsigned int> {
     /// @brief Trim to the last set bit: drop trailing zero blocks.
     inline void trim() {
         assert(valid());
-        for (auto d = end - 1; begin != end && !*d; --d, --end) {};
+        trim_from(end);
     }
 
     /// @brief If the chunk has fewer than @p s blocks, append blocks filled with @p bit.
@@ -114,7 +117,20 @@ private:
     inline void do_pad_ones(const Block* end1) {
         assert(end < end1);
         for (; end < end1; ++end)
-            *end = -1;
+            *end = ~Block(0);
+    }
+
+protected:
+    /// @brief Set `end` to @p e, then drop trailing zero blocks.
+    inline void trim_from(Block* e) {
+        while (e != begin && !e[-1])
+            --e;
+        end = e;
+    }
+
+    /// @brief Smaller of two block counts.
+    static inline int min_size(int a, int b) {
+        return a < b ? a : b;
     }
 
 public:
@@ -127,6 +143,39 @@ public:
         return true;
     }
 
+    /// Block count from which `assign*` and `flip` use a loop the compiler vectorizes (and trim
+    /// afterwards) instead of a scalar loop that tracks the last non-zero block. A vectorized loop
+    /// needs an aliasing check, a remainder loop and a second pass to trim, which only pays off on
+    /// long rows: in a microbenchmark the two break even at about 16 blocks (1024 columns).
+    static const int vector_min_blocks = 16;
+
+private:
+    /// @brief Write `begin[k] = op(k)` for `k` in `[k0, k1)` and return one past the last non-zero
+    ///        block of `[begin, begin + k1)`, given @p e for the blocks before @p k0.
+    ///
+    /// Both loops have a single exit condition on a precomputed block count. The destination may
+    /// alias the blocks that @p op reads (e.g. `x.assign_and(x, y)`): every block is read before it
+    /// is written at the same index.
+    template<typename Op>
+    inline Block* write_blocks(int k0, int k1, Block* e, Op op) {
+        Block* d = begin;
+        if (k1 - k0 < vector_min_blocks) {
+            for (int k = k0; k < k1; ++k) {
+                if ((d[k] = op(k)) != 0)
+                    e = d + k + 1;
+            }
+            return e;
+        }
+
+        for (int k = k0; k < k1; ++k)
+            d[k] = op(k);
+        Block* p = d + k1;
+        while (p != d + k0 && !p[-1])
+            --p;
+        return p == d + k0 ? e : p;
+    }
+
+public:
     /// @brief Assign the intersection `r1 & r2`.
     /// @note Writes up to `min(r1.size(), r2.size())` blocks, then trims trailing zero blocks.
     inline void assign_and(bit_chunk const& r1, bit_chunk const& r2) {
@@ -134,16 +183,9 @@ public:
         assert(r1.valid());
         assert(r2.valid());
 
-        auto endd = begin;
-        auto e1 = r1.begin;
-        auto e2 = r2.begin;
-
-        for (auto d = begin; e1 != r1.end && e2 != r2.end; ++d, ++e1, ++e2) {
-            if ((*d = *e1 & *e2) != 0)
-                endd = d + 1;
-        }
-
-        end = endd;
+        const Block* a = r1.begin;
+        const Block* b = r2.begin;
+        end = write_blocks(0, min_size(r1.size(), r2.size()), begin, [a, b](int k) { return a[k] & b[k]; });
     }
 
     /// @brief Assign the union `r1 | r2`.
@@ -153,26 +195,17 @@ public:
         assert(r1.valid());
         assert(r2.valid());
 
-        auto d = begin;
-        auto endd = begin;
-        auto e1 = r1.begin;
-        auto e2 = r2.begin;
-
-        for (; e1 != r1.end && e2 != r2.end; ++d, ++e1, ++e2) {
-            if ((*d = *e1 | *e2) != 0)
-                endd = d + 1;
-        }
-
-        for (; e1 != r1.end; ++e1, ++d) {
-            if ((*d = *e1) != 0)
-                endd = d + 1;
-        }
-
-        for (; e2 != r2.end; ++e2, ++d) {
-            if ((*d = *e2) != 0)
-                endd = d + 1;
-        }
-        end = endd;
+        const int n1 = r1.size();
+        const int n2 = r2.size();
+        const int n = min_size(n1, n2);
+        const Block* a = r1.begin;
+        const Block* b = r2.begin;
+        Block* e = write_blocks(0, n, begin, [a, b](int k) { return a[k] | b[k]; });
+        if (n1 > n)
+            e = write_blocks(n, n1, e, [a](int k) { return a[k]; });
+        else if (n2 > n)
+            e = write_blocks(n, n2, e, [b](int k) { return b[k]; });
+        end = e;
     }
 
     /// @brief Assign the difference `r1 & ~r2`.
@@ -182,22 +215,14 @@ public:
         assert(r1.valid());
         assert(r2.valid());
 
-        auto d = begin;
-        auto endd = begin;
-        auto e1 = r1.begin;
-        auto e2 = r2.begin;
-
-        for (; e1 != r1.end && e2 != r2.end; ++d, ++e1, ++e2) {
-            if ((*d = *e1 & ~*e2) != 0)
-                endd = d + 1;
-        }
-
-        for (; e1 != r1.end; ++e1, ++d) {
-            if ((*d = *e1) != 0)
-                endd = d + 1;
-        }
-
-        end = endd;
+        const int n1 = r1.size();
+        const int n = min_size(n1, r2.size());
+        const Block* a = r1.begin;
+        const Block* b = r2.begin;
+        Block* e = write_blocks(0, n, begin, [a, b](int k) { return a[k] & ~b[k]; });
+        if (n1 > n)
+            e = write_blocks(n, n1, e, [a](int k) { return a[k]; });
+        end = e;
     }
 
     /// @brief Copy the bits of @p r into this chunk's memory.
@@ -206,12 +231,8 @@ public:
         assert(valid());
         assert(r.valid());
 
-        auto endd = begin;
-        for (auto d = begin, e = r.begin; e != r.end; ++e, ++d) {
-            if ((*d = *e) != 0)
-                endd = d + 1;
-        }
-        end = endd;
+        const Block* a = r.begin;
+        end = write_blocks(0, r.size(), begin, [a](int k) { return a[k]; });
     }
 
     /// @brief Invert the bits of the existing blocks `[begin, end)`, then trim trailing zero blocks.
@@ -219,11 +240,8 @@ public:
     inline void flip() {
         assert(valid());
 
-        auto cend = end;
-        for (auto i = end = begin; i != cend; ++i) {
-            if ((*i = ~*i) != 0)
-                end = i + 1;
-        }
+        const Block* a = begin;
+        end = write_blocks(0, size(), begin, [a](int k) { return ~a[k]; });
     }
 
     /// @brief Get bit @p i.
@@ -299,36 +317,12 @@ public:
 protected:
     /// @brief Index of the lowest set bit of a non-zero block.
     static inline int get_first(Block b) {
-        auto b1 = b & 0xff;
-        if (b1)
-            return BitOpTables::low_bit_number[b1];
-
-        auto b2 = b & 0xff00;
-        if (b2)
-            return BitOpTables::low_bit_number[b2 >> 8] + 8;
-
-        auto b3 = b & 0xff0000;
-        if (b3)
-            return BitOpTables::low_bit_number[b3 >> 16] + 16;
-
-        return BitOpTables::low_bit_number[b >> 24] + 24;
+        return lowest_bit_index(b);
     }
 
     /// @brief Index of the highest set bit of a non-zero block.
     static inline int get_last(Block b) {
-        auto b1 = b & 0xff000000;
-        if (b1)
-            return BitOpTables::high_bit_number[b1 >> 24] + 24;
-
-        auto b2 = b & 0xff0000;
-        if (b2)
-            return BitOpTables::high_bit_number[b2 >> 16] + 16;
-
-        auto b3 = b & 0xff00;
-        if (b3)
-            return BitOpTables::high_bit_number[b3 >> 8] + 8;
-
-        return BitOpTables::high_bit_number[b];
+        return highest_bit_index(b);
     }
 
 public:
@@ -437,46 +431,24 @@ public:
     inline bool operator<(bit_chunk const& r) const {
         assert(valid() && r.valid());
 
-        auto q = begin;
-        auto e = r.begin;
-        for (; q != end && e != r.end; ++q, ++e) {
-            if (*q > *e)
-                return false;
-            if (*q < *e)
-                return true;
+        const int n = min_size(size(), r.size());
+        for (int k = 0; k < n; ++k) {
+            if (begin[k] != r.begin[k])
+                return begin[k] < r.begin[k];
         }
-
-        for (; q != end; ++q)
-            if (*q)
-                return false;
-
-        for (; e != r.end; ++e)
-            if (*e)
-                return true;
-
-        return false;
+        return !bit_chunk(begin + n, end).any() && bit_chunk(r.begin + n, r.end).any();
     }
 
     /// @brief Equality of bit sets; trailing zero blocks are ignored.
     bool operator==(bit_chunk const& r) const {
         assert(valid() && r.valid());
 
-        auto q = begin;
-        auto e = r.begin;
-        for (; q != end && e != r.end; ++q, ++e) {
-            if (*q != *e)
+        const int n = min_size(size(), r.size());
+        for (int k = 0; k < n; ++k) {
+            if (begin[k] != r.begin[k])
                 return false;
         }
-
-        for (; q != end; ++q)
-            if (*q)
-                return false;
-
-        for (; e != r.end; ++e)
-            if (*e)
-                return false;
-
-        return true;
+        return bit_chunk(begin + n, end).none() && bit_chunk(r.begin + n, r.end).none();
     }
 
     /// @brief Check whether every bit set here is also set in @p b.
@@ -484,18 +456,12 @@ public:
         assert(valid());
         assert(b.valid());
 
-        auto b1 = begin;
-        auto b2 = b.begin;
-
-        for (; b1 != end && b2 != b.end; ++b1, ++b2)
-            if ((*b1 & *b2) != *b1)
+        const int n = min_size(size(), b.size());
+        for (int k = 0; k < n; ++k) {
+            if (begin[k] & ~b.begin[k])
                 return false;
-
-        for (; b1 != end; ++b1)
-            if (*b1)
-                return false;
-
-        return true;
+        }
+        return bit_chunk(begin + n, end).none();
     }
 
     /// @brief Compare two bit sets by inclusion.
@@ -555,10 +521,11 @@ public:
         assert(valid());
         assert(b.valid());
 
-        for (auto d = begin, e = b.begin; d != end && e != b.end; ++d, ++e)
-            if (*d & *e)
+        const int n = min_size(size(), b.size());
+        for (int k = 0; k < n; ++k) {
+            if (begin[k] & b.begin[k])
                 return true;
-
+        }
         return false;
     }
 
@@ -567,10 +534,11 @@ public:
     inline int count() const {
         assert(valid());
 
+        const int n = size();
         int c = 0;
-        for (auto d = begin; d != end; ++d) {
-            auto b = *d;
-            if (b)
+        for (int k = 0; k < n; ++k) {
+            const Block b = begin[k];
+            if (hardware_popcount || b)
                 c += bits_count(b);
         }
         return c;
@@ -581,13 +549,14 @@ public:
     inline int count(int maxc) const {
         assert(valid());
 
+        const int n = size();
         int c = 0;
-        for (auto d = begin; d != end; ++d) {
-            auto b = *d;
+        for (int k = 0; k < n; ++k) {
+            const Block b = begin[k];
             if (b) {
                 c += bits_count(b);
                 if (c > maxc)
-                    return c;
+                    break;
             }
         }
         return c;

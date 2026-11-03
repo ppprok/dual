@@ -32,6 +32,12 @@ The `dual_consumer` CTest test installs the build into a scratch prefix and buil
 All tests pass under `dev`, `release` and `asan`; any failure is a regression. More details are in
 [`src/tests/README.md`](src/tests/README.md).
 
+`-DDUAL_NATIVE_ARCH=ON` compiles the library, tests and benchmarks for the CPU of the build machine
+(`-march=native`, `-mcpu=native` where `-march=native` is not accepted, `/arch:AVX2` on MSVC);
+`-DDUAL_ARCH_FLAGS="-march=x86-64-v3"` chooses another level. It is OFF by default because such
+binaries do not run on older CPUs; the flags are not exported to projects that use the installed
+package. Without it, x86-64 builds have no POPCNT instruction and count bits with a portable fallback.
+
 ### Python package
 
 The Python package `dual` (pybind11 + scikit-build-core, sources in `python/`) is built and tested
@@ -140,6 +146,7 @@ mkdir -p build/docs && doxygen docs/Doxyfile   # HTML in build/docs/html
 | Job | What it checks |
 |---|---|
 | `linux-gcc`, `linux-clang`, `macos`, `windows-msvc` × `dev`, `release` | configure, build and `ctest` with the preset (including `dual_consumer`) |
+| `linux-gcc`, `windows-msvc` `release native` | the `release` preset with `DUAL_NATIVE_ARCH=ON` |
 | `linux-gcc asan` | the `asan` preset: tests under AddressSanitizer and UBSan |
 | `docs` | Doxygen with warnings as errors |
 | `clang-format` | the lines changed by the pull request are clang-formatted |
