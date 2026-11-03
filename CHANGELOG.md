@@ -13,6 +13,13 @@ The first release is planned as **0.1.0** (the version in `project(dual VERSION 
 
 ### Added
 
+- Fixed-width fast path in `Runc::RuncGlobalState` for matrices of at most 128 columns
+  (`FastPathMaxWidth`): rows are kept in one (n <= 64) or two 64-bit words instead of the general
+  bit containers, for `OPT`, `RUNC` and `RUNCM`. It reports the identical search tree (every
+  callback call with the same `DualizationNode`, the same covers in the same order), so pruning,
+  the resumable API, the C ABI and the Python package get the speed-up unchanged: at n <= 128
+  RUNCM is 2-5x faster and on par with `RuncFixed`, RUNC 2-4x and OPT 1.2-3x faster.
+  `setFastPathEnabled(false)` forces the general path ([#56](https://github.com/ppprok/dual/issues/56)).
 - Pruning bounds for optimal covers from irreducibility (`<dual/completion_bounds.h>`): every
   column added to a node needs its own uncovered minimal row, which bounds what the node can still
   gain or lose. `CompletionBounds`, `EnableCompletionBounds` of `WeightBoundsPruningCallback` and

@@ -109,6 +109,9 @@ Run status and logs through the API (see the `github` skill for `$API`/`$H`):
 The expected number of minimal covers is encoded in the file name `src/tests/data/<rows>_<cols>_<count>.hg`.
 The `OPT`, `RUNC`, `RUNCM` variants must produce the same set of covers — when changing an algorithm,
 compare them with each other on random matrices and against brute force for small `n`.
+`RuncGlobalState` has two implementations of the same step (general `RuncLocalState` and the
+fixed-width fast path for n <= 128, `src/dual/runc_fixed_width.h`); a change to one must be mirrored in
+the other, and `TestDual -tc="RuncFastPath*"` checks that both report the identical callback trace.
 
 ## clangd
 

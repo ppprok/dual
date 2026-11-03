@@ -38,6 +38,7 @@ add_library(dual
         weight_bounds_pruning.cpp
         weighters.cpp
         bool_matrix_preparation.h  # internal
+        runc_fixed_width.h  # internal
         ${DUAL_DUAL_PUBLIC_HEADERS})
 add_library(dual::dual ALIAS dual)
 

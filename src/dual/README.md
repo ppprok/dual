@@ -10,8 +10,8 @@ listed in [`CMakeLists.txt`](CMakeLists.txt) are built. Two targets:
   The `InstallRuncLib` target copies it into the deprecated [`../pyrunc`](../pyrunc/README.md).
 
 The public headers are in [`../../include/dual/`](../../include/dual) (included as `<dual/...>`,
-installed); this directory holds the sources and one internal header,
-`bool_matrix_preparation.h`. All C++ code is in namespace `dual`; the algorithms keep their state in
+installed); this directory holds the sources and two internal headers,
+`bool_matrix_preparation.h` and `runc_fixed_width.h`. All C++ code is in namespace `dual`; the algorithms keep their state in
 nested namespaces named after them: `dual::Runc`, `dual::AOT1`, `dual::PUNC`, `dual::FK`. The C ABI is the only
 part outside the namespace.
 
@@ -30,12 +30,13 @@ part outside the namespace.
 | `<dual/weight_bounds_pruning.h>`, `weight_bounds_pruning.cpp` | `WeightBoundsPruningCallback`: pruning by bounds on the total column weight (fixed bounds, or dynamic ones that search for the lightest / heaviest covers). `WeightCheckpoints`: weighters save their state on the way down and restore it exactly on backtrack, so `float` weights do not drift. |
 | `<dual/optimal_covers.h>`, `optimal_covers.cpp` | All optimal minimal covers (ties included) by enumeration with branch pruning: `OptimalCoverCollector` and the convenience functions `optimalCovers` (column weights or length) and `optimalCoversByCoveredRows` (weight of hit target rows), for RUNC/RUNCM/OPT/AOT1/PUNC (pruning) and FK (filtering). See [`docs/optimal-covers.md`](../../docs/optimal-covers.md). |
 | `bool_matrix_preparation.h/.cpp` (internal) | Removal of dependent rows (rows that contain another row). |
+| `runc_fixed_width.h` (internal) | Fast path of `Runc::RuncGlobalState`: `FixedWidthLocalState<Word>` (rows as `uint64_t` or `Bits128` words) and the word operations. |
 
 ## Algorithms
 
 | Header / source | Contents |
 |---|---|
-| `<dual/runc.h>`, `runc.cpp` | `Runc::RuncGlobalState`, the RUNC family; `Runc::AlgorithmType` = `OPT`, `RUNC`, `RUNCM` (default). Iterative: a stack of `RuncLocalState` (uncovered rows, support rows, remaining columns), `startDualize()` + `doStep()`. Public entry points: `dualize()` runs to the end reporting through the callbacks; `dualize(max_count)` returns the next at most `max_count` covers as `std::vector<Columns>`; `dualize(buffer_size, buffer)` writes `[size, col...]` records into a `uint32_t` buffer while at least `width + 1` entries are free and returns how many covers it wrote. Repeated calls of the last two resume the enumeration; `isDualizeFinished()` tells a finished enumeration from a too small buffer, `resetDualize()` restarts it, and changing the matrix resets it. An empty matrix has one (empty) cover, a zero row none; a callback that stops the search finishes the enumeration. Tested. |
+| `<dual/runc.h>`, `runc.cpp` | `Runc::RuncGlobalState`, the RUNC family; `Runc::AlgorithmType` = `OPT`, `RUNC`, `RUNCM` (default). Iterative: a stack of `RuncLocalState` (uncovered rows, support rows, remaining columns), `startDualize()` + `doStep()`. Public entry points: `dualize()` runs to the end reporting through the callbacks; `dualize(max_count)` returns the next at most `max_count` covers as `std::vector<Columns>`; `dualize(buffer_size, buffer)` writes `[size, col...]` records into a `uint32_t` buffer while at least `width + 1` entries are free and returns how many covers it wrote. Repeated calls of the last two resume the enumeration; `isDualizeFinished()` tells a finished enumeration from a too small buffer, `resetDualize()` restarts it, and changing the matrix resets it. An empty matrix has one (empty) cover, a zero row none; a callback that stops the search finishes the enumeration. On at most `FastPathMaxWidth` = 128 columns the enumeration runs on the fixed-width fast path (`runc_fixed_width.h`: `FixedWidthLocalState<uint64_t>` for n <= 64, `<Bits128>` up to 128), which mirrors every step of `RuncLocalState` and reports the identical search tree; `setFastPathEnabled(false)` forces the general path, `isFastPathActive()` tells which one runs. Tested, the two paths against each other in `RuncFastPathTests.cpp`. |
 | `<dual/runc_fixed.h>`, `runc_fixed.cpp` | `RuncFixed<Row>`: recursive RUNC-M for at most 32 / 64 columns (`Row` = `bits32` / `bits64`), plus `DualizeIntervals`; helpers `RuncFixedDualize<T>()`. `RuncFixed<bits32>`, `RuncFixed<bits64>` and `RuncFixedDualize<bits32/bits64>()` are explicitly instantiated in `runc_fixed.cpp` (the header only declares `RuncFixedDualize`), so only these two row types link. Tested by `TestRuncFixedO2` and the `dual_consumer` install test. |
 | `<dual/aot1.h>`, `aot1.cpp` | `AOT1::GlobalState`, variants `AO1`, `AO2`, `AO1K`, `AO2K`, `AO1M` (default), `AO2M`; entry point `dualize()`. Tested against RUNCM. |
 | `<dual/punc.h>`, `punc.cpp` | `PUNC::GlobalState`: enumeration with row/column order set by weights (`SetRowsOrder`, `SetColsOrder`); entry point `dualize()`. Tested against RUNCM. |
