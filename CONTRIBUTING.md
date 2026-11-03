@@ -146,7 +146,7 @@ mkdir -p build/docs && doxygen docs/Doxyfile   # HTML in build/docs/html
 | Job | What it checks |
 |---|---|
 | `linux-gcc`, `linux-clang`, `macos`, `windows-msvc` × `dev`, `release` | configure, build and `ctest` with the preset (including `dual_consumer`) |
-| `linux-gcc`, `macos`, `windows-msvc` `release native` | the `release` preset with `DUAL_NATIVE_ARCH=ON` |
+| `linux-gcc`, `windows-msvc` `release native` | the `release` preset with `DUAL_NATIVE_ARCH=ON` |
 | `linux-gcc asan` | the `asan` preset: tests under AddressSanitizer and UBSan |
 | `docs` | Doxygen with warnings as errors |
 | `clang-format` | the lines changed by the pull request are clang-formatted |

@@ -16,7 +16,7 @@ The first release is planned as **0.1.0** (the version in `project(dual VERSION 
 - CMake option `DUAL_NATIVE_ARCH` (OFF by default): compiles the library's own targets for the build
   machine (`-march=native`, `-mcpu=native` as a fallback, `/arch:AVX2` on MSVC) or with
   `DUAL_ARCH_FLAGS` (e.g. `-march=x86-64-v3`); the flags are not exported to consumers. CI builds and
-  tests the `release` preset with it on Linux, macOS and Windows. `dual::hardware_popcount` tells
+  tests the `release` preset with it on Linux (GCC) and Windows (MSVC). `dual::hardware_popcount` tells
   whether `bits_count` uses a popcount instruction ([#59](https://github.com/ppprok/dual/issues/59)).
 - Fixed-width fast path in `Runc::RuncGlobalState` for matrices of at most 128 columns
   (`FastPathMaxWidth`): rows are kept in one (n <= 64) or two 64-bit words instead of the general

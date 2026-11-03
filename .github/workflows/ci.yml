@@ -64,7 +64,8 @@ jobs:
 
   # DUAL_NATIVE_ARCH=ON (#59): -march=native (GCC, Clang; -mcpu=native as a fallback) or /arch:AVX2
   # (MSVC), so the builtin/intrinsic branches of <dual/bits.h> are built and tested, not only the
-  # portable fallbacks that the default build of x86-64 uses.
+  # portable fallbacks that the default build of x86-64 uses. Not on macOS: on arm64 the default build
+# already uses the builtins, and a third macOS job per run left jobs waiting for a runner until cancelled.
   native:
     name: ${{ matrix.name }} release native
     runs-on: ${{ matrix.os }}
@@ -76,10 +77,6 @@ jobs:
             os: ubuntu-latest
             cc: gcc
             cxx: g++
-          - name: macos
-            os: macos-latest
-            cc: clang
-            cxx: clang++
           - name: windows-msvc
             os: windows-latest
             cc: cl
