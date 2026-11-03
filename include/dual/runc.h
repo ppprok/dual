@@ -90,6 +90,7 @@ public:
 
     /// @brief Set the rows of `[begin, end)` not covered by column @p col as the uncovered rows
     ///        (restricted to the remaining columns); the rows covered by @p col become its support rows.
+    ///        If @p col covers every row, no uncovered rows remain and the support rows are not set.
     /// @return `false` if an uncovered row has no remaining column (the branch is dead).
     bool SetUncovered(int col, rows_citerator begin, rows_citerator end);
 

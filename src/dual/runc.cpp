@@ -102,6 +102,12 @@ bool Runc::RuncLocalState::SetUncovered(int col, rows_citerator begin, rows_cite
         *ubeg++ = r;
     }
 
+    if (ubeg == uncovered_.begin()) {
+        // Every row is hit by col: a cover, and its support group is not needed (see AddColumn)
+        uncovered_.clear();
+        return true;
+    }
+
     if (!AddUncoveredSupportRows(-1, col, uend, uncovered_.end()))
         return false;
 
@@ -122,6 +128,14 @@ Runc::RuncLocalState::AddResult Runc::RuncLocalState::AddColumn(RuncLocalState c
 
     if (!SetUncovered(l, col))
         return Uncoverable;
+
+    if (IsCover()) {
+        // Every row is hit by col. Building the support groups cannot fail then: col is a remaining
+        // column of the parent, and AddUncoveredSupportRows removed from the remaining columns the
+        // columns common to all rows of a group, so every group keeps a row without col. The state of
+        // a cover is never used, so the groups are not built (the fixed-width path does the same).
+        return Cover;
+    }
 
     if (!SetUncoveredSupportRows(l, col))
         return Uncompatable;
