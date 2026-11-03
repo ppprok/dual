@@ -214,8 +214,13 @@ struct bit_mask : bit_chunk {
 
         const int n = min_size(size(), bits.size());
         int c = 0;
-        for (int k = 0; k < n; ++k)
-            c += bits_count(begin[k] & bits.begin[k]);
+        // Without a popcount instruction counting a word costs a dozen operations, so zero words
+        // (frequent after masking) are skipped.
+        for (int k = 0; k < n; ++k) {
+            const Block a = begin[k] & bits.begin[k];
+            if (hardware_popcount || a)
+                c += bits_count(a);
+        }
         return c;
     }
 
@@ -228,9 +233,12 @@ struct bit_mask : bit_chunk {
         const int n = min_size(size(), bits.size());
         int c = 0;
         for (int k = 0; k < n; ++k) {
-            c += bits_count(begin[k] & bits.begin[k]);
-            if (c > maxc)
-                break;
+            const Block a = begin[k] & bits.begin[k];
+            if (a) {
+                c += bits_count(a);
+                if (c > maxc)
+                    break;
+            }
         }
         return c;
     }

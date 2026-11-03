@@ -60,11 +60,17 @@ constexpr int portable_highest(uint64_t x) {
     return portable_popcount(x) - 1;
 }
 
-inline int popcount64(uint64_t x) {
 #if defined(__GNUC__) && (defined(__POPCNT__) || defined(__aarch64__) || defined(__ARM_NEON))
-    return __builtin_popcountll(x);
+#    define DUAL_DETAILS_POPCOUNT_BUILTIN 1
 #elif defined(_MSC_VER) && defined(_M_X64) && defined(__AVX__)
-    // /arch:AVX and later imply POPCNT
+// /arch:AVX and later imply POPCNT
+#    define DUAL_DETAILS_POPCOUNT_MSVC 1
+#endif
+
+inline int popcount64(uint64_t x) {
+#if defined(DUAL_DETAILS_POPCOUNT_BUILTIN)
+    return __builtin_popcountll(x);
+#elif defined(DUAL_DETAILS_POPCOUNT_MSVC)
     return int(__popcnt64(x));
 #else
     return portable_popcount(x);
@@ -100,6 +106,14 @@ using enable_if_word = std::enable_if_t<std::is_unsigned<T>::value && sizeof(T) 
 
 }  // namespace details
 /// @endcond
+
+/// @brief `true` if `bits_count` compiles to a popcount instruction, `false` if it uses the portable
+///        fallback (x86-64 without POPCNT, e.g. without `DUAL_NATIVE_ARCH`).
+#if defined(DUAL_DETAILS_POPCOUNT_BUILTIN) || defined(DUAL_DETAILS_POPCOUNT_MSVC)
+constexpr bool hardware_popcount = true;
+#else
+constexpr bool hardware_popcount = false;
+#endif
 
 /// @brief Number of set bits in an unsigned word (at most 64 bits).
 template<typename T, details::enable_if_word<T> = 0>

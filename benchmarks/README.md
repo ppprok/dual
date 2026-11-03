@@ -43,7 +43,7 @@ then run the script with `.venv/bin/python`); without it the report has only tab
 build/release/benchmarks/dual_bench --list
 build/release/benchmarks/dual_bench --algorithm RUNCM --random 30 30 0.2 1 --time-limit 5
 build/release/benchmarks/dual_bench --algorithm FK --file src/tests/data/10_50_7187.hg
-build/release/benchmarks/dual_bench --info    # compiler and whether assertions are on
+build/release/benchmarks/dual_bench --info    # compiler, assertions, hardware popcount (DUAL_NATIVE_ARCH)
 ```
 
 Output: `{"algorithm": "RUNCM", "rows": 30, "cols": 30, "density": 0.2, "seed": 1, "file": "",

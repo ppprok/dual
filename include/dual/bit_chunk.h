@@ -536,8 +536,11 @@ public:
 
         const int n = size();
         int c = 0;
-        for (int k = 0; k < n; ++k)
-            c += bits_count(begin[k]);
+        for (int k = 0; k < n; ++k) {
+            const Block b = begin[k];
+            if (hardware_popcount || b)
+                c += bits_count(b);
+        }
         return c;
     }
 
@@ -549,9 +552,12 @@ public:
         const int n = size();
         int c = 0;
         for (int k = 0; k < n; ++k) {
-            c += bits_count(begin[k]);
-            if (c > maxc)
-                break;
+            const Block b = begin[k];
+            if (b) {
+                c += bits_count(b);
+                if (c > maxc)
+                    break;
+            }
         }
         return c;
     }
