@@ -51,13 +51,10 @@ struct bit_mask : bit_chunk {
         assert(valid());
         assert(bits.valid());
 
-        if (bits.empty() || empty())
-            return true;
-
-        for (auto i = begin, e = bits.begin; i != end && e != bits.end; ++i, ++e)
-            if (*i & *e)
+        const int n = min_size(size(), bits.size());
+        for (int k = 0; k < n; ++k)
+            if (begin[k] & bits.begin[k])
                 return false;
-
         return true;
     }
 
@@ -99,25 +96,22 @@ struct bit_mask : bit_chunk {
         assert(r1.valid());
         assert(r2.valid());
 
-        auto q = begin;
-        auto e1 = r1.begin;
-        auto e2 = r2.begin;
-        for (; q != end && e1 != r1.end && e2 != r2.end; ++q, ++e1, ++e2) {
-            auto b1 = *q & *e1;
-            auto b2 = *q & *e2;
-            if (b1 == b2)
-                continue;
-            if (b1 > b2)
-                return false;
-            return true;
+        const int s1 = min_size(size(), r1.size());
+        const int s2 = min_size(size(), r2.size());
+        const int n = min_size(s1, s2);
+        for (int k = 0; k < n; ++k) {
+            auto b1 = begin[k] & r1.begin[k];
+            auto b2 = begin[k] & r2.begin[k];
+            if (b1 != b2)
+                return b1 < b2;
         }
 
-        for (; q != end && e1 != r1.end; ++q, ++e1)
-            if (*q & *e1)
+        for (int k = n; k < s1; ++k)
+            if (begin[k] & r1.begin[k])
                 return false;
 
-        for (; q != end && e2 != r2.end; ++q, ++e2)
-            if (*q & *e2)
+        for (int k = n; k < s2; ++k)
+            if (begin[k] & r2.begin[k])
                 return true;
 
         return false;
@@ -129,22 +123,19 @@ struct bit_mask : bit_chunk {
         assert(r1.valid());
         assert(r2.valid());
 
-        auto q = begin;
-        auto e1 = r1.begin;
-        auto e2 = r2.begin;
-        for (; q != end && e1 != r1.end && e2 != r2.end; ++q, ++e1, ++e2) {
-            auto b1 = *q & *e1;
-            auto b2 = *q & *e2;
-            if (b1 != b2)
-                return false;
-        }
-
-        for (; q != end && e1 != r1.end; ++q, ++e1)
-            if (*q & *e1)
+        const int s1 = min_size(size(), r1.size());
+        const int s2 = min_size(size(), r2.size());
+        const int n = min_size(s1, s2);
+        for (int k = 0; k < n; ++k)
+            if ((begin[k] & r1.begin[k]) != (begin[k] & r2.begin[k]))
                 return false;
 
-        for (; q != end && e2 != r2.end; ++q, ++e2)
-            if (*q & *e2)
+        for (int k = n; k < s1; ++k)
+            if (begin[k] & r1.begin[k])
+                return false;
+
+        for (int k = n; k < s2; ++k)
+            if (begin[k] & r2.begin[k])
                 return false;
 
         return true;
@@ -159,23 +150,25 @@ struct bit_mask : bit_chunk {
         assert(b1.valid());
         assert(b2.valid());
 
-        auto d0 = begin, d1 = b1.begin, d2 = b2.begin;
+        const int s1 = min_size(size(), b1.size());
+        const int s2 = min_size(size(), b2.size());
+        const int n = min_size(s1, s2);
         int r = 0;
 
-        for (; d0 != end && d1 != b1.end && d2 != b2.end; ++d0, ++d1, ++d2) {
-            auto a = *d1 & *d0;
-            if (a == (*d2 & *d0))
+        for (int k = 0; k < n; ++k) {
+            auto a1 = b1.begin[k] & begin[k];
+            auto a2 = b2.begin[k] & begin[k];
+            if (a1 == a2)
                 continue;
 
-            if ((*d2 & a) == a) {
+            if ((a2 & a1) == a1) {
                 if (r == 1)
                     return 0;
                 r = -1;
                 continue;
             }
 
-            a = *d2 & *d0;
-            if ((*d1 & a) == a) {
+            if ((a1 & a2) == a2) {
                 if (r == -1)
                     return 0;
                 r = 1;
@@ -186,13 +179,13 @@ struct bit_mask : bit_chunk {
         }
 
         if (r != 1)
-            for (; d0 != end && d1 != b1.end; ++d0, ++d1)
-                if (*d1 & *d0)
+            for (int k = n; k < s1; ++k)
+                if (b1.begin[k] & begin[k])
                     return r + 1;
 
         if (r != -1)
-            for (; d0 != end && d2 != b2.end; ++d0, ++d2)
-                if (*d2 & *d0)
+            for (int k = n; k < s2; ++k)
+                if (b2.begin[k] & begin[k])
                     return r - 1;
 
         if (r == 0)
@@ -207,10 +200,10 @@ struct bit_mask : bit_chunk {
         assert(b1.valid());
         assert(b2.valid());
 
-        for (auto d = begin, e1 = b1.begin, e2 = b2.begin; d != end && e1 != b1.end && e2 != b2.end; ++d, ++e1, ++e2) {
-            if (*d & *e1 & *e2)
+        const int n = min_size(size(), min_size(b1.size(), b2.size()));
+        for (int k = 0; k < n; ++k)
+            if (begin[k] & b1.begin[k] & b2.begin[k])
                 return true;
-        }
         return false;
     }
 
@@ -219,13 +212,10 @@ struct bit_mask : bit_chunk {
         assert(valid());
         assert(bits.valid());
 
+        const int n = min_size(size(), bits.size());
         int c = 0;
-        for (auto d = begin, e = bits.begin; d != end && e != bits.end; ++d, ++e) {
-            auto a = *d & *e;
-            if (a)
-                c += bits_count(a);
-        }
-
+        for (int k = 0; k < n; ++k)
+            c += bits_count(begin[k] & bits.begin[k]);
         return c;
     }
 
@@ -235,14 +225,12 @@ struct bit_mask : bit_chunk {
         assert(valid());
         assert(bits.valid());
 
+        const int n = min_size(size(), bits.size());
         int c = 0;
-        for (auto d = begin, e = bits.begin; d != end && e != bits.end; ++d, ++e) {
-            auto a = *d & *e;
-            if (a) {
-                c += bits_count(a);
-                if (c > maxc)
-                    break;
-            }
+        for (int k = 0; k < n; ++k) {
+            c += bits_count(begin[k] & bits.begin[k]);
+            if (c > maxc)
+                break;
         }
         return c;
     }
@@ -258,27 +246,20 @@ struct bit_mask : bit_chunk {
         assert(bits.valid());
         assert(k >= -1);
 
+        const int n = min_size(size(), bits.size());
         int h = (k + 1) >> low_index_bit_count;
-        auto d = begin + h;
-        auto e = bits.begin + h;
-        assert(d <= end);
-        assert(e <= bits.end);
-        if (d == end || e == bits.end)
+        if (h >= n)
             return -1;
 
-        int i = h << low_index_bit_count;
         int r = (k + 1) & low_index_bit_mask;
-        auto b = (*d & *e) >> r;
+        auto b = (begin[h] & bits.begin[h]) >> r;
         if (b)
-            return i + r + get_first(b);
-        i += bits_per_block;
-        ++d;
-        ++e;
+            return (h << low_index_bit_count) + r + get_first(b);
 
-        for (; d != end && e != bits.end; ++e, ++d, i += bits_per_block) {
-            auto b = *d & *e;
+        for (++h; h < n; ++h) {
+            b = begin[h] & bits.begin[h];
             if (b)
-                return i + get_first(b);
+                return (h << low_index_bit_count) + get_first(b);
         }
 
         return -1;
@@ -289,11 +270,11 @@ struct bit_mask : bit_chunk {
         assert(valid());
         assert(bits.valid());
 
-        int i = 0;
-        for (auto d = begin, e = bits.begin; d != end && e != bits.end; ++d, ++e, i += bits_per_block) {
-            auto b = *d & *e;
+        const int n = min_size(size(), bits.size());
+        for (int h = 0; h < n; ++h) {
+            auto b = begin[h] & bits.begin[h];
             if (b)
-                return get_first(b) + i;
+                return (h << low_index_bit_count) + get_first(b);
         }
 
         return -1;
