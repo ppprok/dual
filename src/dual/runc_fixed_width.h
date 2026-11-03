@@ -103,29 +103,29 @@ bool wordFromRow(bit_chunk const& row, Word& word);
 template<>
 inline bool wordFromRow<uint64_t>(bit_chunk const& row, uint64_t& word) {
     word = 0;
-    int k = 0;
-    for (auto d = row.begin; d != row.end; ++d, ++k) {
-        if (k >= 2) {
+    int offset = 0;
+    for (auto d = row.begin; d != row.end; ++d, offset += bit_chunk::bits_per_block) {
+        if (offset >= 64) {
             if (*d)
                 return false;
             continue;
         }
-        word |= uint64_t(*d) << (32 * k);
+        word |= uint64_t(*d) << offset;
     }
     return true;
 }
 template<>
 inline bool wordFromRow<Bits128>(bit_chunk const& row, Bits128& word) {
     word = Bits128{};
-    int k = 0;
-    for (auto d = row.begin; d != row.end; ++d, ++k) {
-        if (k >= 4) {
+    int offset = 0;
+    for (auto d = row.begin; d != row.end; ++d, offset += bit_chunk::bits_per_block) {
+        if (offset >= 128) {
             if (*d)
                 return false;
             continue;
         }
-        uint64_t& half = k < 2 ? word.lo : word.hi;
-        half |= uint64_t(*d) << (32 * (k & 1));
+        uint64_t& half = offset < 64 ? word.lo : word.hi;
+        half |= uint64_t(*d) << (offset & 63);
     }
     return true;
 }

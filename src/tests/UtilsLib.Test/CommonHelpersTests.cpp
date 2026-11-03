@@ -83,10 +83,10 @@ TEST_CASE("exclude_removes_listed_elements_keeping_order") {
 
 // The loop stopped at e1 != b2.end instead of e2 != b2.end, so a shorter b2 was read past its end.
 TEST_CASE("bit_mask_intersects_stops_at_the_end_of_the_second_chunk") {
-    bit_chunk::Block maskBlocks[3] = {0, ~0u, ~0u};
-    bit_chunk::Block b1Blocks[3] = {0, ~0u, ~0u};
+    bit_chunk::Block maskBlocks[3] = {0, ~bit_chunk::Block(0), ~bit_chunk::Block(0)};
+    bit_chunk::Block b1Blocks[3] = {0, ~bit_chunk::Block(0), ~bit_chunk::Block(0)};
     // Only the first block belongs to b2; the following ones must not be read.
-    bit_chunk::Block b2Blocks[3] = {0, ~0u, ~0u};
+    bit_chunk::Block b2Blocks[3] = {0, ~bit_chunk::Block(0), ~bit_chunk::Block(0)};
 
     bit_mask mask(bit_chunk(maskBlocks, maskBlocks + 3));
     bit_chunk b1(b1Blocks, b1Blocks + 3);

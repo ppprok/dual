@@ -38,8 +38,11 @@ struct log2<1> {
 /// forward (`set`, `pad_blocks`, `pad_bits`, `assign*`) write past the current `end`; the caller
 /// must guarantee that enough memory is available there (see `bit_vector` and `bit_matrix`,
 /// which allocate the storage). Preconditions are checked with `assert` only.
-//template <typename BaseChunk>
-struct bit_chunk : chunk<unsigned int> {
+///
+/// Blocks are 64-bit words (`bits64`) on every platform. The block width is an implementation detail
+/// of the in-memory layout: code outside the containers should use `Block` and `bits_per_block`
+/// rather than assume a width.
+struct bit_chunk : chunk<bits64> {
     /// Byte type.
     typedef unsigned char byte;
 
@@ -114,7 +117,7 @@ private:
     inline void do_pad_ones(const Block* end1) {
         assert(end < end1);
         for (; end < end1; ++end)
-            *end = -1;
+            *end = ~Block(0);
     }
 
 public:

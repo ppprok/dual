@@ -223,23 +223,26 @@ TEST_CASE("read_bit_matrix_int_max") {
 
 // Block counts that do not fit into int throw before anything is allocated instead of wrapping around
 TEST_CASE("bit_matrix_too_many_blocks") {
+    // The smallest number of rows of 2e9 columns whose blocks do not fit into int
+    const int n = 2000000000;
+    const int m = int(INT_MAX / bit_chunk::block_for_bits(n)) + 1;
+    REQUIRE((long long) m * bit_chunk::block_for_bits(n) > INT_MAX);
     SUBCASE("new rows") {
-        // 41 rows of 62500001 blocks each
         bit_matrix bm;
-        CHECK_THROWS_AS(bm.set(40, 2000000000), std::length_error);
+        CHECK_THROWS_AS(bm.set(m - 1, n), std::length_error);
         CHECK(bm.height() == 0);
         CHECK(bm.width() == 0);
     }
     SUBCASE("restride") {
         bit_matrix bm;
-        CHECK(bm.set(40, 0));
-        CHECK_THROWS_AS(bm.set(0, 2000000000), std::length_error);
-        REQUIRE(bm.height() == 41);
+        CHECK(bm.set(m - 1, 0));
+        CHECK_THROWS_AS(bm.set(0, n), std::length_error);
+        REQUIRE(bm.height() == m);
         CHECK(bm.width() == 1);
-        CHECK(bm.get(40, 0));
+        CHECK(bm.get(m - 1, 0));
     }
     SUBCASE("reserve") {
         bit_matrix bm;
-        CHECK_THROWS_AS(bm.reserve(41, 2000000000), std::length_error);
+        CHECK_THROWS_AS(bm.reserve(m, n), std::length_error);
     }
 }
